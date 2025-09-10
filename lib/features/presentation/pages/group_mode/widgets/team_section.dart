@@ -71,7 +71,7 @@ class _TeamSectionState extends State<TeamSection> {
             onAdd: _addPlayer,
             onRemove: () => _removePlayer(index),
           );
-        }).toList(),
+        }),
       ],
     );
   }
