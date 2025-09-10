@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
 import '../../../widgets/Inputs/player_input_field.dart';
 import '../../../widgets/buttons/custom_button.dart';
+import 'package:go_router/go_router.dart';
 
 class PlayersRegisterScreen extends StatefulWidget {
   const PlayersRegisterScreen({super.key});
@@ -11,7 +12,7 @@ class PlayersRegisterScreen extends StatefulWidget {
 }
 
 class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
-  // Lista de jugadores 
+  // Lista de jugadores
   List<String> players = [""];
 
   void _addPlayer() {
@@ -44,7 +45,8 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
       return;
     }
 
-    debugPrint("Jugadores: $validPlayers");
+    // Navegar a la página de categorías
+    context.push('/select-categories', extra: validPlayers);
   }
 
   @override
@@ -57,7 +59,7 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-                 Row(
+              Row(
                 children: [
                   IconButton(
                     onPressed: () => Navigator.pop(context),
@@ -65,9 +67,9 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
                   ),
                 ],
               ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-                // Title
+              // Title
               const Text(
                 'StopWord',
                 style: TextStyle(
@@ -79,10 +81,7 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
               const SizedBox(height: 10),
               Text(
                 "Ingresar nombres",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: AppColors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 20, color: AppColors.textSecondary),
               ),
               const SizedBox(height: 20),
 
@@ -94,6 +93,7 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
                     return PlayerInputField(
                       index: index,
                       isLast: index == players.length - 1,
+                      initialValue: players[index],
                       onChanged: (value) => _updatePlayer(index, value),
                       onAdd: _addPlayer,
                       onRemove: () => _removePlayer(index),
@@ -102,8 +102,7 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
                 ),
               ),
 
-            
-               const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Botón jugar reutilizando CustomButton
               CustomButton(text: "Jugar 🎮", onPressed: _startGame),

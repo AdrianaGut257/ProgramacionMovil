@@ -3,6 +3,7 @@ import '../../../../config/colors.dart';
 import 'widgets/team_section.dart';
 import 'widgets/game_mode_selector.dart';
 import '../../widgets/buttons/custom_button.dart';
+import 'package:go_router/go_router.dart';
 
 class GroupModePage extends StatefulWidget {
   const GroupModePage({super.key});
@@ -37,6 +38,29 @@ class _GroupModePageState extends State<GroupModePage> {
     }
   }
 
+  // 🔹 Función para validar y navegar
+  void _startGame() {
+    // Obtener todos los jugadores visibles según el modo
+    List<String> currentPlayers = isDetermined
+        ? [...team1Players, ...team2Players]
+        : randomPlayers;
+
+    // Filtrar jugadores válidos
+    final validPlayers = currentPlayers
+        .where((p) => p.trim().isNotEmpty)
+        .toList();
+
+    if (validPlayers.length < 2) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Agrega al menos 2 jugadores")),
+      );
+      return;
+    }
+
+    // Navegar a la página de categorías pasando jugadores
+    context.push('/select-categories', extra: validPlayers);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,10 +78,8 @@ class _GroupModePageState extends State<GroupModePage> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 20),
 
-              // Title
               const Text(
                 'StopWord',
                 style: TextStyle(
@@ -66,17 +88,14 @@ class _GroupModePageState extends State<GroupModePage> {
                   color: AppColors.primary,
                 ),
               ),
-
               const SizedBox(height: 10),
 
               const Text(
                 'Elige una opción',
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
-
               const SizedBox(height: 30),
 
-              // Game Mode Selector
               GameModeSelector(
                 isDetermined: isDetermined,
                 onModeChanged: (value) {
@@ -87,17 +106,14 @@ class _GroupModePageState extends State<GroupModePage> {
                         ...team1Players.where((p) => p.isNotEmpty),
                         ...team2Players.where((p) => p.isNotEmpty),
                       ];
-                      if (randomPlayers.isEmpty) {
-                        randomPlayers = [''];
-                      }
+                      if (randomPlayers.isEmpty) randomPlayers = [''];
                     }
-
                     isDetermined = value;
                   });
                 },
               ),
-
               const SizedBox(height: 30),
+
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -136,7 +152,7 @@ class _GroupModePageState extends State<GroupModePage> {
                 ),
               ),
 
-              CustomButton(text: "Jugar 🎮", onPressed: () {}),
+              CustomButton(text: "Jugar 🎮", onPressed: _startGame),
               const SizedBox(height: 30),
             ],
           ),
