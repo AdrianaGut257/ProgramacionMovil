@@ -2,48 +2,21 @@ import 'package:flutter/material.dart';
 import '../../../../../config/colors.dart';
 import '../../../widgets/Inputs/player_input_field.dart';
 
-class TeamSection extends StatefulWidget {
+class TeamSection extends StatelessWidget {
   final String title;
-  final int initialPlayerCount;
+  final List<String> players;
+  final void Function(int index, String value) onUpdatePlayer;
+  final VoidCallback onAddPlayer;
+  final void Function(int index) onRemovePlayer;
 
   const TeamSection({
     super.key,
     required this.title,
-    required this.initialPlayerCount,
+    required this.players,
+    required this.onUpdatePlayer,
+    required this.onAddPlayer,
+    required this.onRemovePlayer,
   });
-
-  @override
-  State<TeamSection> createState() => _TeamSectionState();
-}
-
-class _TeamSectionState extends State<TeamSection> {
-  late List<String> players;
-
-  @override
-  void initState() {
-    super.initState();
-    players = List.generate(widget.initialPlayerCount, (index) => '');
-  }
-
-  void _addPlayer() {
-    setState(() {
-      players.add('');
-    });
-  }
-
-  void _removePlayer(int index) {
-    if (players.length > 1) {
-      setState(() {
-        players.removeAt(index);
-      });
-    }
-  }
-
-  void _updatePlayer(int index, String value) {
-    setState(() {
-      players[index] = value;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +24,7 @@ class _TeamSectionState extends State<TeamSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.title,
+          title,
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -64,12 +37,14 @@ class _TeamSectionState extends State<TeamSection> {
           final isLast = index == players.length - 1;
 
           return PlayerInputField(
-            key: Key('player_$index'),
+            key: Key('player_${title}_$index'),
             index: index,
             isLast: isLast,
-            onChanged: (value) => _updatePlayer(index, value),
-            onAdd: _addPlayer,
-            onRemove: () => _removePlayer(index),
+            initialValue:
+                players[index], // 🔑 sincroniza con la lista del padre
+            onChanged: (value) => onUpdatePlayer(index, value),
+            onAdd: onAddPlayer,
+            onRemove: () => onRemovePlayer(index),
           );
         }),
       ],
