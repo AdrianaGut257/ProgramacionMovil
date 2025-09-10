@@ -19,10 +19,21 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 20),
               const Spacer(),
 
+              // Botón para Jugar en grupo
               CustomButton(
                 text: "Jugar 🎮",
                 onPressed: () {
                   context.push('/group-mode');
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // Nuevo botón para modo individual
+              CustomButton(
+                text: "Individual 🧍",
+                onPressed: () {
+                  context.push('/player-register');
                 },
               ),
 
