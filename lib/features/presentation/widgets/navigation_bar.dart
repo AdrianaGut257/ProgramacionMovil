@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CustomNavigationBar extends StatelessWidget {
+  const CustomNavigationBar({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -9,6 +11,7 @@ class CustomNavigationBar extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.grey.withOpacity(0.3),
             spreadRadius: 1,
             blurRadius: 5,

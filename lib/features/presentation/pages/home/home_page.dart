@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/buttons/custom_button.dart';
-import 'widgets/home_header.dart';
+import '../../widgets/home_header.dart';
 import 'package:go_router/go_router.dart';
 
 class HomePage extends StatelessWidget {
@@ -20,13 +20,22 @@ class HomePage extends StatelessWidget {
               const Spacer(),
 
               CustomButton(
-                text: "Jugar 🎮",
+                text: "Modo individual",
+                icon: Icons.person,
+                onPressed: () {
+                  context.push('/player-register');
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              CustomButton(
+                text: "Modo grupal",
+                icon: Icons.group,
                 onPressed: () {
                   context.push('/group-mode');
                 },
               ),
-
-              const SizedBox(height: 100),
             ],
           ),
         ),
