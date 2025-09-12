@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:programacion_movil_/features/presentation/pages/category/styles/text_styles.dart';
 
 class CreateCategory extends StatefulWidget {
-  const CreateCategory({super.key});
+  final void Function(String categoryName) onCategoryCreated;
+  const CreateCategory({super.key, required this.onCategoryCreated});
 
   @override
   State<CreateCategory> createState() => _CreateCategoryState();
@@ -19,10 +20,10 @@ class _CreateCategoryState extends State<CreateCategory> {
 
   void _saveCategory() {
     final name = _nameController.text.trim();
+    if (name.isEmpty) return;
+
+    widget.onCategoryCreated(name);
     _nameController.clear();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Categoría "$name" creada')));
   }
 
   @override

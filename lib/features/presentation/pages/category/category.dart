@@ -11,7 +11,7 @@ class Category extends StatefulWidget {
 }
 
 class _CategoryState extends State<Category> {
-  bool isDetermined = true;
+  final List<String> createdCategories = [];
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +43,16 @@ class _CategoryState extends State<Category> {
               ),
 
               const SizedBox(height: 10),
-              const CreateCategory(),
-              const SizedBox(height: 100),
+
+              CreateCategory(
+                onCategoryCreated: (String categoryName) {
+                  setState(() {
+                    createdCategories.add(categoryName);
+                  });
+                },
+              ),
+
+              const SizedBox(height: 10),
             ],
           ),
         ),
