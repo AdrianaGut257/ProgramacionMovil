@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:programacion_movil_/features/presentation/pages/category/widgets/create_category.dart';
+import 'package:programacion_movil/features/presentation/pages/category/widgets/create_category.dart';
 
 import '../../../../config/colors.dart';
 
@@ -20,7 +20,7 @@ class _CategoryState extends State<Category> {
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
                 children: [
@@ -34,7 +34,7 @@ class _CategoryState extends State<Category> {
 
               // Title
               const Text(
-                'StopWords',
+                'StopWord',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
