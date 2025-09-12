@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../../../config/colors.dart';
 
-class CustomButton extends StatefulWidget {
+class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final Color? backgroundColor;
   final Color? textColor;
+  final IconData? icon;
 
   const CustomButton({
     super.key,
@@ -13,69 +14,53 @@ class CustomButton extends StatefulWidget {
     required this.onPressed,
     this.backgroundColor,
     this.textColor,
+    this.icon,
   });
-
-  @override
-  State<CustomButton> createState() => _CustomButtonState();
-}
-
-class _CustomButtonState extends State<CustomButton> {
-  bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _isHovered = true),
-        onExit: (_) => setState(() => _isHovered = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          decoration: BoxDecoration(
-            color: _isHovered
-                ? (widget.backgroundColor ?? AppColors.secondaryVariant)
-                : widget.backgroundColor ?? AppColors.secondary,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.secondaryVariant,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Material(
+          color: backgroundColor ?? AppColors.secondary,
+          borderRadius: BorderRadius.circular(25),
+          elevation: 0,
+          child: InkWell(
+            onTap: onPressed,
             borderRadius: BorderRadius.circular(25),
-            boxShadow: _isHovered
-                ? [
-                    BoxShadow(
-                      color: (widget.backgroundColor ?? AppColors.secondary),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                      spreadRadius: 2,
-                    ),
-                    const BoxShadow(
-                      color: AppColors.secondaryVariant,
-                      blurRadius: 8,
-                      offset: Offset(0, 4),
-                    ),
-                  ]
-                : [
-                    const BoxShadow(
-                      color: AppColors.secondaryVariant,
-                      blurRadius: 4,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(25),
-              onTap: widget.onPressed,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Center(
-                  child: AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 200),
+            splashColor: backgroundColor ?? AppColors.secondaryVariant,
+            highlightColor: backgroundColor ?? AppColors.secondary,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    text,
                     style: TextStyle(
-                      fontSize: _isHovered ? 18.5 : 18,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: widget.textColor ?? Colors.white,
+                      color: textColor ?? Colors.white,
                     ),
-                    child: Text(widget.text),
                   ),
-                ),
+                  if (icon != null) ...[
+                    const SizedBox(width: 8),
+                    Icon(icon, color: textColor ?? Colors.white),
+                  ],
+                ],
               ),
             ),
           ),

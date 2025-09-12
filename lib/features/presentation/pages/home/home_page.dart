@@ -21,6 +21,7 @@ class HomePage extends StatelessWidget {
 
               CustomButton(
                 text: "Modo individual",
+                icon: Icons.person,
                 onPressed: () {
                   context.push('/player-register');
                 },
@@ -30,6 +31,7 @@ class HomePage extends StatelessWidget {
 
               CustomButton(
                 text: "Modo grupal",
+                icon: Icons.group,
                 onPressed: () {
                   context.push('/group-mode');
                 },
