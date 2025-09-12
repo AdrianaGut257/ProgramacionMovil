@@ -10,4 +10,6 @@ class AppColors {
   static const Color teal = Color(0xFF26A69A);
   static const Color background = Color(0xFFF5F5F5);
   static const Color textSecondary = Colors.black54;
+  //Textos principales
+  static const Color textPrimary = Color(0xFFFFBE54);
 }
