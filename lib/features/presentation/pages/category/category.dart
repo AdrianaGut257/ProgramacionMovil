@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:programacion_movil_/features/presentation/pages/category/widgets/create_category.dart';
+import 'package:programacion_movil/features/presentation/pages/category/widgets/create_category.dart';
 
 import '../../../../config/colors.dart';
 

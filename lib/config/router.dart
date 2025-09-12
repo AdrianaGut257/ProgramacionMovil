@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:programacion_movil_/features/presentation/pages/category/category.dart';
+import 'package:programacion_movil/features/presentation/pages/category/category.dart';
 import '../features/presentation/pages/home/home_page.dart';
 import '../features/presentation/pages/group_mode/group_mode_page.dart';
 
@@ -12,7 +12,7 @@ class AppRouter {
         builder: (context, state) => const GroupModePage(),
       ),
       GoRoute(
-        path: '/category',
+        path: '/select-categories',
         builder: (context, state) => const Category(),
       ),
     ],

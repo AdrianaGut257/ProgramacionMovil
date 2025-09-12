@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:programacion_movil_/features/presentation/pages/category/styles/text_styles.dart';
+import 'package:programacion_movil/features/presentation/pages/category/styles/text_styles.dart';
 
 class CreateCategory extends StatefulWidget {
   final void Function(String categoryName) onCategoryCreated;
