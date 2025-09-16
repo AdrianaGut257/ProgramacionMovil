@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../config/colors.dart';
 
 class HomeHeader extends StatefulWidget {
@@ -166,8 +167,8 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
                         ).createShader(bounds),
                         child: Text(
                           widget.title,
-                          style: const TextStyle(
-                            fontSize: 48,
+                          style: GoogleFonts.blackOpsOne().copyWith(
+                            fontSize: 45,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
                             letterSpacing: -1.5,

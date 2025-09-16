@@ -38,14 +38,11 @@ class _GroupModePageState extends State<GroupModePage> {
     }
   }
 
-  // 🔹 Función para validar y navegar
   void _startGame() {
-    // Obtener todos los jugadores visibles según el modo
     List<String> currentPlayers = isDetermined
         ? [...team1Players, ...team2Players]
         : randomPlayers;
 
-    // Filtrar jugadores válidos
     final validPlayers = currentPlayers
         .where((p) => p.trim().isNotEmpty)
         .toList();

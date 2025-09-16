@@ -20,7 +20,7 @@ class _CategoryState extends State<Category> {
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
@@ -34,7 +34,7 @@ class _CategoryState extends State<Category> {
 
               // Title
               const Text(
-                'StopWord',
+                'StopWords',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,

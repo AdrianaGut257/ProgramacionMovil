@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/pages/category/styles/text_styles.dart';
 
 class CreateCategory extends StatefulWidget {
@@ -25,14 +24,6 @@ class _CreateCategoryState extends State<CreateCategory> {
 
     widget.onCategoryCreated(name);
     _nameController.clear();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Categoría "$name" creada exitosamente'),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.primary,
-      ),
-    );
   }
 
   @override
