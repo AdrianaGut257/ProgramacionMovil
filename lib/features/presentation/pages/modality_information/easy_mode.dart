@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:programacion_movil/config/colors.dart';
 import '../../widgets/buttons/custom_button.dart';
 import '../../widgets/modality_information.dart';
 import '../../widgets/home_header.dart';
@@ -34,7 +35,7 @@ class EasyMode extends StatelessWidget {
                     levelIcon: Icons.star_half,
                     levelTitle: 'Dificultad',
                     levelValue: 'moderado',
-                    cardColor: Color(0xFF2196F3),
+                    cardColor: AppColors.primary,
                   ),
                   const Spacer(),
                   const SizedBox(height: 20),

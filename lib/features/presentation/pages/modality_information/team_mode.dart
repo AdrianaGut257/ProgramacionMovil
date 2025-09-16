@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:programacion_movil/config/colors.dart';
 import '../../widgets/buttons/custom_button.dart';
 import '../../widgets/modality_information.dart';
 import '../../widgets/home_header.dart';
@@ -34,7 +35,7 @@ class TeamModePage extends StatelessWidget {
                     levelIcon: Icons.diversity_3,
                     levelTitle: 'Jugadores',
                     levelValue: '2-8',
-                    cardColor: Color.fromARGB(255, 205, 156, 214),
+                    cardColor: AppColors.primary,
                   ),
                   const Spacer(),
                   const SizedBox(height: 20),

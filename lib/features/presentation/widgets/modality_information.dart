@@ -23,6 +23,9 @@ class GameModeCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.primary,
         borderRadius: BorderRadius.circular(20),
+        border: Border(
+          bottom: BorderSide(color: AppColors.primaryVariant, width: 6),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,12 +154,17 @@ class StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [color, color],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: color,
         borderRadius: BorderRadius.circular(16),
+        border: Border(
+          bottom: BorderSide(color: AppColors.primaryVariant, width: 6),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryVariant,
+            spreadRadius: 4, // grosor del borde adicional
+          ),
+        ],
       ),
       child: Column(
         children: [
