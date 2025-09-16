@@ -31,7 +31,7 @@ class HardModePage extends StatelessWidget {
                   const StatsCards(
                     timeIcon: Icons.timer,
                     timeTitle: 'Tiempo',
-                    timeValue: '10 seg',
+                    timeValue: '5 seg',
                     levelIcon: Icons.whatshot,
                     levelTitle: 'Dificultad',
                     levelValue: 'dificil',

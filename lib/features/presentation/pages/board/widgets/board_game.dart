@@ -14,8 +14,33 @@ class _BoardGameState extends State<BoardGame> {
   List<String> availableLetters = [];
   List<String> currentLetters = [];
   final List<String> spanishAlphabet = [
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-    'N', 'Ñ', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'Ñ',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
   ];
 
   @override
@@ -27,36 +52,22 @@ class _BoardGameState extends State<BoardGame> {
   void _initializeGame() {
     setState(() {
       availableLetters = List.from(spanishAlphabet);
-      
+
       currentLetters = ['A', 'O', 'U', 'R', 'N', 'D'];
-      
-     
+
+      // Remove current letters from available letters
       for (String letter in currentLetters) {
         availableLetters.remove(letter);
       }
     });
   }
 
-  List<String> _getRandomLetters(int count) {
-    final random = Random();
-    final List<String> randomLetters = [];
-    
-    for (int i = 0; i < count; i++) {
-      if (availableLetters.isEmpty) break;
-      
-      final index = random.nextInt(availableLetters.length);
-      randomLetters.add(availableLetters[index]);
-      availableLetters.removeAt(index);
-    }
-    
-    return randomLetters;
-  }
-
   void _onLetterPressed(int index) {
     setState(() {
-      final removedLetter = currentLetters.removeAt(index);
-      
-  
+      // Remove the letter at the pressed position
+      currentLetters.removeAt(index);
+
+      // Add a new random letter if available
       if (availableLetters.isNotEmpty) {
         final random = Random();
         final newIndex = random.nextInt(availableLetters.length);
@@ -70,7 +81,7 @@ class _BoardGameState extends State<BoardGame> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-     
+        // Title "StopWords"
         Text(
           'StopWords',
           style: TextStyle(
@@ -79,9 +90,9 @@ class _BoardGameState extends State<BoardGame> {
             color: Colors.blue[700],
           ),
         ).animate().fadeIn(duration: 500.ms).slideY(begin: -0.5, end: 0),
-        
+
         SizedBox(height: 20),
-        
+
         // Título "Requests"
         Text(
           'Requests',
@@ -91,10 +102,10 @@ class _BoardGameState extends State<BoardGame> {
             color: Colors.grey[700],
           ),
         ).animate().fadeIn(duration: 500.ms).slideY(begin: -0.3, end: 0),
-        
+
         SizedBox(height: 40),
-        
- 
+
+        // First row of letters (4 letters)
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -106,10 +117,10 @@ class _BoardGameState extends State<BoardGame> {
                 ),
           ],
         ),
-        
+
         SizedBox(height: 20),
-        
-       
+
+        // Second row of letters (remaining letters)
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -127,48 +138,47 @@ class _BoardGameState extends State<BoardGame> {
   Widget _buildLetterTile(int index) {
     return GestureDetector(
       onTap: () => _onLetterPressed(index),
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: availableLetters.isNotEmpty 
-              ? Colors.blue 
-              : Colors.blue.withOpacity(0.5),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            currentLetters[index],
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      )
-      .animate(
-        onPlay: (controller) => controller.repeat(reverse: true),
-      )
-      .scale(
-        begin: const Offset(1, 1),
-        end: const Offset(1.05, 1.05),
-        duration: 1000.ms,
-        curve: Curves.easeInOut,
-      )
-      .then()
-      .animate(
-        delay: 200.ms * index, // Escalonar las animaciones
-      )
-      .fadeIn(duration: 500.ms)
-      .slideY(begin: 0.5, end: 0, curve: Curves.easeOutBack),
+      child:
+          Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: availableLetters.isNotEmpty
+                      ? Colors.blue
+                      : Colors.blue,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue,
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    currentLetters[index],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              )
+              .animate(onPlay: (controller) => controller.repeat(reverse: true))
+              .scale(
+                begin: const Offset(1, 1),
+                end: const Offset(1.05, 1.05),
+                duration: 1000.ms,
+                curve: Curves.easeInOut,
+              )
+              .then()
+              .animate(
+                delay: 200.ms * index, // Stagger the animations
+              )
+              .fadeIn(duration: 500.ms)
+              .slideY(begin: 0.5, end: 0, curve: Curves.easeOutBack),
     );
   }
 }

@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
 
               CustomButton(
                 text: "Modo dificil",
-                icon: Icons.person_2_sharp,
+                icon: Icons.person,
                 onPressed: () {
                   context.push('/modality-information-hard');
                 },
@@ -47,8 +47,8 @@ class HomePage extends StatelessWidget {
                 },
               ),
 
-               const SizedBox(height: 20),
-               CustomButton(
+              const SizedBox(height: 20),
+              CustomButton(
                 text: "Tablero del juego",
                 onPressed: () {
                   context.push('/board-game');

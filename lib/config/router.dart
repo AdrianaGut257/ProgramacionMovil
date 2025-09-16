@@ -6,7 +6,7 @@ import '../features/presentation/pages/home/home_page.dart';
 import '../features/presentation/pages/group_mode/group_mode_page.dart';
 import '../features/presentation/pages/modality_selection/modality_selection_page.dart';
 import '../features/presentation/pages/modality_information/hard_mode.dart';
-import '../features/presentation/pages/modality_information/normal_mode.dart';
+import '../features/presentation/pages/modality_information/easy_mode.dart';
 import '../features/presentation/pages/modality_information/team_mode.dart';
 
 class AppRouter {
@@ -39,7 +39,7 @@ class AppRouter {
       ),
       GoRoute(
         path: '/modality-information-normal',
-        builder: (context, state) => const NormalModePage(),
+        builder: (context, state) => const EasyMode(),
       ),
       GoRoute(
         path: '/modality-information-team',

@@ -4,8 +4,8 @@ import '../../widgets/modality_information.dart';
 import '../../widgets/home_header.dart';
 import 'package:go_router/go_router.dart';
 
-class NormalModePage extends StatelessWidget {
-  const NormalModePage({super.key});
+class EasyMode extends StatelessWidget {
+  const EasyMode({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class NormalModePage extends StatelessWidget {
                 children: [
                   const HomeHeader(),
                   const GameModeCard(
-                    title: 'Modo Normal',
+                    title: 'Modo fácil',
                     description:
                         'El modo clásico donde puedes fallar algunas veces antes de que termine la partida.',
                     badgeText: 'CLASSIC',
@@ -30,7 +30,7 @@ class NormalModePage extends StatelessWidget {
                   const StatsCards(
                     timeIcon: Icons.access_time,
                     timeTitle: 'Tiempo',
-                    timeValue: '4 seg',
+                    timeValue: '10 seg',
                     levelIcon: Icons.star_half,
                     levelTitle: 'Dificultad',
                     levelValue: 'moderado',
