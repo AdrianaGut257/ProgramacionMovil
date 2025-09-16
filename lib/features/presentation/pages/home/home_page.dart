@@ -36,6 +36,14 @@ class HomePage extends StatelessWidget {
                   context.push('/group-mode');
                 },
               ),
+
+               const SizedBox(height: 20),
+               CustomButton(
+                text: "Tablero del juego",
+                onPressed: () {
+                  context.push('/board-game');
+                },
+              ),
             ],
           ),
         ),

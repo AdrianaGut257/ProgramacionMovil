@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:programacion_movil/features/presentation/pages/board/board_page.dart';
 import '../features/presentation/pages/home/home_page.dart';
 import '../features/presentation/pages/group_mode/group_mode_page.dart';
 import '../features/presentation/pages/individual_mode/widgets/players_register_screen.dart';
@@ -15,6 +16,10 @@ class AppRouter {
       GoRoute(
         path: '/player-register',
         builder: (context, state) => const PlayersRegisterScreen(),
+      ),
+      GoRoute(
+        path: '/board-game',
+        builder: (context, state) => const BoardPage(),
       ),
       GoRoute(
         path: '/select-categories',
