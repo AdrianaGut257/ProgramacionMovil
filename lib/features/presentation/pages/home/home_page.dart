@@ -20,10 +20,20 @@ class HomePage extends StatelessWidget {
               const Spacer(),
 
               CustomButton(
-                text: "Modo individual",
+                text: "Modo facil",
                 icon: Icons.person,
                 onPressed: () {
-                  context.push('/player-register');
+                  context.push('/modality-information-normal');
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              CustomButton(
+                text: "Modo dificil",
+                icon: Icons.person_2_sharp,
+                onPressed: () {
+                  context.push('/modality-information-hard');
                 },
               ),
 
@@ -33,7 +43,7 @@ class HomePage extends StatelessWidget {
                 text: "Modo grupal",
                 icon: Icons.group,
                 onPressed: () {
-                  context.push('/group-mode');
+                  context.push('/modality-information-team');
                 },
               ),
 
