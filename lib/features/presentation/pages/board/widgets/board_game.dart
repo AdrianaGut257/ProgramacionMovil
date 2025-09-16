@@ -27,10 +27,10 @@ class _BoardGameState extends State<BoardGame> {
   void _initializeGame() {
     setState(() {
       availableLetters = List.from(spanishAlphabet);
-      // Inicializar con las letras específicas de la imagen
+      
       currentLetters = ['A', 'O', 'U', 'R', 'N', 'D'];
       
-      // Remover estas letras del conjunto disponible
+     
       for (String letter in currentLetters) {
         availableLetters.remove(letter);
       }
@@ -56,7 +56,7 @@ class _BoardGameState extends State<BoardGame> {
     setState(() {
       final removedLetter = currentLetters.removeAt(index);
       
-      // Agregar nueva letra si hay disponibles
+  
       if (availableLetters.isNotEmpty) {
         final random = Random();
         final newIndex = random.nextInt(availableLetters.length);
@@ -70,7 +70,7 @@ class _BoardGameState extends State<BoardGame> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Título "StopWords"
+     
         Text(
           'StopWords',
           style: TextStyle(
@@ -94,7 +94,7 @@ class _BoardGameState extends State<BoardGame> {
         
         SizedBox(height: 40),
         
-        // Primera fila de letras: A, O, U, R
+ 
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -109,7 +109,7 @@ class _BoardGameState extends State<BoardGame> {
         
         SizedBox(height: 20),
         
-        // Segunda fila de letras: N, D
+       
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
