@@ -1,8 +1,6 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
-import 'package:programacion_movil/data/models/player.dart';
 import '../../../widgets/Inputs/player_input_field.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import 'package:go_router/go_router.dart';
@@ -18,25 +16,10 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
   // Lista de jugadores
   List<String> players = [""];
 
-  void _addPlayer(String name) async {
-    if (name.trim().isEmpty) {
-      print('El nombre está vacío');
-      return;
-    }
-
-    try {
-      final db = await AppDatabase.instance.database;
-      await db.insert('player', {'name': name});
-      print('Jugador "$name" agregado a la base de datos');
-      setState(() {
-        players.add(""); // agrega nuevo campo vacío
-      });
-
-      final response = await db.query('player');
-      print("Jugadores guardados: $response");
-    } catch (e, st) {
-      print('Error al agregar jugador: $e\n$st');
-    }
+  void _addPlayer() {
+    setState(() {
+      players.add("");
+    });
   }
 
   void _removePlayer(int index) {
@@ -53,8 +36,13 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
     });
   }
 
-  void _startGame() {
+  void _startGame() async {
     final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
+
+    final db = await AppDatabase.instance.database;
+
+    final allPlayers = await db.query('player');
+    print('Contenido completo de la tabla player: $allPlayers');
 
     if (validPlayers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -63,8 +51,21 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
       return;
     }
 
-    // Navegar a la página de categorías
-    context.push('/select-categories', extra: validPlayers);
+    try {
+      // Insertar todos los jugadores válidos en la base
+      await AppDatabase.instance.insertPlayers(validPlayers);
+
+      print("Jugadores guardados en DB: $validPlayers");
+
+      // Opcional: mostrar todos los registros que quedaron guardados
+      final all = await db.query('player');
+      print("Contenido completo de la tabla player: $all");
+
+      // Ahora navega a la siguiente pantalla
+      context.push('/select-categories', extra: validPlayers);
+    } catch (e, st) {
+      print('Error al guardar jugadores: $e\n$st');
+    }
   }
 
   @override
@@ -113,7 +114,7 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
                       isLast: index == players.length - 1,
                       initialValue: players[index],
                       onChanged: (value) => _updatePlayer(index, value),
-                      onAdd: () => _addPlayer(players[index]),
+                      onAdd: () => _addPlayer(),
                       onRemove: () => _removePlayer(index),
                     );
                   },

@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:programacion_movil/data/models/player.dart';
 import 'package:sqflite/sqflite.dart';
@@ -6,6 +5,9 @@ import 'package:sqflite/sqflite.dart';
 class AppDatabase {
   static final AppDatabase instance = AppDatabase._internal();
   static Database? _db;
+
+  // Cambia a true solo durante desarrollo para reiniciar DB
+  static const bool resetDatabaseOnStart = false;
 
   AppDatabase._internal();
 
@@ -20,6 +22,18 @@ class AppDatabase {
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, 'database_sqlite.db');
 
+    if (resetDatabaseOnStart) {
+      // Cierra la base si ya estaba abierta
+      if (_db != null) {
+        await _db!.close();
+        _db = null;
+      }
+      // Borra el archivo físico de la DB
+      await deleteDatabase(path);
+      print('Base de datos eliminada y lista para recrear');
+    }
+
+    // Abrir o crear la DB
     return await openDatabase(path, version: 1, onCreate: _onCreate);
   }
 
@@ -27,17 +41,51 @@ class AppDatabase {
     await db.execute('''
       CREATE TABLE player (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        score INTEGER
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE category (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE category_item (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        category_id INTEGER NOT NULL,
+        FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE CASCADE
       )
     ''');
   }
 
-  Future<List<Player>?> getPlayers() async {
+  Future<List<Player>> getPlayers() async {
     final db = await database;
     final data = await db.query('player');
-    List<Player> players = data
-        .map((e) => Player(id: e["id"] as int, name: e["name"] as String))
+    return data
+        .map(
+          (e) => Player(
+            id: e["id"] as int,
+            name: e["name"] as String,
+            score: e["score"] as int? ?? 0,
+          ),
+        )
         .toList();
-    return players;
+  }
+
+  Future<void> insertPlayers(List<String> players) async {
+    final db = await database;
+    for (var name in players) {
+      await db.insert('player', {'name': name.trim(), 'score': 0});
+    }
+  }
+
+  Future<void> insertCategory(String category) async {
+    final db = await database;
+    await db.insert('category', {'name': category});
   }
 }
