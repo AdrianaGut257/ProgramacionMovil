@@ -1,7 +1,8 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:programacion_movil/features/presentation/widgets/home_header.dart';
+
 
 class BoardGame extends StatefulWidget {
   const BoardGame({super.key});
@@ -52,10 +53,7 @@ class _BoardGameState extends State<BoardGame> {
   void _initializeGame() {
     setState(() {
       availableLetters = List.from(spanishAlphabet);
-
       currentLetters = ['A', 'O', 'U', 'R', 'N', 'D'];
-
-      // Remove current letters from available letters
       for (String letter in currentLetters) {
         availableLetters.remove(letter);
       }
@@ -64,10 +62,8 @@ class _BoardGameState extends State<BoardGame> {
 
   void _onLetterPressed(int index) {
     setState(() {
-      // Remove the letter at the pressed position
       currentLetters.removeAt(index);
 
-      // Add a new random letter if available
       if (availableLetters.isNotEmpty) {
         final random = Random();
         final newIndex = random.nextInt(availableLetters.length);
@@ -79,23 +75,17 @@ class _BoardGameState extends State<BoardGame> {
 
   @override
   Widget build(BuildContext context) {
+    final double radius = 120; 
+
     return Column(
       children: [
-        // Title "StopWords"
-        Text(
-          'StopWords',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.blue[700],
-          ),
-        ).animate().fadeIn(duration: 500.ms).slideY(begin: -0.5, end: 0),
 
-        SizedBox(height: 20),
+        HomeHeader(title: "StopWords"),
+        const SizedBox(height: 30),
 
-        // Título "Requests"
+       
         Text(
-          'Requests',
+          'Selecciona una letra',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w500,
@@ -103,33 +93,25 @@ class _BoardGameState extends State<BoardGame> {
           ),
         ).animate().fadeIn(duration: 500.ms).slideY(begin: -0.3, end: 0),
 
-        SizedBox(height: 40),
+        const SizedBox(height: 50),
 
-        // First row of letters (4 letters)
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for (int i = 0; i < 4; i++)
-              if (i < currentLetters.length)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+
+        SizedBox(
+          width: 300,
+          height: 300,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              for (int i = 0; i < currentLetters.length; i++)
+                Transform.translate(
+                  offset: Offset(
+                    radius * cos(2 * pi * i / currentLetters.length - pi / 2),
+                    radius * sin(2 * pi * i / currentLetters.length - pi / 2),
+                  ),
                   child: _buildLetterTile(i),
                 ),
-          ],
-        ),
-
-        SizedBox(height: 20),
-
-        // Second row of letters (remaining letters)
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for (int i = 4; i < currentLetters.length; i++)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: _buildLetterTile(i),
-              ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -138,47 +120,45 @@ class _BoardGameState extends State<BoardGame> {
   Widget _buildLetterTile(int index) {
     return GestureDetector(
       onTap: () => _onLetterPressed(index),
-      child:
-          Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: availableLetters.isNotEmpty
-                      ? Colors.blue
-                      : Colors.blue,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
                       color: Colors.blue,
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
                   ],
-                ),
-                child: Center(
-                  child: Text(
-                    currentLetters[index],
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              )
-              .animate(onPlay: (controller) => controller.repeat(reverse: true))
-              .scale(
-                begin: const Offset(1, 1),
-                end: const Offset(1.05, 1.05),
-                duration: 1000.ms,
-                curve: Curves.easeInOut,
-              )
-              .then()
-              .animate(
-                delay: 200.ms * index, // Stagger the animations
-              )
-              .fadeIn(duration: 500.ms)
-              .slideY(begin: 0.5, end: 0, curve: Curves.easeOutBack),
+        ),
+        child: Center(
+          child: Text(
+            currentLetters[index],
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      )
+          // Animaciones (igual que antes)
+          .animate(onPlay: (controller) => controller.repeat(reverse: true))
+          .scale(
+            begin: const Offset(1, 1),
+            end: const Offset(1.05, 1.05),
+            duration: 1000.ms,
+            curve: Curves.easeInOut,
+          )
+          .then()
+          .animate(
+            delay: 200.ms * index, // Stagger
+          )
+          .fadeIn(duration: 500.ms)
+          .slideY(begin: 0.5, end: 0, curve: Curves.easeOutBack),
     );
   }
 }
