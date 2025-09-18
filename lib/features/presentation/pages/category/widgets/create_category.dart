@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:programacion_movil/data/datasources/app_database.dart';
 import 'package:programacion_movil/features/presentation/pages/category/styles/text_styles.dart';
 
 class CreateCategory extends StatefulWidget {
@@ -18,12 +20,20 @@ class _CreateCategoryState extends State<CreateCategory> {
     super.dispose();
   }
 
-  void _saveCategory() {
+  void _saveCategory() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
 
+    //final db = await AppDatabase.instance.database;
+
     widget.onCategoryCreated(name);
     _nameController.clear();
+
+    await AppDatabase.instance.insertCategory(name);
+
+    if (kDebugMode) {
+      print("este es la categoria: $name");
+    }
   }
 
   @override
