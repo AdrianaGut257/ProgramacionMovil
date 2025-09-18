@@ -44,9 +44,8 @@ class LetterTile extends StatelessWidget {
         ),
       ),
     )
-        // Animación de entrada más marcada
         .animate()
-        .fadeIn(duration: 400.ms) // aparece suavemente
+        .fadeIn(duration: 400.ms) 
         .scale(begin: const Offset(0.5, 0.5), end: const Offset(1, 1), curve: Curves.elasticOut, duration: 700.ms) // rebote
         .move(begin: const Offset(0, 120), end: const Offset(0, 0), curve: Curves.easeOutBack, duration: 600.ms); // caída más notoria
   }

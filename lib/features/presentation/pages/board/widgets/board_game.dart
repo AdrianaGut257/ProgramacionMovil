@@ -108,7 +108,7 @@ class _BoardGameState extends State<BoardGame> {
                   ),
                 ),
 
-              // Círculo central decorativo
+              // Círculo central 
               Container(
                 width: 60,
                 height: 60,
