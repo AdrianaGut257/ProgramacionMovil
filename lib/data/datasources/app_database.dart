@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:programacion_movil/data/models/player.dart';
 import 'package:sqflite/sqflite.dart';
@@ -30,7 +31,9 @@ class AppDatabase {
       }
       // Borra el archivo físico de la DB
       await deleteDatabase(path);
-      print('Base de datos eliminada y lista para recrear');
+      if (kDebugMode) {
+        print('Base de datos eliminada y lista para recrear');
+      }
     }
 
     // Abrir o crear la DB

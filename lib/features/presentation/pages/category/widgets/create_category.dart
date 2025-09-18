@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
 import 'package:programacion_movil/features/presentation/pages/category/styles/text_styles.dart';
@@ -30,7 +31,9 @@ class _CreateCategoryState extends State<CreateCategory> {
 
     await AppDatabase.instance.insertCategory(name);
 
-    print("este es la categoria: $name");
+    if (kDebugMode) {
+      print("este es la categoria: $name");
+    }
   }
 
   @override

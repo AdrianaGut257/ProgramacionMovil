@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
@@ -36,15 +37,18 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
     });
   }
 
-  void _startGame() async {
+  Future<void> _startGame() async {
     final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
 
     final db = await AppDatabase.instance.database;
 
     final allPlayers = await db.query('player');
-    print('Contenido completo de la tabla player: $allPlayers');
+    if (kDebugMode) {
+      print('Contenido completo de la tabla player: $allPlayers');
+    }
 
     if (validPlayers.isEmpty) {
+      if (!mounted) return; // 🔥 evita usar context si el widget ya no existe
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Agrega al menos un jugador")),
       );
@@ -55,16 +59,25 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
       // Insertar todos los jugadores válidos en la base
       await AppDatabase.instance.insertPlayers(validPlayers);
 
-      print("Jugadores guardados en DB: $validPlayers");
+      if (kDebugMode) {
+        print("Jugadores guardados en DB: $validPlayers");
+      }
 
       // Opcional: mostrar todos los registros que quedaron guardados
       final all = await db.query('player');
-      print("Contenido completo de la tabla player: $all");
+      if (kDebugMode) {
+        print("Contenido completo de la tabla player: $all");
+      }
+
+      // Verificamos que el widget siga montado antes de navegar
+      if (!mounted) return;
 
       // Ahora navega a la siguiente pantalla
       context.push('/select-categories', extra: validPlayers);
     } catch (e, st) {
-      print('Error al guardar jugadores: $e\n$st');
+      if (kDebugMode) {
+        print('Error al guardar jugadores: $e\n$st');
+      }
     }
   }
 
