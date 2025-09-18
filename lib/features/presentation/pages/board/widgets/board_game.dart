@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:programacion_movil/features/presentation/pages/board/widgets/letter_tile.dart.dart';
 import 'package:programacion_movil/features/presentation/widgets/home_header.dart';
-
 
 class BoardGame extends StatefulWidget {
   const BoardGame({super.key});
@@ -14,34 +14,13 @@ class BoardGame extends StatefulWidget {
 class _BoardGameState extends State<BoardGame> {
   List<String> availableLetters = [];
   List<String> currentLetters = [];
+
   final List<String> spanishAlphabet = [
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-    'G',
-    'H',
-    'I',
-    'J',
-    'K',
-    'L',
-    'M',
-    'N',
-    'Ñ',
-    'O',
-    'P',
-    'Q',
-    'R',
-    'S',
-    'T',
-    'U',
-    'V',
-    'W',
-    'X',
-    'Y',
-    'Z',
+    'A', 'B', 'C', 'D', 'E', 'F',
+    'G', 'H', 'I', 'J', 'K', 'L',
+    'M', 'N', 'Ñ', 'O', 'P', 'Q',
+    'R', 'S', 'T', 'U', 'V', 'W',
+    'X', 'Y', 'Z',
   ];
 
   @override
@@ -53,8 +32,13 @@ class _BoardGameState extends State<BoardGame> {
   void _initializeGame() {
     setState(() {
       availableLetters = List.from(spanishAlphabet);
-      currentLetters = ['A', 'O', 'U', 'R', 'N', 'D'];
-      for (String letter in currentLetters) {
+      availableLetters.shuffle();
+
+      // Escoger 6 letras aleatorias
+      currentLetters = availableLetters.take(6).toList();
+
+      // Quitarlas de la lista
+      for (var letter in currentLetters) {
         availableLetters.remove(letter);
       }
     });
@@ -75,15 +59,13 @@ class _BoardGameState extends State<BoardGame> {
 
   @override
   Widget build(BuildContext context) {
-    final double radius = 120; 
+    final double radius = 95; // radio del círculo
 
     return Column(
       children: [
-
         HomeHeader(title: "StopWords"),
         const SizedBox(height: 30),
 
-       
         Text(
           'Selecciona una letra',
           style: TextStyle(
@@ -93,72 +75,58 @@ class _BoardGameState extends State<BoardGame> {
           ),
         ).animate().fadeIn(duration: 500.ms).slideY(begin: -0.3, end: 0),
 
-        const SizedBox(height: 50),
+        const SizedBox(height: 30),
 
-
+        // Círculo de fondo + letras
         SizedBox(
-          width: 300,
-          height: 300,
+          width: 290,
+          height: 290,
           child: Stack(
             alignment: Alignment.center,
             children: [
+              // Círculo morado de fondo
+              Container(
+                width: 290,
+                height: 290,
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 122, 115, 212),
+                  shape: BoxShape.circle,
+                ),
+              ),
+
+              // Letras en círculo
               for (int i = 0; i < currentLetters.length; i++)
                 Transform.translate(
                   offset: Offset(
                     radius * cos(2 * pi * i / currentLetters.length - pi / 2),
                     radius * sin(2 * pi * i / currentLetters.length - pi / 2),
                   ),
-                  child: _buildLetterTile(i),
+                  child: LetterTile(
+                    letter: currentLetters[i],
+                    onTap: () => _onLetterPressed(i),
+                    availableLetters: availableLetters.length,
+                  ),
                 ),
+
+              // Círculo central decorativo
+              Container(
+                width: 60,
+                height: 60,
+                decoration: const BoxDecoration(
+                  color: Colors.orange,
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: CircleAvatar(
+                    radius: 12,
+                    backgroundColor: Colors.yellow,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildLetterTile(int index) {
-    return GestureDetector(
-      onTap: () => _onLetterPressed(index),
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-                      color: Colors.blue,
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-        ),
-        child: Center(
-          child: Text(
-            currentLetters[index],
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      )
-          // Animaciones (igual que antes)
-          .animate(onPlay: (controller) => controller.repeat(reverse: true))
-          .scale(
-            begin: const Offset(1, 1),
-            end: const Offset(1.05, 1.05),
-            duration: 1000.ms,
-            curve: Curves.easeInOut,
-          )
-          .then()
-          .animate(
-            delay: 200.ms * index, // Stagger
-          )
-          .fadeIn(duration: 500.ms)
-          .slideY(begin: 0.5, end: 0, curve: Curves.easeOutBack),
     );
   }
 }

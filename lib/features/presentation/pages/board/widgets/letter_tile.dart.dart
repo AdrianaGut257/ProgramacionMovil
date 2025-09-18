@@ -16,35 +16,38 @@ class LetterTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-          onTap: onTap,
-          child: Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: availableLetters > 0 ? Colors.blue : Colors.blue,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.blue,
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+      onTap: onTap,
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: availableLetters > 0 ? Colors.blue : Colors.blue,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue.shade700,
+              blurRadius: 12,
+              spreadRadius: 2,
+              offset: const Offset(0, 6),
             ),
-            child: Center(
-              child: Text(
-                letter,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            letter,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        )
-        // Animación de entrada con escala y suavizado
+        ),
+      ),
+    )
+        // Animación de entrada más marcada
         .animate()
-        .move(begin: Offset(0, 50), end: Offset(0, 0), duration: 500.ms);
+        .fadeIn(duration: 400.ms) // aparece suavemente
+        .scale(begin: const Offset(0.5, 0.5), end: const Offset(1, 1), curve: Curves.elasticOut, duration: 700.ms) // rebote
+        .move(begin: const Offset(0, 120), end: const Offset(0, 0), curve: Curves.easeOutBack, duration: 600.ms); // caída más notoria
   }
 }
