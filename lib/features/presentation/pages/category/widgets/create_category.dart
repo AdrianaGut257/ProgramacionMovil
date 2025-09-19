@@ -7,13 +7,13 @@ import 'package:programacion_movil/features/presentation/pages/category/styles/t
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
 
 class CreateCategory extends StatefulWidget {
-  final void Function(String categoryName) onCategoryCreated;
-  final void Function(List<String> selectedCategories)? onSelectionChanged;
+  final List<String> selectedCategories;
+  final void Function(String) onToggle;
 
   const CreateCategory({
     super.key,
-    required this.onCategoryCreated,
-    this.onSelectionChanged,
+    required this.selectedCategories,
+    required this.onToggle,
   });
 
   @override
@@ -22,15 +22,13 @@ class CreateCategory extends StatefulWidget {
 
 class _CreateCategoryState extends State<CreateCategory> {
   final TextEditingController _nameController = TextEditingController();
-  final List<String> _selectedCategories = [];
   final List<String> _createdCategories = [
     "Deportes",
+    "Libros",
+    "Personajes históricos",
     "Tecnología",
-    "Música",
-    "Cine",
-    "Juegos",
-    "Bebidas",
-    "Furbo",
+    "Ciudades",
+    "Vehículos",
   ];
   @override
   void dispose() {
@@ -44,7 +42,6 @@ class _CreateCategoryState extends State<CreateCategory> {
 
     //final db = await AppDatabase.instance.database;
 
-    widget.onCategoryCreated(name);
     _nameController.clear();
     _createdCategories.add(name);
     await AppDatabase.instance.insertCategory(name);
@@ -52,18 +49,6 @@ class _CreateCategoryState extends State<CreateCategory> {
     if (kDebugMode) {
       print("este es la categoria: $name");
     }
-  }
-
-  void _toggleCategory(String category) {
-    setState(() {
-      if (_selectedCategories.contains(category)) {
-        _selectedCategories.remove(category);
-      } else {
-        _selectedCategories.add(category);
-      }
-    });
-
-    widget.onSelectionChanged?.call(List.from(_selectedCategories));
   }
 
   Widget _inputField() {
@@ -137,7 +122,7 @@ class _CreateCategoryState extends State<CreateCategory> {
         const SizedBox(width: 8),
         AddRemoveButton(
           isAdd: !isSelected,
-          onPressed: () => _toggleCategory(category),
+          onPressed: () => widget.onToggle(category),
         ),
       ],
     );
@@ -162,7 +147,7 @@ class _CreateCategoryState extends State<CreateCategory> {
               itemCount: _createdCategories.length,
               itemBuilder: (context, index) {
                 final category = _createdCategories[index];
-                final isSelected = _selectedCategories.contains(category);
+                final isSelected = widget.selectedCategories.contains(category);
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5),
                   child: _childListPadding(category, isSelected),
