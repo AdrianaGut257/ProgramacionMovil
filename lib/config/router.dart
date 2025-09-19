@@ -1,9 +1,13 @@
 import 'package:go_router/go_router.dart';
-import 'package:programacion_movil_/features/presentation/pages/category/category.dart';
+import 'package:programacion_movil/features/presentation/pages/board/board_page.dart';
+import 'package:programacion_movil/features/presentation/pages/category/category.dart';
+import 'package:programacion_movil/features/presentation/pages/individual_mode/widgets/players_register_screen.dart';
 import '../features/presentation/pages/home/home_page.dart';
 import '../features/presentation/pages/group_mode/group_mode_page.dart';
-import '../features/presentation/pages/individual_mode/widgets/players_register_screen.dart';
-import '../features/presentation/pages/select_categories/select_categories_page.dart';
+import '../features/presentation/pages/modality_selection/modality_selection_page.dart';
+import '../features/presentation/pages/modality_information/hard_mode.dart';
+import '../features/presentation/pages/modality_information/easy_mode.dart';
+import '../features/presentation/pages/modality_information/team_mode.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -18,11 +22,28 @@ class AppRouter {
         builder: (context, state) => const PlayersRegisterScreen(),
       ),
       GoRoute(
+        path: '/board-game',
+        builder: (context, state) => const BoardPage(),
+      ),
+      GoRoute(
         path: '/select-categories',
-        builder: (context, state) {
-          final players = state.extra as List<String>? ?? [];
-          return SelectCategoriesPage(players: players);
-        },
+        builder: (context, state) => const Category(),
+      ),
+      GoRoute(
+        path: '/modality-selection',
+        builder: (context, state) => const ModalitySelectionPage(),
+      ),
+      GoRoute(
+        path: '/modality-information-hard',
+        builder: (context, state) => const HardModePage(),
+      ),
+      GoRoute(
+        path: '/modality-information-normal',
+        builder: (context, state) => const EasyMode(),
+      ),
+      GoRoute(
+        path: '/modality-information-team',
+        builder: (context, state) => const TeamModePage(),
       ),
     ],
   );

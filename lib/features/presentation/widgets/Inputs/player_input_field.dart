@@ -60,7 +60,7 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(25),
                 border: Border(
-                  bottom: BorderSide(color: AppColors.primaryVariant, width: 4),
+                  bottom: BorderSide(color: AppColors.primaryVariant, width: 5),
                 ),
               ),
               child: TextField(
