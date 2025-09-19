@@ -37,12 +37,9 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
   }
 
   void _startGame() async {
+    print('🔥 Entró a _startGame');
+
     final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
-
-    final db = await AppDatabase.instance.database;
-
-    final allPlayers = await db.query('player');
-    print('Contenido completo de la tabla player: $allPlayers');
 
     if (validPlayers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -54,17 +51,25 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
     try {
       // Insertar todos los jugadores válidos en la base
       await AppDatabase.instance.insertPlayers(validPlayers);
-
-      print("Jugadores guardados en DB: $validPlayers");
+      print("✅ Jugadores guardados en DB: $validPlayers");
 
       // Opcional: mostrar todos los registros que quedaron guardados
-      final all = await db.query('player');
-      print("Contenido completo de la tabla player: $all");
+      // Usa el método getPlayers() en lugar de acceder directamente a la DB
+      final allPlayers = await AppDatabase.instance.getPlayers();
+      print(
+        "📋 Jugadores en la tabla: ${allPlayers.map((p) => '${p.name} (${p.score})').toList()}",
+      );
 
       // Ahora navega a la siguiente pantalla
       context.push('/select-categories', extra: validPlayers);
     } catch (e, st) {
-      print('Error al guardar jugadores: $e\n$st');
+      print('❌ Error al guardar jugadores: $e');
+      print('Stack trace: $st');
+
+      // Mostrar error al usuario
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al guardar jugadores: ${e.toString()}")),
+      );
     }
   }
 
