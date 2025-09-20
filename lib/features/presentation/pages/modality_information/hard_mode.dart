@@ -12,45 +12,50 @@ class HardModePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      body: Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  const HomeHeader(),
-                  const GameModeCard(
-                    title: 'Modo Difícil',
-                    description:
-                        'En este modo, si uno falla, la partida termina de inmediato.',
-                    badgeText: 'HARD MODE',
-                    icon: Icons.bolt,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      const HomeHeader(),
+                      const GameModeCard(
+                        title: 'Modo Difícil',
+                        description:
+                            'En este modo, si uno falla, la partida termina de inmediato.',
+                        badgeText: 'HARD MODE',
+                        icon: Icons.bolt,
+                      ),
+                      const SizedBox(height: 30),
+                      const StatsCards(
+                        timeIcon: Icons.timer,
+                        timeTitle: 'Tiempo',
+                        timeValue: '5 seg',
+                        levelIcon: Icons.whatshot,
+                        levelTitle: 'Dificultad',
+                        levelValue: 'dificil',
+                        cardColor: AppColors.primary,
+                      ),
+                      const Spacer(),
+                      const SizedBox(height: 20),
+                      CustomButton(
+                        text: "Jugar",
+                        icon: Icons.group,
+                        onPressed: () {
+                          context.push('/player-register');
+                        },
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 30),
-                  const StatsCards(
-                    timeIcon: Icons.timer,
-                    timeTitle: 'Tiempo',
-                    timeValue: '5 seg',
-                    levelIcon: Icons.whatshot,
-                    levelTitle: 'Dificultad',
-                    levelValue: 'dificil',
-                    cardColor: AppColors.primary,
-                  ),
-                  const Spacer(),
-                  const SizedBox(height: 20),
-                  CustomButton(
-                    text: "Jugar",
-                    icon: Icons.group,
-                    onPressed: () {
-                      context.push('/player-register');
-                    },
-                  ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

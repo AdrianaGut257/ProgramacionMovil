@@ -1,11 +1,12 @@
 //import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:programacion_movil/features/presentation/pages/category/styles/button_styles.dart';
+//import 'package:programacion_movil/features/presentation/pages/category/styles/button_styles.dart';
 import 'package:programacion_movil/features/presentation/pages/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/pages/category/widgets/pred_category.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
-
+import 'package:programacion_movil/features/presentation/pages/category/widgets/category_selector.dart';
+import '../../widgets/home_header.dart';
 import 'widgets/create_category.dart';
 
 class Category extends StatefulWidget {
@@ -36,30 +37,17 @@ class _CategoryState extends State<Category> {
     selectedCategories.value = current;
   }
 
+  void _onModeChanged(bool isPred) {
+    setState(() {
+      _currentIndex = isPred ? 0 : 1;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: selectedCategories,
       builder: (_, selected, _) => Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight), // altura extra
-          child: AppBar(
-            automaticallyImplyLeading: false, // control manual del leading
-            flexibleSpace: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -67,35 +55,14 @@ class _CategoryState extends State<Category> {
               crossAxisAlignment:
                   CrossAxisAlignment.center, // Centra horizontalmente
               children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Text('StopWords', style: categoryTitleStyle),
-                ),
-                const SizedBox(height: 10),
+                const HomeHeader(),
+
                 Text("Seleccione categorias", style: categorySubtitleStyle),
                 const SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _currentIndex = 0;
-                        });
-                      },
-                      style: categoryButtonStyle(isActive: _currentIndex == 0),
-                      child: const Text('Predeterminadas'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _currentIndex = 1;
-                        });
-                      },
-                      style: categoryButtonStyle(isActive: _currentIndex == 1),
-                      child: const Text('Creadas'),
-                    ),
-                  ],
+
+                CategorySelector(
+                  isPredSelected: _currentIndex == 0,
+                  onModeChanged: _onModeChanged,
                 ),
                 const SizedBox(height: 20),
                 // IndexedStack para mostrar el contenido
