@@ -31,7 +31,7 @@ class TeamSection extends StatelessWidget {
             color: AppColors.primary,
           ),
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 10),
         ...players.asMap().entries.map((entry) {
           final index = entry.key;
           final isLast = index == players.length - 1;
@@ -40,8 +40,7 @@ class TeamSection extends StatelessWidget {
             key: Key('player_${title}_$index'),
             index: index,
             isLast: isLast,
-            initialValue:
-                players[index], // 🔑 sincroniza con la lista del padre
+            initialValue: players[index],
             onChanged: (value) => onUpdatePlayer(index, value),
             onAdd: onAddPlayer,
             onRemove: () => onRemovePlayer(index),

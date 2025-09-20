@@ -19,7 +19,7 @@ class GameModeSelector extends StatelessWidget {
           child: GestureDetector(
             onTap: () => onModeChanged(true),
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
               decoration: BoxDecoration(
                 color: isDetermined ? AppColors.teal : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(25),
@@ -40,7 +40,7 @@ class GameModeSelector extends StatelessWidget {
           child: GestureDetector(
             onTap: () => onModeChanged(false),
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
               decoration: BoxDecoration(
                 color: !isDetermined ? AppColors.teal : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(25),

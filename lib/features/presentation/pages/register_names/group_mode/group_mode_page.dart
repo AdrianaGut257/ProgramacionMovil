@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../../../config/colors.dart';
+//import '../../../../../config/colors.dart';
 import 'widgets/team_section.dart';
 import 'widgets/game_mode_selector.dart';
 import '../../../widgets/buttons/custom_button.dart';
+import '../../../widgets/home_header.dart';
 import 'package:go_router/go_router.dart';
 
 class GroupModePage extends StatefulWidget {
@@ -54,7 +55,6 @@ class _GroupModePageState extends State<GroupModePage> {
       return;
     }
 
-    // Navegar a la página de categorías pasando jugadores
     context.push('/select-categories', extra: validPlayers);
   }
 
@@ -67,38 +67,19 @@ class _GroupModePageState extends State<GroupModePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              const Text(
-                'StopWord',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
-              const SizedBox(height: 10),
+              const HomeHeader(),
 
               const Text(
                 'Elige una opción',
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 10),
 
               GameModeSelector(
                 isDetermined: isDetermined,
                 onModeChanged: (value) {
                   setState(() {
                     if (value == false && isDetermined == true) {
-                      // Determinado → Aleatorio
                       randomPlayers = [
                         ...team1Players.where((p) => p.isNotEmpty),
                         ...team2Players.where((p) => p.isNotEmpty),
@@ -148,9 +129,7 @@ class _GroupModePageState extends State<GroupModePage> {
                   ),
                 ),
               ),
-
-              CustomButton(text: "Jugar 🎮", onPressed: _startGame),
-              const SizedBox(height: 30),
+              CustomButton(text: "Jugar", onPressed: _startGame),
             ],
           ),
         ),
