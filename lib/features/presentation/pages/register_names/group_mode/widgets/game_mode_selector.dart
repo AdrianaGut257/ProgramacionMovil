@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../../config/colors.dart';
+import '../../../../../../config/colors.dart';
 
 class GameModeSelector extends StatelessWidget {
   final bool isDetermined;

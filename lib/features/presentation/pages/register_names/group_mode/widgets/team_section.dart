@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../config/colors.dart';
-import '../../../widgets/Inputs/player_input_field.dart';
+import '../../../../../../config/colors.dart';
+import '../../../../widgets/Inputs/player_input_field.dart';
 
 class TeamSection extends StatelessWidget {
   final String title;

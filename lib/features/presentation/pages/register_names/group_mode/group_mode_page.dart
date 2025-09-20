@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../config/colors.dart';
+import '../../../../../config/colors.dart';
 import 'widgets/team_section.dart';
 import 'widgets/game_mode_selector.dart';
-import '../../widgets/buttons/custom_button.dart';
+import '../../../widgets/buttons/custom_button.dart';
 import 'package:go_router/go_router.dart';
 
 class GroupModePage extends StatefulWidget {
