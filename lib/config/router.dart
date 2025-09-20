@@ -1,9 +1,9 @@
 import 'package:go_router/go_router.dart';
 import 'package:programacion_movil/features/presentation/pages/board/board_page.dart';
 import 'package:programacion_movil/features/presentation/pages/category/category.dart';
-import 'package:programacion_movil/features/presentation/pages/individual_mode/widgets/players_register_screen.dart';
+import 'package:programacion_movil/features/presentation/pages/register_names/individual_mode/players_register_page.dart';
 import '../features/presentation/pages/home/home_page.dart';
-import '../features/presentation/pages/group_mode/group_mode_page.dart';
+import '../features/presentation/pages/register_names/group_mode/group_mode_page.dart';
 import '../features/presentation/pages/modality_selection/modality_selection_page.dart';
 import '../features/presentation/pages/modality_information/hard_mode.dart';
 import '../features/presentation/pages/modality_information/easy_mode.dart';

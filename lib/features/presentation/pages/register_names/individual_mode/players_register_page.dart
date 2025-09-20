@@ -4,6 +4,7 @@ import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
 import '../../../widgets/Inputs/player_input_field.dart';
 import '../../../widgets/buttons/custom_button.dart';
+import '../../../widgets/home_header.dart';
 import 'package:go_router/go_router.dart';
 
 class PlayersRegisterScreen extends StatefulWidget {
@@ -91,33 +92,16 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Title
-              const Text(
-                'StopWord',
+              const HomeHeader(),
+              Text(
+                "Ingresar nombres",
                 style: TextStyle(
-                  fontSize: 32,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
                 ),
               ),
-              const SizedBox(height: 10),
-              Text(
-                "Ingresar nombres",
-                style: TextStyle(fontSize: 20, color: AppColors.textSecondary),
-              ),
               const SizedBox(height: 20),
-
-              // Lista dinámica de campos
               Expanded(
                 child: ListView.builder(
                   itemCount: players.length,
@@ -134,10 +118,7 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
-
-              // Botón jugar reutilizando CustomButton
-              CustomButton(text: "Jugar 🎮", onPressed: _startGame),
+              CustomButton(text: "Jugar", onPressed: _startGame),
             ],
           ),
         ),

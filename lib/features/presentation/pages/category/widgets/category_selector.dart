@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../../../../config/colors.dart';
 
-class GameModeSelector extends StatelessWidget {
-  final bool isDetermined;
+class CategorySelector extends StatelessWidget {
+  final bool isPredSelected;
   final Function(bool) onModeChanged;
 
-  const GameModeSelector({
+  const CategorySelector({
     super.key,
-    required this.isDetermined,
+    required this.isPredSelected,
     required this.onModeChanged,
   });
 
@@ -19,16 +18,16 @@ class GameModeSelector extends StatelessWidget {
           child: GestureDetector(
             onTap: () => onModeChanged(true),
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
               decoration: BoxDecoration(
-                color: isDetermined ? AppColors.teal : Colors.grey.shade300,
+                color: isPredSelected ? Colors.teal : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Text(
-                'Determinado',
+                'Predeterminadas',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: isDetermined ? Colors.white : Colors.grey.shade600,
+                  color: isPredSelected ? Colors.white : Colors.grey.shade600,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -40,16 +39,16 @@ class GameModeSelector extends StatelessWidget {
           child: GestureDetector(
             onTap: () => onModeChanged(false),
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
               decoration: BoxDecoration(
-                color: !isDetermined ? AppColors.teal : Colors.grey.shade300,
+                color: !isPredSelected ? Colors.teal : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Text(
-                'Aleatorio',
+                'Creadas',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: !isDetermined ? Colors.white : Colors.grey.shade600,
+                  color: !isPredSelected ? Colors.white : Colors.grey.shade600,
                   fontWeight: FontWeight.bold,
                 ),
               ),
