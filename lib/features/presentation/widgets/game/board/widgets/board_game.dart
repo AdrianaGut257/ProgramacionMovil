@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:programacion_movil/features/presentation/pages/board/widgets/letter_tile.dart.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board/widgets/letter_tile.dart.dart';
 import 'package:programacion_movil/features/presentation/widgets/home_header.dart';
 
 class BoardGame extends StatefulWidget {
@@ -16,11 +16,33 @@ class _BoardGameState extends State<BoardGame> {
   List<String> currentLetters = [];
 
   final List<String> spanishAlphabet = [
-    'A', 'B', 'C', 'D', 'E', 'F',
-    'G', 'H', 'I', 'J', 'K', 'L',
-    'M', 'N', 'Ñ', 'O', 'P', 'Q',
-    'R', 'S', 'T', 'U', 'V', 'W',
-    'X', 'Y', 'Z',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'Ñ',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
   ];
 
   @override
@@ -59,7 +81,7 @@ class _BoardGameState extends State<BoardGame> {
 
   @override
   Widget build(BuildContext context) {
-    final double radius = 95; // radio del círculo
+    final double radius = 120; // radio del círculo
 
     return Column(
       children: [
@@ -79,15 +101,15 @@ class _BoardGameState extends State<BoardGame> {
 
         // Círculo de fondo + letras
         SizedBox(
-          width: 290,
-          height: 290,
+          width: 360,
+          height: 360,
           child: Stack(
             alignment: Alignment.center,
             children: [
               // Círculo morado de fondo
               Container(
-                width: 290,
-                height: 290,
+                width: 380,
+                height: 380,
                 decoration: const BoxDecoration(
                   color: Color.fromARGB(255, 122, 115, 212),
                   shape: BoxShape.circle,
@@ -108,17 +130,17 @@ class _BoardGameState extends State<BoardGame> {
                   ),
                 ),
 
-              // Círculo central 
+              // Círculo central
               Container(
-                width: 60,
-                height: 60,
+                width: 80,
+                height: 80,
                 decoration: const BoxDecoration(
                   color: Colors.orange,
                   shape: BoxShape.circle,
                 ),
                 child: const Center(
                   child: CircleAvatar(
-                    radius: 12,
+                    radius: 16,
                     backgroundColor: Colors.yellow,
                   ),
                 ),

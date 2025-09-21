@@ -19,7 +19,7 @@ class AddRemoveButton extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: isAdd ? AppColors.success : AppColors.error,
+          color: isAdd ? AppColors.success : AppColors.errorPrimary,
           shape: BoxShape.circle,
         ),
         child: Icon(
