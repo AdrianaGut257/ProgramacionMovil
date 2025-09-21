@@ -1,13 +1,12 @@
-//import 'dart:developer';
-
 import 'package:flutter/material.dart';
-//import 'package:programacion_movil/features/presentation/pages/category/styles/button_styles.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:programacion_movil/features/presentation/pages/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/pages/category/widgets/pred_category.dart';
-import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
 import 'package:programacion_movil/features/presentation/pages/category/widgets/category_selector.dart';
+import 'package:programacion_movil/features/presentation/pages/category/widgets/create_category.dart';
+import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
 import '../../widgets/home_header.dart';
-import 'widgets/create_category.dart';
 
 class Category extends StatefulWidget {
   const Category({super.key});
@@ -17,77 +16,83 @@ class Category extends StatefulWidget {
 }
 
 class _CategoryState extends State<Category> {
+
   final ValueNotifier<List<String>> selectedCategories = ValueNotifier([
     "Música",
     "Animales",
-    "Paises",
+    "Países",
     "Frutas",
     "Vegetales",
     "Apellidos",
   ]);
+
+
   int _currentIndex = 0;
 
   void toggleCategory(String category) {
     final current = List<String>.from(selectedCategories.value);
-    if (current.contains(category)) {
-      current.remove(category);
-    } else {
-      current.add(category);
-    }
+    current.contains(category) ? current.remove(category) : current.add(category);
     selectedCategories.value = current;
   }
 
+
   void _onModeChanged(bool isPred) {
-    setState(() {
-      _currentIndex = isPred ? 0 : 1;
-    });
+    setState(() => _currentIndex = isPred ? 0 : 1);
   }
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
+    return ValueListenableBuilder<List<String>>(
       valueListenable: selectedCategories,
-      builder: (_, selected, _) => Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.center, // Centra horizontalmente
-              children: [
-                const HomeHeader(),
+      builder: (_, selected, __) {
+        return Scaffold(
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const HomeHeader(),
 
-                Text("Seleccione categorias", style: categorySubtitleStyle),
-                const SizedBox(height: 15),
+                  Text("Seleccione categorías", style: categorySubtitleStyle),
+                  const SizedBox(height: 15),
 
-                CategorySelector(
-                  isPredSelected: _currentIndex == 0,
-                  onModeChanged: _onModeChanged,
-                ),
-                const SizedBox(height: 20),
-                // IndexedStack para mostrar el contenido
-                Expanded(
-                  child: IndexedStack(
-                    index: _currentIndex,
-                    children: [
-                      PredCategory(
-                        selectedCategories: selected,
-                        onToggle: toggleCategory,
-                      ),
-                      CreateCategory(
-                        selectedCategories: selected,
-                        onToggle: toggleCategory,
-                      ),
-                    ],
+          
+                  CategorySelector(
+                    isPredSelected: _currentIndex == 0,
+                    onModeChanged: _onModeChanged,
                   ),
-                ),
-                const SizedBox(height: 10),
-                CustomButton(text: "Jugar 🎮", onPressed: () {}),
-              ],
+                  const SizedBox(height: 20),
+
+                  Expanded(
+                    child: IndexedStack(
+                      index: _currentIndex,
+                      children: [
+                        PredCategory(
+                          selectedCategories: selected,
+                          onToggle: toggleCategory,
+                        ),
+                        CreateCategory(
+                          selectedCategories: selected,
+                          onToggle: toggleCategory,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  CustomButton(
+                    text: "Jugar",
+                    icon: Icons.play_arrow_rounded,
+                    onPressed: () => context.push('/board-game'),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
