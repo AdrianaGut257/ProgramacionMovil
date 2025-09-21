@@ -8,6 +8,7 @@ class CustomButton extends StatelessWidget {
   final Color? backgroundColor;
   final Color? textColor;
   final IconData? icon;
+  final Color? borderColor; // 🔹 Nuevo parámetro para borde
 
   const CustomButton({
     super.key,
@@ -16,6 +17,7 @@ class CustomButton extends StatelessWidget {
     this.backgroundColor,
     this.textColor,
     this.icon,
+    this.borderColor,
   });
 
   @override
@@ -25,8 +27,9 @@ class CustomButton extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
-          border: Border(
-            bottom: BorderSide(color: AppColors.secondaryVariant, width: 5),
+          border: Border.all(
+            color: borderColor ?? AppColors.secondaryVariant,
+            width: 3,
           ),
         ),
         child: Material(
@@ -37,9 +40,8 @@ class CustomButton extends StatelessWidget {
             onTap: onPressed,
             borderRadius: BorderRadius.circular(25),
             splashColor: backgroundColor ?? AppColors.secondaryVariant,
-            highlightColor: backgroundColor ?? AppColors.secondary,
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
               alignment: Alignment.center,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -50,7 +52,6 @@ class CustomButton extends StatelessWidget {
                     style: GoogleFonts.blackOpsOne().copyWith(
                       fontSize: 19,
                       fontWeight: FontWeight.w900,
-
                       color: textColor ?? Colors.white,
                     ),
                   ),

@@ -54,6 +54,14 @@ class HomePage extends StatelessWidget {
                   context.push('/board-game');
                 },
               ),
+
+              const SizedBox(height: 20),
+              CustomButton(
+                text: "Info comodines",
+                onPressed: () {
+                  context.push('/info-comodines');
+                },
+              ),
             ],
           ),
         ),
