@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/widgets/letter_tile.dart.dart';
-import 'package:programacion_movil/features/presentation/widgets/home_header.dart';
+import 'package:programacion_movil/config/colors.dart';
 
 class BoardGame extends StatefulWidget {
   const BoardGame({super.key});
@@ -85,9 +85,6 @@ class _BoardGameState extends State<BoardGame> {
 
     return Column(
       children: [
-        HomeHeader(title: "StopWords"),
-        const SizedBox(height: 30),
-
         Text(
           'Selecciona una letra',
           style: TextStyle(
@@ -111,7 +108,7 @@ class _BoardGameState extends State<BoardGame> {
                 width: 380,
                 height: 380,
                 decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 122, 115, 212),
+                  color: AppColors.primary,
                   shape: BoxShape.circle,
                 ),
               ),

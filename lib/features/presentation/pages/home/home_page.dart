@@ -54,6 +54,13 @@ class HomePage extends StatelessWidget {
                   context.push('/board-game');
                 },
               ),
+              const SizedBox(height: 20),
+              CustomButton(
+                text: "prueba tablero",
+                onPressed: () {
+                  context.push('/board-gamee');
+                },
+              ),
             ],
           ),
         ),
