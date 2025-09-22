@@ -3,7 +3,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
-import 'package:programacion_movil/features/presentation/pages/category/styles/text_styles.dart';
+import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
 
 class CreateCategory extends StatefulWidget {

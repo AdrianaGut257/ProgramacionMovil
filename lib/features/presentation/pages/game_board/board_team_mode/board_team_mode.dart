@@ -4,6 +4,8 @@ import 'package:programacion_movil/features/presentation/widgets/game/buttons.da
 import 'package:programacion_movil/features/presentation/widgets/game/name.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
 import 'package:programacion_movil/features/presentation/pages/home/home_page.dart';
+import 'package:provider/provider.dart';
+import 'package:programacion_movil/features/presentation/state/game_team.dart';
 import 'package:programacion_movil/config/colors.dart';
 
 class BoardTeamModePage extends StatefulWidget {
@@ -15,7 +17,7 @@ class BoardTeamModePage extends StatefulWidget {
 
 class _BoardTeamModePageState extends State<BoardTeamModePage> {
   int score = 0;
-  String playerName = "Dayana";
+  int currentPlayerIndex = 0;
   Duration gameTime = const Duration(seconds: 5);
 
   void _increaseScore() {
@@ -24,8 +26,13 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     });
   }
 
-  void _resetGame() {
+  void _nextPlayer() {
+    final players = context.read<GameTeam>().players;
     setState(() {
+      currentPlayerIndex++;
+      if (currentPlayerIndex >= players.length) {
+        currentPlayerIndex = 0;
+      }
       score = 0;
       gameTime = const Duration(seconds: 5);
     });
@@ -33,6 +40,11 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
   @override
   Widget build(BuildContext context) {
+    final players = context.watch<GameTeam>().players;
+    if (players.isEmpty) return const SizedBox(); // seguridad
+
+    final currentPlayer = players[currentPlayerIndex];
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -44,11 +56,9 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 16, top: 16),
                 child: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                    );
-                  },
+                  onPressed: () => Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const HomePage())),
                   icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                   tooltip: 'Volver',
                   color: AppColors.textPrimary,
@@ -58,17 +68,29 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
             ),
 
             const SizedBox(height: 50),
-            PlayerNameWidget(name: playerName, score: score),
+
+            // Mostrar solo el jugador actual
+            PlayerNameWidget(
+              name: currentPlayer.name,
+              score: score,
+              team: currentPlayer.team,
+            ),
+
             const SizedBox(height: 20),
+
             ChronometerWidget(
+              key: ValueKey(currentPlayer.id),
               duration: gameTime,
               onTimeEnd: () {
-                debugPrint("⏰ Tiempo terminado!");
+                debugPrint("⏰ Tiempo terminado para ${currentPlayer.name}");
+                _nextPlayer();
               },
             ),
+
+            const SizedBox(height: 20),
             Center(child: BoardPage()),
             const SizedBox(height: 20),
-            GameButtons(onCorrect: _increaseScore, onReset: _resetGame),
+            GameButtons(onCorrect: _increaseScore, onReset: _nextPlayer),
           ],
         ),
       ),

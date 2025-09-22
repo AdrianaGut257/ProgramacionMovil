@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-//import '../../../../../config/colors.dart';
 import 'widgets/team_section.dart';
 import 'widgets/game_mode_selector.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/home_header.dart';
+
+import 'package:provider/provider.dart';
+import '../../../../../features/presentation/state/game_team.dart';
+import '../../../../../data/models/player.dart' as models;
+
 import 'package:go_router/go_router.dart';
 
 class GroupModePage extends StatefulWidget {
@@ -55,7 +59,27 @@ class _GroupModePageState extends State<GroupModePage> {
       return;
     }
 
-    context.push('/select-categories', extra: validPlayers);
+    final gameTeam = context.read<GameTeam>();
+
+    gameTeam.clearPlayers();
+
+    for (int i = 0; i < team1Players.length; i++) {
+      if (team1Players[i].trim().isNotEmpty) {
+        gameTeam.addPlayer(
+          models.Player(id: i + 1, name: team1Players[i], score: 0, team: 1),
+        );
+      }
+    }
+
+    for (int i = 0; i < team2Players.length; i++) {
+      if (team2Players[i].trim().isNotEmpty) {
+        gameTeam.addPlayer(
+          models.Player(id: i + 100, name: team2Players[i], score: 0, team: 2),
+        );
+      }
+    }
+
+    context.push('/select-categories');
   }
 
   @override

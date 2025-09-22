@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
+import 'package:programacion_movil/data/models/player.dart';
 import '../../../widgets/Inputs/player_input_field.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/home_header.dart';
@@ -15,7 +16,6 @@ class PlayersRegisterScreen extends StatefulWidget {
 }
 
 class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
-  // Lista de jugadores
   List<String> players = [""];
 
   void _addPlayer() {
@@ -41,45 +41,33 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
   Future<void> _startGame() async {
     final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
 
-    final db = await AppDatabase.instance.database;
-
-    final allPlayers = await db.query('player');
-    if (kDebugMode) {
-      print('Contenido completo de la tabla player: $allPlayers');
-    }
-
     if (validPlayers.isEmpty) {
-      if (!mounted) return; // 🔥 evita usar context si el widget ya no existe
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Agrega al menos un jugador")),
       );
       return;
     }
 
-    try {
-      // Insertar todos los jugadores válidos en la base
-      await AppDatabase.instance.insertPlayers(validPlayers);
+    final playersToInsert = validPlayers.asMap().entries.map((e) {
+      return Player(
+        id: 0, // SQLite autoincrementará
+        name: e.value.trim(),
+        score: 0,
+        team: 1, // o asigna 2 si quieres diferenciar equipos
+      );
+    }).toList();
 
-      if (kDebugMode) {
-        print("Jugadores guardados en DB: $validPlayers");
-      }
+    final db = await AppDatabase.instance.database;
+    await AppDatabase.instance.insertPlayers(playersToInsert);
 
-      // Opcional: mostrar todos los registros que quedaron guardados
-      final all = await db.query('player');
-      if (kDebugMode) {
-        print("Contenido completo de la tabla player: $all");
-      }
-
-      // Verificamos que el widget siga montado antes de navegar
-      if (!mounted) return;
-
-      // Ahora navega a la siguiente pantalla
-      context.push('/select-categories', extra: validPlayers);
-    } catch (e, st) {
-      if (kDebugMode) {
-        print('Error al guardar jugadores: $e\n$st');
-      }
+    final all = await db.query('player');
+    if (kDebugMode) {
+      print("Contenido completo de la tabla player: $all");
     }
+
+    if (!mounted) return;
+    context.push('/select-categories', extra: playersToInsert);
   }
 
   @override

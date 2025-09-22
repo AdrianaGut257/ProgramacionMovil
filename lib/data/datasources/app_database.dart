@@ -45,7 +45,8 @@ class AppDatabase {
       CREATE TABLE player (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        score INTEGER
+        score INTEGER,
+        team INTEGER NOT NULL
       )
     ''');
 
@@ -75,15 +76,20 @@ class AppDatabase {
             id: e["id"] as int,
             name: e["name"] as String,
             score: e["score"] as int? ?? 0,
+            team: e["team"] as int,
           ),
         )
         .toList();
   }
 
-  Future<void> insertPlayers(List<String> players) async {
+  Future<void> insertPlayers(List<Player> players) async {
     final db = await database;
-    for (var name in players) {
-      await db.insert('player', {'name': name.trim(), 'score': 0});
+    for (var player in players) {
+      await db.insert('player', {
+        'name': player.name.trim(),
+        'score': player.score,
+        'team': player.team, // 👈 obligatorio
+      });
     }
   }
 

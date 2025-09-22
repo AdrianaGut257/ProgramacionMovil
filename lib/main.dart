@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'config/router.dart';
 import 'config/theme.dart';
+import 'features/presentation/state/game_team.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const StopWordsApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => GameTeam(),
+      child: const StopWordsApp(),
+    ),
+  );
 }
 
 class StopWordsApp extends StatelessWidget {
