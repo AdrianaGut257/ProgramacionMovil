@@ -2,8 +2,14 @@ class Player {
   final int id;
   final String name;
   final int score;
+  final int team;
 
-  Player({required this.id, required this.name, required this.score});
+  Player({
+    required this.id,
+    required this.name,
+    required this.score,
+    required this.team,
+  });
 
   // factory Player.fromMap(Map<String, dynamic> map) {
   //   final idVal = map['id'];

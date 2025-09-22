@@ -16,7 +16,6 @@ class Category extends StatefulWidget {
 }
 
 class _CategoryState extends State<Category> {
-
   final ValueNotifier<List<String>> selectedCategories = ValueNotifier([
     "Música",
     "Animales",
@@ -26,15 +25,15 @@ class _CategoryState extends State<Category> {
     "Apellidos",
   ]);
 
-
   int _currentIndex = 0;
 
   void toggleCategory(String category) {
     final current = List<String>.from(selectedCategories.value);
-    current.contains(category) ? current.remove(category) : current.add(category);
+    current.contains(category)
+        ? current.remove(category)
+        : current.add(category);
     selectedCategories.value = current;
   }
-
 
   void _onModeChanged(bool isPred) {
     setState(() => _currentIndex = isPred ? 0 : 1);
@@ -57,7 +56,6 @@ class _CategoryState extends State<Category> {
                   Text("Seleccione categorías", style: categorySubtitleStyle),
                   const SizedBox(height: 15),
 
-          
                   CategorySelector(
                     isPredSelected: _currentIndex == 0,
                     onModeChanged: _onModeChanged,
@@ -85,7 +83,7 @@ class _CategoryState extends State<Category> {
                   CustomButton(
                     text: "Jugar",
                     icon: Icons.play_arrow_rounded,
-                    onPressed: () => context.push('/board-game'),
+                    onPressed: () => context.push('/board-gamee'),
                   ),
                 ],
               ),
