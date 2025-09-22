@@ -79,10 +79,11 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
             const SizedBox(height: 20),
 
             ChronometerWidget(
+              key: ValueKey(currentPlayer.id),
               duration: gameTime,
               onTimeEnd: () {
                 debugPrint("⏰ Tiempo terminado para ${currentPlayer.name}");
-                _nextPlayer(); // pasa al siguiente jugador
+                _nextPlayer();
               },
             ),
 
