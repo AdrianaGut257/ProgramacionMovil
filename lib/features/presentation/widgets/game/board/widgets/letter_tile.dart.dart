@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:programacion_movil/config/colors.dart';
 
 class LetterTile extends StatelessWidget {
   final String letter;
@@ -21,17 +22,13 @@ class LetterTile extends StatelessWidget {
             width: 85,
             height: 85,
             decoration: BoxDecoration(
-              color: availableLetters > 0 ? Colors.blue : Colors.blue,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.blue.shade700,
-                  blurRadius: 12,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 6),
-                ),
-              ],
+              color: availableLetters > 0 ? AppColors.secondary : Colors.blue,
+              borderRadius: BorderRadius.circular(45),
+              border: Border(
+                bottom: BorderSide(color: AppColors.secondaryVariant, width: 5),
+              ),
             ),
+
             child: Center(
               child: Text(
                 letter,

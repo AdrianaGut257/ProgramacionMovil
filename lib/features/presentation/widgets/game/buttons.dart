@@ -16,17 +16,38 @@ class GameButtons extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        FloatingActionButton(
-          heroTag: "combination",
-          backgroundColor: Colors.green,
-          onPressed: onCorrect,
-          child: const Icon(Icons.check, size: 30, color: Colors.white),
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: AppColors.secondary,
+            borderRadius: BorderRadius.circular(45),
+            border: const Border(
+              bottom: BorderSide(color: AppColors.secondaryVariant, width: 6),
+            ),
+          ),
+
+          child: IconButton(
+            icon: const Icon(Icons.check, color: Colors.white, size: 40),
+            onPressed: onCorrect,
+          ),
         ),
-        FloatingActionButton(
-          heroTag: "reset",
-          backgroundColor: AppColors.errorPrimary,
-          onPressed: onReset,
-          child: const Icon(Icons.close, size: 30, color: Colors.white),
+
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: AppColors.errorPrimary,
+            borderRadius: BorderRadius.circular(45),
+            border: const Border(
+              bottom: BorderSide(color: AppColors.errorSecondary, width: 6),
+            ),
+          ),
+
+          child: IconButton(
+            icon: const Icon(Icons.close, color: Colors.white, size: 40),
+            onPressed: onReset,
+          ),
         ),
       ],
     );
