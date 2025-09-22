@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:programacion_movil/features/presentation/pages/category/styles/text_styles.dart';
-import 'package:programacion_movil/features/presentation/pages/category/widgets/pred_category.dart';
-import 'package:programacion_movil/features/presentation/pages/category/widgets/category_selector.dart';
-import 'package:programacion_movil/features/presentation/pages/category/widgets/create_category.dart';
+import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
+import 'package:programacion_movil/features/presentation/widgets/category/widgets/pred_category.dart';
+import 'package:programacion_movil/features/presentation/widgets/category/widgets/category_selector.dart';
+import 'package:programacion_movil/features/presentation/widgets/category/widgets/create_category.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
-import '../../widgets/home_header.dart';
+import '../home_header.dart';
 
 class Category extends StatefulWidget {
   const Category({super.key});
