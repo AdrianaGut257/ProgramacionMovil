@@ -6,8 +6,6 @@ import 'package:programacion_movil/features/presentation/widgets/game/board/boar
 import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
 import 'package:provider/provider.dart';
 import 'package:programacion_movil/features/presentation/state/game_team.dart';
-import 'package:programacion_movil/config/colors.dart';
-import 'package:go_router/go_router.dart';
 
 class BoardTeamModePage extends StatefulWidget {
   const BoardTeamModePage({super.key});
@@ -22,14 +20,22 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   Duration gameTime = const Duration(seconds: 5);
   bool gameEnded = false;
   Map<String, int> playerScores = {};
+  bool hasSelectedLetter = false;
+
+  void _onLetterSelected() {
+    setState(() {
+      hasSelectedLetter = true;
+    });
+  }
 
   void _increaseScore() {
     final players = context.read<GameTeam>().players;
     final currentPlayer = players[currentPlayerIndex];
 
     setState(() {
-      score++;
+      score += 5;
       playerScores[currentPlayer.name] = score;
+      hasSelectedLetter = false;
     });
   }
 
@@ -39,7 +45,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     if (gameEnded) return;
 
     setState(() {
-      // Guardar el puntaje final del jugador actual
       final currentPlayer = players[currentPlayerIndex];
       playerScores[currentPlayer.name] = score;
 
@@ -52,6 +57,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
       score = 0;
       gameTime = const Duration(seconds: 5);
+      hasSelectedLetter = false;
     });
   }
 
@@ -73,23 +79,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16, top: 16),
-                child: IconButton(
-                  onPressed: () {
-                    context.push('/home');
-                  },
-                  icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                  tooltip: 'Volver',
-                  color: AppColors.textPrimary,
-                  splashRadius: 24,
-                ),
-              ),
-            ),
-            const SizedBox(height: 50),
-
+            const SizedBox(height: 80),
             PlayerNameWidget(
               name: currentPlayer.name,
               score: score,
@@ -109,7 +99,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
             ),
 
             const SizedBox(height: 20),
-            Center(child: BoardPage()),
+            Center(child: BoardPage(onLetterSelected: _onLetterSelected)),
             const SizedBox(height: 20),
             GameButtons(onCorrect: _increaseScore, onReset: _nextPlayer),
           ],

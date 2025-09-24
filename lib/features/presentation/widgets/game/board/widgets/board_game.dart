@@ -5,7 +5,9 @@ import 'package:programacion_movil/features/presentation/widgets/game/board/widg
 import 'package:programacion_movil/config/colors.dart';
 
 class BoardGame extends StatefulWidget {
-  const BoardGame({super.key});
+  final VoidCallback? onLetterSelected;
+
+  const BoardGame({super.key, this.onLetterSelected});
 
   @override
   State<BoardGame> createState() => _BoardGameState();
@@ -76,6 +78,7 @@ class _BoardGameState extends State<BoardGame> {
         currentLetters.insert(index, availableLetters[newIndex]);
         availableLetters.removeAt(newIndex);
       }
+      widget.onLetterSelected?.call();
     });
   }
 
