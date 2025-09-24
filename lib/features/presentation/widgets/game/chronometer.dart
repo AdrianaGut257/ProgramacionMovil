@@ -6,6 +6,7 @@ class ChronometerWidget extends StatefulWidget {
   final VoidCallback onTimeEnd;
   final bool showAddButton;
   final VoidCallback? onAddTime;
+  final bool isActive;
 
   const ChronometerWidget({
     super.key,
@@ -13,6 +14,7 @@ class ChronometerWidget extends StatefulWidget {
     required this.onTimeEnd,
     this.showAddButton = false,
     this.onAddTime,
+    this.isActive = true,
   });
 
   @override
@@ -31,13 +33,17 @@ class _ChronometerWidgetState extends State<ChronometerWidget> {
   }
 
   void _startTimer() {
+    if (!widget.isActive) return;
+
     timer?.cancel();
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (seconds > 0) {
         setState(() => seconds--);
       } else {
         t.cancel();
-        widget.onTimeEnd();
+        if (widget.isActive) {
+          widget.onTimeEnd();
+        }
       }
     });
   }

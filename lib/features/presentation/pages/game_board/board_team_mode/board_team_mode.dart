@@ -19,20 +19,36 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   int score = 0;
   int currentPlayerIndex = 0;
   Duration gameTime = const Duration(seconds: 5);
+  bool gameEnded = false;
+  Map<String, int> playerScores = {};
 
   void _increaseScore() {
+    final players = context.read<GameTeam>().players;
+    final currentPlayer = players[currentPlayerIndex];
+
     setState(() {
       score++;
+      playerScores[currentPlayer.name] = score;
     });
   }
 
   void _nextPlayer() {
     final players = context.read<GameTeam>().players;
+
+    if (gameEnded) return;
+
     setState(() {
+      // Guardar el puntaje final del jugador actual
+      final currentPlayer = players[currentPlayerIndex];
+      playerScores[currentPlayer.name] = score;
+
       currentPlayerIndex++;
+
       if (currentPlayerIndex >= players.length) {
-        currentPlayerIndex = 0;
+        gameEnded = true;
+        return;
       }
+
       score = 0;
       gameTime = const Duration(seconds: 5);
     });
@@ -41,7 +57,61 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   @override
   Widget build(BuildContext context) {
     final players = context.watch<GameTeam>().players;
-    if (players.isEmpty) return const SizedBox(); // seguridad
+
+    if (players.isEmpty) return const SizedBox();
+
+    if (gameEnded || currentPlayerIndex >= players.length) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('🎉 Resumen del Juego'),
+          automaticallyImplyLeading: false,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Puntajes finales:',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: playerScores.length,
+                  itemBuilder: (context, index) {
+                    final name = playerScores.keys.elementAt(index);
+                    final score = playerScores[name] ?? 0;
+                    return ListTile(
+                      leading: const Icon(Icons.person),
+                      title: Text(name),
+                      trailing: Text(
+                        "$score pts",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.home),
+                  label: const Text('Volver al inicio'),
+                  onPressed: () {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (_) => const HomePage()),
+                      );
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     final currentPlayer = players[currentPlayerIndex];
 
@@ -56,9 +126,11 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 16, top: 16),
                 child: IconButton(
-                  onPressed: () => Navigator.of(
-                    context,
-                  ).push(MaterialPageRoute(builder: (_) => const HomePage())),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const HomePage()),
+                    );
+                  },
                   icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                   tooltip: 'Volver',
                   color: AppColors.textPrimary,
@@ -66,10 +138,8 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                 ),
               ),
             ),
-
             const SizedBox(height: 50),
 
-            // Mostrar solo el jugador actual
             PlayerNameWidget(
               name: currentPlayer.name,
               score: score,
@@ -85,6 +155,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                 debugPrint("⏰ Tiempo terminado para ${currentPlayer.name}");
                 _nextPlayer();
               },
+              isActive: !gameEnded,
             ),
 
             const SizedBox(height: 20),
