@@ -40,12 +40,7 @@ class _ComodinesPageState extends State<ComodinesPage> {
         child: Column(
           children: [
             // Header
-            HomeHeader(
-              title: 'StopWords',
-              onBackPressed: () {
-                context.pop();
-              },
-            ),
+            HomeHeader(onBackPressed: () => context.pop()),
 
             // Contenido
             Expanded(

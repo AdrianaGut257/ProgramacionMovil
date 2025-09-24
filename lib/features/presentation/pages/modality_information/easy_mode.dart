@@ -17,7 +17,7 @@ class EasyMode extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              const HomeHeader(),
+              HomeHeader(onBackPressed: () => context.pop()),
               const GameModeCard(
                 title: 'Modo fácil',
                 description:

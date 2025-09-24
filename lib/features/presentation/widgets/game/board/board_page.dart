@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'widgets/board_game.dart';
 
 class BoardPage extends StatelessWidget {
-  const BoardPage({super.key});
+  final VoidCallback? onLetterSelected;
+
+  const BoardPage({super.key, this.onLetterSelected});
 
   @override
   Widget build(BuildContext context) {
-    return const BoardGame();
+    return BoardGame(onLetterSelected: onLetterSelected);
   }
 }

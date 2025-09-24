@@ -51,7 +51,7 @@ class _CategoryState extends State<Category> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const HomeHeader(),
+                  HomeHeader(onBackPressed: () => context.pop()),
 
                   Text("Seleccione categorías", style: categorySubtitleStyle),
                   const SizedBox(height: 15),
