@@ -46,6 +46,14 @@ class HomePage extends StatelessWidget {
                   context.push('/modality-information-team');
                 },
               ),
+
+               const SizedBox(height: 20),
+              CustomButton(
+                text: "Comodines",
+                onPressed: () {
+                  context.push('/comodines-info');
+                },
+              ),
             ],
           ),
         ),
