@@ -48,10 +48,6 @@ class AppRouter {
         builder: (context, state) => const TeamModePage(),
       ),
       GoRoute(
-        path: '/board-gamee',
-        builder: (context, state) => const BoardTeamModePage(),
-      ),
-      GoRoute(
         path: '/comodines-info',
         builder: (context, state) => const ComodinesPage(),
       ),
