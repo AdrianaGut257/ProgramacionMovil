@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
-import 'package:programacion_movil/data/models/player.dart';
 import 'package:sqflite/sqflite.dart';
+import '../models/player.dart';
 
 class AppDatabase {
-  static final AppDatabase instance = AppDatabase._internal();
-  static Database? _db;
+  // Singleton
+  AppDatabase._privateConstructor();
+  static final AppDatabase instance = AppDatabase._privateConstructor();
 
   // Cambia a true solo durante desarrollo para reiniciar DB
   static const bool resetDatabaseOnStart = false;
@@ -42,7 +43,7 @@ class AppDatabase {
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE player (
+      CREATE TABLE players(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         score INTEGER,
@@ -67,6 +68,29 @@ class AppDatabase {
     ''');
   }
 
+  // Insertar múltiples jugadores
+  Future<void> insertPlayers(List<Player> players) async {
+    final db = await database;
+    for (final player in players) {
+      await db.insert(
+        'players',
+        player.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+  }
+
+  // Insertar un solo jugador
+  Future<int> insertPlayer(Player player) async {
+    final db = await database;
+    return await db.insert(
+      'players',
+      player.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  // Obtener todos los jugadores
   Future<List<Player>> getPlayers() async {
     final db = await database;
     final data = await db.query('player');

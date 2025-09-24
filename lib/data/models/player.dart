@@ -4,6 +4,7 @@ class Player {
   final int score;
   final int team;
 
+  Player({required this.id, required this.name, this.score = 0});
   Player({
     required this.id,
     required this.name,
