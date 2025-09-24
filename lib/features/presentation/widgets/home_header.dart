@@ -95,28 +95,27 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                  if (widget.onBackPressed != null)
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: widget.onBackPressed,
+                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                        tooltip: 'Volver',
+                        color: AppColors.textPrimary,
+                        splashRadius: 24,
+                      ),
                     ),
-                    child: IconButton(
-                      onPressed:
-                          widget.onBackPressed ??
-                          () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                      tooltip: 'Volver',
-                      color: AppColors.textPrimary,
-                      splashRadius: 24,
-                    ),
-                  ),
                 ],
               ),
             ),

@@ -70,7 +70,7 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const HomeHeader(),
+              HomeHeader(onBackPressed: () => context.pop()),
               Text(
                 "Ingresar nombres",
                 style: TextStyle(

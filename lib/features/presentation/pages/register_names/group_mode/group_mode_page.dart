@@ -91,7 +91,7 @@ class _GroupModePageState extends State<GroupModePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const HomeHeader(),
+              HomeHeader(onBackPressed: () => context.pop()),
 
               const Text(
                 'Elige una opción',
