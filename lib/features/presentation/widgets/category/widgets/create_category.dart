@@ -1,5 +1,3 @@
-//import 'dart:ffi';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
@@ -22,32 +20,57 @@ class CreateCategory extends StatefulWidget {
 
 class _CreateCategoryState extends State<CreateCategory> {
   final TextEditingController _nameController = TextEditingController();
-  final List<String> _createdCategories = [
-    "Deportes",
-    "Libros",
-    "Personajes históricos",
-    "Tecnología",
-    "Ciudades",
-    "Vehículos",
-  ];
+  final List<String> _createdCategories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
     super.dispose();
   }
 
-  void _saveCategory() async {
+  /// Cargar categorías desde la base de datos
+  Future<void> _loadCategories() async {
+    final db = await AppDatabase.instance.database;
+    final result = await db.query("category");
+    final categories = result.map((e) => e['name'] as String).toList();
+
+    setState(() {
+      _createdCategories.clear();
+      _createdCategories.addAll(categories);
+    });
+
+    if (kDebugMode) {
+      print("Categorías cargadas: $_createdCategories");
+    }
+  }
+
+  /// Guardar nueva categoría
+  Future<void> _saveCategory() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
 
-    //final db = await AppDatabase.instance.database;
+    if (_createdCategories.contains(name)) {
+      if (kDebugMode) {
+        print("La categoría '$name' ya existe");
+      }
+      return;
+    }
 
-    _nameController.clear();
-    _createdCategories.add(name);
     await AppDatabase.instance.insertCategory(name);
 
+    setState(() {
+      _createdCategories.add(name);
+      _nameController.clear();
+    });
+
     if (kDebugMode) {
-      print("este es la categoria: $name");
+      print("Categoría guardada: $name");
     }
   }
 
@@ -60,14 +83,14 @@ class _CreateCategoryState extends State<CreateCategory> {
           child: TextField(
             controller: _nameController,
             style: const TextStyle(color: Colors.white, fontSize: 20),
-            textAlignVertical: TextAlignVertical.center, // ✅ Centrado vertical
+            textAlignVertical: TextAlignVertical.center,
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color(0xFF615AC7),
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 0,
                 horizontal: 12,
-              ), // 🔧 Ajusta el padding
+              ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
@@ -81,15 +104,14 @@ class _CreateCategoryState extends State<CreateCategory> {
             ),
           ),
         ),
-        const SizedBox(width: 15), // Espacio entre el campo y el botón
+        const SizedBox(width: 15),
         SizedBox(
           width: 45,
           height: 45,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF28D4B1),
-              padding: EdgeInsets
-                  .zero, // Elimina el padding para que SizedBox controle el tamaño
+              padding: EdgeInsets.zero,
               shape: const CircleBorder(
                 side: BorderSide(color: Color(0xFF1EA58A), width: 2),
               ),
@@ -135,19 +157,19 @@ class _CreateCategoryState extends State<CreateCategory> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Título
-          Text('Crea tu categoria', style: categorySubtitleStyle),
+          Text('Crea tu categoría', style: categorySubtitleStyle),
           const SizedBox(height: 15),
           _inputField(),
           const SizedBox(height: 45),
-          Text("Tus categorias creadas", style: categorySubtitleStyle),
+          Text("Tus categorías creadas", style: categorySubtitleStyle),
           const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
               itemCount: _createdCategories.length,
               itemBuilder: (context, index) {
                 final category = _createdCategories[index];
-                final isSelected = widget.selectedCategories.contains(category);
+                final isSelected =
+                    widget.selectedCategories.contains(category);
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5),
                   child: _childListPadding(category, isSelected),

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:programacion_movil/data/datasources/app_database.dart';
 import 'widgets/team_section.dart';
 import 'widgets/game_mode_selector.dart';
 import '../../../widgets/buttons/custom_button.dart';
@@ -43,44 +45,64 @@ class _GroupModePageState extends State<GroupModePage> {
     }
   }
 
-  void _startGame() {
-    List<String> currentPlayers = isDetermined
-        ? [...team1Players, ...team2Players]
-        : randomPlayers;
+  void _startGame() async {
+  List<String> currentPlayers = isDetermined
+      ? [...team1Players, ...team2Players]
+      : randomPlayers;
 
-    final validPlayers = currentPlayers
-        .where((p) => p.trim().isNotEmpty)
-        .toList();
+  final validPlayers = currentPlayers
+      .where((p) => p.trim().isNotEmpty)
+      .toList();
 
-    if (validPlayers.length < 2) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Agrega al menos 2 jugadores")),
-      );
-      return;
-    }
-
-    final gameTeam = context.read<GameTeam>();
-
-    gameTeam.clearPlayers();
-
-    for (int i = 0; i < team1Players.length; i++) {
-      if (team1Players[i].trim().isNotEmpty) {
-        gameTeam.addPlayer(
-          models.Player(id: i + 1, name: team1Players[i], score: 0, team: 1),
-        );
-      }
-    }
-
-    for (int i = 0; i < team2Players.length; i++) {
-      if (team2Players[i].trim().isNotEmpty) {
-        gameTeam.addPlayer(
-          models.Player(id: i + 100, name: team2Players[i], score: 0, team: 2),
-        );
-      }
-    }
-
-    context.push('/select-categories');
+  if (validPlayers.length < 2) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Agrega al menos 2 jugadores")),
+    );
+    return;
   }
+
+  final gameTeam = context.read<GameTeam>();
+  gameTeam.clearPlayers();
+
+  List<models.Player> playersToInsert = [];
+
+  for (int i = 0; i < team1Players.length; i++) {
+    if (team1Players[i].trim().isNotEmpty) {
+      final player = models.Player(
+        name: team1Players[i].trim(),
+        score: 0,
+        team: 1,
+      );
+      gameTeam.addPlayer(player);
+      playersToInsert.add(player);
+    }
+  }
+
+  for (int i = 0; i < team2Players.length; i++) {
+    if (team2Players[i].trim().isNotEmpty) {
+      final player = models.Player(
+        name: team2Players[i].trim(),
+        score: 0,
+        team: 2,
+      );
+      gameTeam.addPlayer(player);
+      playersToInsert.add(player);
+    }
+  }
+
+  // Insertar en SQLite
+  final db = await AppDatabase.instance.database;
+  await AppDatabase.instance.insertPlayers(playersToInsert);
+
+  // Debug: ver la tabla
+  final all = await db.query('players');
+  if (kDebugMode) {
+    print("Contenido de la tabla players (Team): $all");
+  }
+
+  context.push('/select-categories');
+}
+
 
   @override
   Widget build(BuildContext context) {

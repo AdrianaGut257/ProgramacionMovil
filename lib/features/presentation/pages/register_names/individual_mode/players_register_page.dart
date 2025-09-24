@@ -18,56 +18,47 @@ class PlayersRegisterScreen extends StatefulWidget {
 class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
   List<String> players = [""];
 
-  void _addPlayer() {
-    setState(() {
-      players.add("");
-    });
-  }
+  void _addPlayer() => setState(() => players.add(""));
 
   void _removePlayer(int index) {
-    setState(() {
-      if (players.length > 1) {
-        players.removeAt(index);
-      }
-    });
+    if (players.length <= 1) return;
+    setState(() => players.removeAt(index));
   }
 
   void _updatePlayer(int index, String value) {
-    setState(() {
-      players[index] = value;
-    });
+    setState(() => players[index] = value);
   }
 
   Future<void> _startGame() async {
     final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
-
     if (validPlayers.isEmpty) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Agrega al menos un jugador")),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Agrega al menos un jugador")));
       return;
     }
 
-    final playersToInsert = validPlayers.asMap().entries.map((e) {
-      return Player(
-        id: 0, // SQLite autoincrementará
-        name: e.value.trim(),
-        score: 0,
-        team: 1, // o asigna 2 si quieres diferenciar equipos
-      );
-    }).toList();
+    final playersToInsert = validPlayers.map((name) => Player(
+      name: name.trim(),
+      score: 0,
+      team: 1,
+    )).toList();
 
-    final db = await AppDatabase.instance.database;
-    await AppDatabase.instance.insertPlayers(playersToInsert);
+    try {
+      await AppDatabase.instance.insertPlayers(playersToInsert);
 
-    final all = await db.query('player');
-    if (kDebugMode) {
-      print("Contenido completo de la tabla player: $all");
+      final db = await AppDatabase.instance.database;
+      final all = await db.query('players');
+      if (kDebugMode) print("Contenido de la tabla players: $all");
+
+      if (!mounted) return;
+      context.push('/select-categories', extra: playersToInsert);
+    } catch (e, stack) {
+      if (kDebugMode) {
+        print("Error en _startGame: $e");
+        print(stack);
+      }
     }
-
-    if (!mounted) return;
-    context.push('/select-categories', extra: playersToInsert);
   }
 
   @override
@@ -105,7 +96,6 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
                   },
                 ),
               ),
-
               CustomButton(text: "Jugar", onPressed: _startGame),
             ],
           ),

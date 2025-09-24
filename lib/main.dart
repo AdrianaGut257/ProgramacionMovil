@@ -24,5 +24,8 @@ class StopWordsApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       routerConfig: AppRouter.router,
     );
+
+
+    
   }
 }
