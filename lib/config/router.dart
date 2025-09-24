@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:programacion_movil/features/presentation/pages/comodines_information/comodines_info.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
+import 'package:programacion_movil/features/presentation/widgets/category/category.dart';
 import 'package:programacion_movil/features/presentation/pages/register_names/individual_mode/players_register_page.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
 import '../features/presentation/pages/home/home_page.dart';
@@ -25,7 +27,7 @@ class AppRouter {
         path: '/board-game',
         builder: (context, state) => const BoardPage(),
       ),
-     GoRoute(
+      GoRoute(
         path: '/select-categories',
         builder: (context, state) => const ModalitySelectionPage(),
       ),
@@ -46,7 +48,11 @@ class AppRouter {
         builder: (context, state) => const TeamModePage(),
       ),
       GoRoute(
-        path: '/info-comodines',
+        path: '/board-gamee',
+        builder: (context, state) => const BoardTeamModePage(),
+      ),
+      GoRoute(
+        path: '/comodines-info',
         builder: (context, state) => const ComodinesPage(),
       ),
     ],

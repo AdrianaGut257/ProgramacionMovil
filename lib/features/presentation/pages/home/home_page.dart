@@ -49,17 +49,9 @@ class HomePage extends StatelessWidget {
 
               const SizedBox(height: 20),
               CustomButton(
-                text: "Tablero del juego",
+                text: "Comodines",
                 onPressed: () {
-                  context.push('/board-game');
-                },
-              ),
-
-              const SizedBox(height: 20),
-              CustomButton(
-                text: "Info comodines",
-                onPressed: () {
-                  context.push('/info-comodines');
+                  context.push('/comodines-info');
                 },
               ),
             ],

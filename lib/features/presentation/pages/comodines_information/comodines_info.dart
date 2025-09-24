@@ -46,14 +46,13 @@ class _ComodinesPageState extends State<ComodinesPage> {
                 context.pop();
               },
             ),
-            
-            // Contenido 
+
+            // Contenido
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
                   children: [
- 
                     Text(
                       "Tipos de Comodines",
                       style: TextStyle(
@@ -63,9 +62,9 @@ class _ComodinesPageState extends State<ComodinesPage> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    
+
                     const SizedBox(height: 4),
-                    
+
                     Text(
                       "Los comodines aparecen aleatoriamente en el tablero del juego, solo tienes que apretar el botón que aparece.",
                       style: const TextStyle(
@@ -85,24 +84,28 @@ class _ComodinesPageState extends State<ComodinesPage> {
                             child: StatsCards(
                               timeIcon: Icons.access_time,
                               timeTitle: 'Tiempo extra',
-                              timeValue: 'Podrá tener 5 segundos extras para decir la palabra.',
+                              timeValue:
+                                  'Podrá tener 5 segundos extras para decir la palabra.',
                               levelIcon: Icons.star_half,
                               levelTitle: 'Saltar turno',
-                              levelValue: 'Permite saltar el turno e ir hacia la siguiente persona.',
+                              levelValue:
+                                  'Permite saltar el turno e ir hacia la siguiente persona.',
                               cardColor: const Color.fromRGBO(97, 90, 199, 1),
                             ),
                           ),
-                          
+
                           const SizedBox(height: 15),
-                          
+
                           Expanded(
                             child: StatsCards(
                               timeIcon: Icons.bolt,
                               timeTitle: 'Punto doble',
-                              timeValue: 'Podrá activar el doble de la puntuación al decir la palabra.',
+                              timeValue:
+                                  'Podrá activar el doble de la puntuación al decir la palabra.',
                               levelIcon: Icons.block,
                               levelTitle: 'Castigo leve',
-                              levelValue: 'Se elige 1 letra y las demás se bloquean para la próxima persona.',
+                              levelValue:
+                                  'Se elige 1 letra y las demás se bloquean para la próxima persona.',
                               cardColor: AppColors.primary,
                             ),
                           ),
@@ -114,18 +117,15 @@ class _ComodinesPageState extends State<ComodinesPage> {
 
                     Column(
                       children: [
-
                         CustomButton(
                           text: _powerUpsEnabled
                               ? "Comodines activados"
                               : "Comodines desactivados",
                           icon: Icons.extension,
-                          backgroundColor: _powerUpsEnabled 
-                              ? Colors.yellow[700] 
+                          backgroundColor: _powerUpsEnabled
+                              ? Colors.yellow[700]
                               : Colors.grey[600],
                           textColor: Colors.white,
-                          fontSize: 16,
-                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                           onPressed: _togglePowerUps,
                         ),
 
@@ -136,15 +136,13 @@ class _ComodinesPageState extends State<ComodinesPage> {
                           icon: Icons.group,
                           backgroundColor: AppColors.secondary,
                           textColor: Colors.white,
-                          fontSize: 16,
-                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                           onPressed: () {
                             context.push('/player-register');
                           },
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 8),
                   ],
                 ),
