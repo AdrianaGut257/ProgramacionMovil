@@ -33,16 +33,15 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
     final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
     if (validPlayers.isEmpty) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Agrega al menos un jugador")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Agrega al menos un jugador")),
+      );
       return;
     }
 
-    final playersToInsert = validPlayers.map((name) => Player(
-      name: name.trim(),
-      score: 0,
-      team: 1,
-    )).toList();
+    final playersToInsert = validPlayers
+        .map((name) => Player(name: name.trim(), score: 0, team: 1))
+        .toList();
 
     try {
       await AppDatabase.instance.insertPlayers(playersToInsert);

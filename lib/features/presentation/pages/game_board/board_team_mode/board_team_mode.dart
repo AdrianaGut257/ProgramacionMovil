@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:programacion_movil/features/presentation/widgets/game/chronometer.dart';
-import 'package:programacion_movil/features/presentation/widgets/game/buttons.dart';
-import 'package:programacion_movil/features/presentation/widgets/game/name.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board_information/chronometer.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board_information/buttons.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board_information/name.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
-import 'package:programacion_movil/features/presentation/pages/home/home_page.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
 import 'package:provider/provider.dart';
 import 'package:programacion_movil/features/presentation/state/game_team.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:go_router/go_router.dart';
 
 class BoardTeamModePage extends StatefulWidget {
   const BoardTeamModePage({super.key});
@@ -61,56 +62,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     if (players.isEmpty) return const SizedBox();
 
     if (gameEnded || currentPlayerIndex >= players.length) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('🎉 Resumen del Juego'),
-          automaticallyImplyLeading: false,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Puntajes finales:',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: playerScores.length,
-                  itemBuilder: (context, index) {
-                    final name = playerScores.keys.elementAt(index);
-                    final score = playerScores[name] ?? 0;
-                    return ListTile(
-                      leading: const Icon(Icons.person),
-                      title: Text(name),
-                      trailing: Text(
-                        "$score pts",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.home),
-                  label: const Text('Volver al inicio'),
-                  onPressed: () {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const HomePage()),
-                      );
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      return RankingGame(playerScores: playerScores);
     }
 
     final currentPlayer = players[currentPlayerIndex];
@@ -127,9 +79,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                 padding: const EdgeInsets.only(left: 16, top: 16),
                 child: IconButton(
                   onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const HomePage()),
-                    );
+                    context.push('/home');
                   },
                   icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                   tooltip: 'Volver',
@@ -152,7 +102,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
               key: ValueKey(currentPlayer.id),
               duration: gameTime,
               onTimeEnd: () {
-                debugPrint("⏰ Tiempo terminado para ${currentPlayer.name}");
+                debugPrint("Tiempo terminado para ${currentPlayer.name}");
                 _nextPlayer();
               },
               isActive: !gameEnded,
