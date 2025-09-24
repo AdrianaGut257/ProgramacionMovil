@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/widgets/modality_information.dart';
 import '../../widgets/buttons/custom_button.dart';
+import '../../widgets/home_header.dart';
 import 'package:go_router/go_router.dart';
 
 class ComodinesPage extends StatefulWidget {
@@ -23,8 +24,8 @@ class _ComodinesPageState extends State<ComodinesPage> {
       SnackBar(
         content: Text(
           _powerUpsEnabled
-              ? "✅ Comodines activados para este juego"
-              : "❌ Comodines desactivados",
+              ? "Comodines activados para este juego"
+              : "Comodines desactivados",
         ),
         duration: const Duration(seconds: 2),
       ),
@@ -36,98 +37,120 @@ class _ComodinesPageState extends State<ComodinesPage> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Botón volver arriba a la izquierda
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black87),
-                  onPressed: () {
-                    context.pop(); // Vuelve a la pantalla anterior
-                  },
+        child: Column(
+          children: [
+            // Header
+            HomeHeader(
+              title: 'StopWords',
+              onBackPressed: () {
+                context.pop();
+              },
+            ),
+            
+            // Contenido 
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [
+ 
+                    Text(
+                      "Tipos de Comodines",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    
+                    const SizedBox(height: 4),
+                    
+                    Text(
+                      "Los comodines aparecen aleatoriamente en el tablero del juego, solo tienes que apretar el botón que aparece.",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color.fromARGB(96, 0, 0, 0),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Expanded(
+                      flex: 4,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: StatsCards(
+                              timeIcon: Icons.access_time,
+                              timeTitle: 'Tiempo extra',
+                              timeValue: 'Podrá tener 5 segundos extras para decir la palabra.',
+                              levelIcon: Icons.star_half,
+                              levelTitle: 'Saltar turno',
+                              levelValue: 'Permite saltar el turno e ir hacia la siguiente persona.',
+                              cardColor: const Color.fromRGBO(97, 90, 199, 1),
+                            ),
+                          ),
+                          
+                          const SizedBox(height: 15),
+                          
+                          Expanded(
+                            child: StatsCards(
+                              timeIcon: Icons.bolt,
+                              timeTitle: 'Punto doble',
+                              timeValue: 'Podrá activar el doble de la puntuación al decir la palabra.',
+                              levelIcon: Icons.block,
+                              levelTitle: 'Castigo leve',
+                              levelValue: 'Se elige 1 letra y las demás se bloquean para la próxima persona.',
+                              cardColor: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Column(
+                      children: [
+
+                        CustomButton(
+                          text: _powerUpsEnabled
+                              ? "Comodines activados"
+                              : "Comodines desactivados",
+                          icon: Icons.extension,
+                          backgroundColor: _powerUpsEnabled 
+                              ? Colors.yellow[700] 
+                              : Colors.grey[600],
+                          textColor: Colors.white,
+                          fontSize: 16,
+                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                          onPressed: _togglePowerUps,
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        CustomButton(
+                          text: "Jugar",
+                          icon: Icons.group,
+                          backgroundColor: AppColors.secondary,
+                          textColor: Colors.white,
+                          fontSize: 16,
+                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                          onPressed: () {
+                            context.push('/player-register');
+                          },
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: 8),
+                  ],
                 ),
               ),
-
-              Text(
-                "Tipos de comodines",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 8),
-
-              Text(
-                "Los comodines aparecen aleatoriamente en el tablero del juego, solo tienes que apretar el botón que aparece.",
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 20),
-
-              // Las tarjetas se adaptan al contenido
-              StatsCards(
-                timeIcon: Icons.access_time,
-                timeTitle: 'Tiempo extra',
-                timeValue:
-                    'Podrá tener 5 segundos extras para decir la palabra.',
-                levelIcon: Icons.star_half,
-                levelTitle: 'Saltar turno',
-                levelValue:
-                    'Permite saltar el turno e ir hacia la siguiente persona.',
-                cardColor: AppColors.primary,
-              ),
-
-              const SizedBox(height: 12),
-
-              StatsCards(
-                timeIcon: Icons.bolt,
-                timeTitle: 'Punto doble',
-                timeValue:
-                    'Podrá activar el doble de la puntuación al decir la palabra.',
-                levelIcon: Icons.block,
-                levelTitle: 'Castigo leve',
-                levelValue:
-                    'Se elige 1 letra y las demás se bloquean para la próxima persona.',
-                cardColor: AppColors.primary,
-              ),
-
-              const SizedBox(height: 20),
-
-              // Botón de comodines
-              CustomButton(
-                text: _powerUpsEnabled
-                    ? "Comodines activados"
-                    : "Comodines desactivados",
-                icon: Icons.extension,
-                backgroundColor:
-                    _powerUpsEnabled ? Colors.yellow[700] : Colors.grey[600],
-                textColor: Colors.white,
-                onPressed: _togglePowerUps,
-              ),
-
-              const SizedBox(height: 15),
-
-              // Botón jugar
-              CustomButton(
-                text: "Jugar",
-                icon: Icons.group,
-                onPressed: () {
-                  context.push('/player-register');
-                },
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

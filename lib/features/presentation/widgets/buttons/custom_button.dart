@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import '../../../../config/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class CustomButton extends StatelessWidget {
+class CustomButton extends StatefulWidget {
   final String text;
   final VoidCallback onPressed;
   final Color? backgroundColor;
   final Color? textColor;
   final IconData? icon;
-  final Color? borderColor; // 🔹 Nuevo parámetro para borde
+  final Color? borderColor;
+  final bool isEnabled;
+  final double? fontSize;
+  final EdgeInsets? padding;
 
   const CustomButton({
     super.key,
@@ -18,52 +21,204 @@ class CustomButton extends StatelessWidget {
     this.textColor,
     this.icon,
     this.borderColor,
+    this.isEnabled = true,
+    this.fontSize,
+    this.padding,
   });
 
   @override
+  State<CustomButton> createState() => _CustomButtonState();
+}
+
+class _CustomButtonState extends State<CustomButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _shadowAnimation;
+
+  bool _isPressed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+
+    _shadowAnimation = Tween<double>(
+      begin: 8.0,
+      end: 4.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails details) {
+    if (widget.isEnabled) {
+      setState(() {
+        _isPressed = true;
+      });
+      _animationController.forward();
+    }
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    if (widget.isEnabled) {
+      setState(() {
+        _isPressed = false;
+      });
+      _animationController.reverse();
+      widget.onPressed();
+    }
+  }
+
+  void _onTapCancel() {
+    if (widget.isEnabled) {
+      setState(() {
+        _isPressed = false;
+      });
+      _animationController.reverse();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final effectiveBackgroundColor = widget.isEnabled
+        ? (widget.backgroundColor ?? AppColors.secondary)
+        : Colors.grey[400]!;
+    
+    final effectiveTextColor = widget.isEnabled
+        ? (widget.textColor ?? Colors.white)
+        : Colors.grey[600]!;
+
+    final effectiveBorderColor = widget.isEnabled
+        ? (widget.borderColor ?? AppColors.secondaryVariant)
+        : Colors.grey[500]!;
+
     return SizedBox(
       width: double.infinity,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25),
-          border: Border.all(
-            color: borderColor ?? AppColors.secondaryVariant,
-            width: 3,
-          ),
-        ),
-        child: Material(
-          color: backgroundColor ?? AppColors.secondary,
-          borderRadius: BorderRadius.circular(25),
-          elevation: 0,
-          child: InkWell(
-            onTap: onPressed,
-            borderRadius: BorderRadius.circular(25),
-            splashColor: backgroundColor ?? AppColors.secondaryVariant,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-              alignment: Alignment.center,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    text,
-                    style: GoogleFonts.blackOpsOne().copyWith(
-                      fontSize: 19,
-                      fontWeight: FontWeight.w900,
-                      color: textColor ?? Colors.white,
+      child: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _scaleAnimation.value,
+            child: GestureDetector(
+              onTapDown: _onTapDown,
+              onTapUp: _onTapUp,
+              onTapCancel: _onTapCancel,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    // Sombra principal
+                    BoxShadow(
+                      color: effectiveBackgroundColor.withValues(alpha: 0.3),
+                      blurRadius: _shadowAnimation.value,
+                      offset: Offset(0, _shadowAnimation.value / 2),
+                      spreadRadius: 1,
+                    ),
+                    // Sombra del borde
+                    BoxShadow(
+                      color: effectiveBorderColor.withValues(alpha: 0.2),
+                      blurRadius: _shadowAnimation.value * 1.5,
+                      offset: Offset(0, _shadowAnimation.value / 1.5),
+                      spreadRadius: 0.5,
+                    ),
+                  ],
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: effectiveBorderColor,
+                      width: 3.5,
+                    ),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: _isPressed
+                          ? [
+                              effectiveBackgroundColor.withValues(alpha: 0.8),
+                              effectiveBackgroundColor,
+                            ]
+                          : [
+                              effectiveBackgroundColor,
+                              effectiveBackgroundColor.withValues(alpha: 0.9),
+                            ],
                     ),
                   ),
-                  if (icon != null) ...[
-                    const SizedBox(width: 8),
-                    Icon(icon, color: textColor ?? Colors.white),
-                  ],
-                ],
+                  child: Material(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(30),
+                    child: Container(
+                      padding: widget.padding ??
+                          const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                      alignment: Alignment.center,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (widget.icon != null) ...[
+                            Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: effectiveTextColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                widget.icon,
+                                color: effectiveTextColor,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                          ],
+                          Flexible(
+                            child: Text(
+                              widget.text,
+                              style: GoogleFonts.blackOpsOne().copyWith(
+                                fontSize: widget.fontSize ?? 18,
+                                fontWeight: FontWeight.w900,
+                                color: effectiveTextColor,
+                                letterSpacing: 0.5,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withValues(alpha: 0.3),
+                                    offset: const Offset(0, 1),
+                                    blurRadius: 2,
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
