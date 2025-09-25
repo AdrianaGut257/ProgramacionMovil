@@ -30,6 +30,11 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
   }
 
   Future<void> _startGame() async {
+    print("inicio de _startGame");
+    print(
+      "estas son las categorias: ${await AppDatabase.instance.getCategories()}",
+    );
+
     final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
     if (validPlayers.isEmpty) {
       if (!mounted) return;
