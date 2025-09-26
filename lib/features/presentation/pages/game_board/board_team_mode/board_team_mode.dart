@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/chronometer.dart';
-import 'package:programacion_movil/features/presentation/widgets/game/board_information/buttons.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/name.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
 import 'package:provider/provider.dart';
 import 'package:programacion_movil/features/presentation/state/game_team.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
 
 class BoardTeamModePage extends StatefulWidget {
   const BoardTeamModePage({super.key});
@@ -21,12 +21,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   bool gameEnded = false;
   Map<String, int> playerScores = {};
   bool hasSelectedLetter = false;
-
-  void _onLetterSelected() {
-    setState(() {
-      hasSelectedLetter = true;
-    });
-  }
 
   void _increaseScore() {
     final players = context.read<GameTeam>().players;
@@ -61,6 +55,28 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     });
   }
 
+  void _onLetterSelected() {
+    if (hasSelectedLetter) return;
+
+    setState(() {
+      hasSelectedLetter = true;
+    });
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ButtonPopup(
+        onCorrect: () {
+          _increaseScore();
+          _nextPlayer();
+        },
+        onReset: () {
+          _nextPlayer();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final players = context.watch<GameTeam>().players;
@@ -93,15 +109,17 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
               duration: gameTime,
               onTimeEnd: () {
                 debugPrint("Tiempo terminado para ${currentPlayer.name}");
-                _nextPlayer();
+                if (!hasSelectedLetter) {
+                  _nextPlayer();
+                }
               },
-              isActive: !gameEnded,
+              isActive: !gameEnded && !hasSelectedLetter,
             ),
 
             const SizedBox(height: 20),
             Center(child: BoardPage(onLetterSelected: _onLetterSelected)),
+
             const SizedBox(height: 20),
-            GameButtons(onCorrect: _increaseScore, onReset: _nextPlayer),
           ],
         ),
       ),

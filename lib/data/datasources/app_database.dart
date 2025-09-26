@@ -17,11 +17,7 @@ class AppDatabase {
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'app_database.db');
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _onCreate,
-    );
+    return await openDatabase(path, version: 1, onCreate: _onCreate);
   }
 
   Future _onCreate(Database db, int version) async {
@@ -55,10 +51,8 @@ class AppDatabase {
 
   Future<void> insertCategory(String name) async {
     final db = await database;
-    await db.insert(
-      'category',
-      {'name': name},
-      conflictAlgorithm: ConflictAlgorithm.ignore,
-    );
+    await db.insert('category', {
+      'name': name,
+    }, conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 }
