@@ -275,7 +275,8 @@ class _ComodinCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryVariant.withOpacity(0.4),
+            // ignore: deprecated_member_use
+            color: AppColors.primary,
             spreadRadius: 2,
             blurRadius: 4,
             offset: const Offset(0, 3),
