@@ -192,3 +192,124 @@ class StatCard extends StatelessWidget {
     );
   }
 }
+
+/// Widget para mostrar dos comodines en fila
+class ComodinCards extends StatelessWidget {
+  final IconData? leftIcon;
+  final String leftTitle;
+  final String leftValue;
+  final String? leftAssetPath;
+
+  final IconData? rightIcon;
+  final String rightTitle;
+  final String rightValue;
+  final String? rightAssetPath;
+
+  final Color cardColor;
+
+  const ComodinCards({
+    super.key,
+    this.leftIcon,
+    this.leftAssetPath,
+    required this.leftTitle,
+    required this.leftValue,
+    this.rightIcon,
+    this.rightAssetPath,
+    required this.rightTitle,
+    required this.rightValue,
+    required this.cardColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _ComodinCard(
+            icon: leftIcon,
+            assetPath: leftAssetPath,
+            title: leftTitle,
+            value: leftValue,
+            color: cardColor,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: _ComodinCard(
+            icon: rightIcon,
+            assetPath: rightAssetPath,
+            title: rightTitle,
+            value: rightValue,
+            color: cardColor,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ComodinCard extends StatelessWidget {
+  final IconData? icon;
+  final String? assetPath;
+  final String title;
+  final String value;
+  final Color color;
+
+  const _ComodinCard({
+    this.icon,
+    this.assetPath,
+    required this.title,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(16),
+        border: Border(
+          bottom: BorderSide(color: AppColors.primaryVariant, width: 6),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryVariant.withOpacity(0.4),
+            spreadRadius: 2,
+            blurRadius: 4,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (assetPath != null)
+            Image.asset(assetPath!, height: 30)
+          else if (icon != null)
+            Icon(icon, color: Colors.white, size: 32),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
