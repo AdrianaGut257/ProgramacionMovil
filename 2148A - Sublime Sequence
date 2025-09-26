@@ -1,0 +1,25 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t;
+    cin >> t;
+
+    vector<pair<long long,long long>> casos(t);
+    for (int i = 0; i < t; i++) {
+        cin >> casos[i].first >> casos[i].second;
+    }
+
+    for (auto [x, n] : casos) {
+        if (n % 2 == 0){
+            cout << 0 << '\n';
+        }else{ 
+            cout << x << '\n';
+        }
+    }
+
+    return 0;
+}
