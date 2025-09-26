@@ -73,7 +73,12 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
       if (!mounted) return;
 
       // Ahora navega a la siguiente pantalla
-      context.push('/select-categories', extra: validPlayers);
+      //context.push('/select-categories', extra: validPlayers);
+
+// después
+      context.push('/select-categories', extra: {
+        'players': validPlayers,
+      });
     } catch (e, st) {
       if (kDebugMode) {
         print('Error al guardar jugadores: $e\n$st');

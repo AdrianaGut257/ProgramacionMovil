@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:programacion_movil/features/presentation/pages/board/board_page.dart';
 import 'package:programacion_movil/features/presentation/pages/category/category.dart';
 import 'package:programacion_movil/features/presentation/pages/individual_mode/widgets/players_register_screen.dart';
+import 'package:programacion_movil/features/presentation/pages/game_start/easy_game_page.dart';
 import '../features/presentation/pages/home/home_page.dart';
 import '../features/presentation/pages/group_mode/group_mode_page.dart';
 import '../features/presentation/pages/modality_selection/modality_selection_page.dart';
@@ -45,6 +46,55 @@ class AppRouter {
         path: '/modality-information-team',
         builder: (context, state) => const TeamModePage(),
       ),
+
+      // 🚀 Modo FÁCIL: 10 segundos
+      GoRoute(
+        path: '/play-easy',
+        builder: (context, state) {
+          final extra = state.extra;
+          List<String>? players;
+          List<String>? categories;
+
+          if (extra is Map) {
+            players = (extra['players'] as List?)?.cast<String>();
+            categories = (extra['categories'] as List?)?.cast<String>();
+          } else if (extra is List) {
+            // compatibilidad si llega una lista de jugadores directamente
+            players = extra.cast<String>();
+          }
+
+          return EasyGamePage(
+            players: players,
+            categories: categories,
+            startAsEasy: true, // 10s
+          );
+        },
+      ),
+
+      // 🔥 Modo DIFÍCIL: 5 segundos
+      GoRoute(
+        path: '/play-hard',
+        builder: (context, state) {
+          final extra = state.extra;
+          List<String>? players;
+          List<String>? categories;
+
+          if (extra is Map) {
+            players = (extra['players'] as List?)?.cast<String>();
+            categories = (extra['categories'] as List?)?.cast<String>();
+          } else if (extra is List) {
+            players = extra.cast<String>();
+          }
+
+          return EasyGamePage(
+            players: players,
+            categories: categories,
+            startAsEasy: false, // 5s
+          );
+        },
+      ),
     ],
   );
 }
+
+
