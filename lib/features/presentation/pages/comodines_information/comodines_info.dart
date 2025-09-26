@@ -50,7 +50,7 @@ class _ComodinesPageState extends State<ComodinesPage> {
                   children: [
                     Text(
                       "Tipos de Comodines",
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.deepPurple,
@@ -60,9 +60,9 @@ class _ComodinesPageState extends State<ComodinesPage> {
 
                     const SizedBox(height: 4),
 
-                    Text(
+                    const Text(
                       "Los comodines aparecen aleatoriamente en el tablero del juego, solo tienes que apretar el botón que aparece.",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: Color.fromARGB(96, 0, 0, 0),
                       ),
@@ -76,14 +76,14 @@ class _ComodinesPageState extends State<ComodinesPage> {
                       child: Column(
                         children: [
                           Expanded(
-                            child: StatsCards(
-                              timeIcon: Icons.access_time,
-                              timeTitle: 'Tiempo extra',
-                              timeValue:
+                            child: ComodinCards(
+                              leftIcon: Icons.access_time,
+                              leftTitle: 'Tiempo extra',
+                              leftValue:
                                   'Podrá tener 5 segundos extras para decir la palabra.',
-                              levelIcon: Icons.star_half,
-                              levelTitle: 'Saltar turno',
-                              levelValue:
+                              rightIcon: Icons.star_half,
+                              rightTitle: 'Saltar turno',
+                              rightValue:
                                   'Permite saltar el turno e ir hacia la siguiente persona.',
                               cardColor: const Color.fromRGBO(97, 90, 199, 1),
                             ),
@@ -92,14 +92,14 @@ class _ComodinesPageState extends State<ComodinesPage> {
                           const SizedBox(height: 15),
 
                           Expanded(
-                            child: StatsCards(
-                              timeIcon: Icons.bolt,
-                              timeTitle: 'Punto doble',
-                              timeValue:
+                            child: ComodinCards(
+                              leftIcon: Icons.bolt,
+                              leftTitle: 'Punto doble',
+                              leftValue:
                                   'Podrá activar el doble de la puntuación al decir la palabra.',
-                              levelIcon: Icons.block,
-                              levelTitle: 'Castigo leve',
-                              levelValue:
+                              rightIcon: Icons.block,
+                              rightTitle: 'Castigo leve',
+                              rightValue:
                                   'Se elige 1 letra y las demás se bloquean para la próxima persona.',
                               cardColor: AppColors.primary,
                             ),

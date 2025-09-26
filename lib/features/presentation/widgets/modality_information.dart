@@ -192,3 +192,123 @@ class StatCard extends StatelessWidget {
     );
   }
 }
+
+/// Widget para mostrar dos comodines en fila
+class ComodinCards extends StatelessWidget {
+  final IconData leftIcon;
+  final String leftTitle;
+  final String leftValue;
+  final IconData rightIcon;
+  final String rightTitle;
+  final String rightValue;
+  final Color cardColor;
+  final double titleFontSize;
+  final double valueFontSize;
+
+  const ComodinCards({
+    super.key,
+    required this.leftIcon,
+    required this.leftTitle,
+    required this.leftValue,
+    required this.rightIcon,
+    required this.rightTitle,
+    required this.rightValue,
+    required this.cardColor,
+    this.titleFontSize = 12,
+    this.valueFontSize = 14,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: ComodinCard(
+            icon: leftIcon,
+            title: leftTitle,
+            value: leftValue,
+            color: cardColor,
+            titleFontSize: titleFontSize,
+            valueFontSize: valueFontSize,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: ComodinCard(
+            icon: rightIcon,
+            title: rightTitle,
+            value: rightValue,
+            color: cardColor,
+            titleFontSize: titleFontSize,
+            valueFontSize: valueFontSize,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Card individual de comodín
+class ComodinCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String value;
+  final Color color;
+  final double titleFontSize;
+  final double valueFontSize;
+
+  const ComodinCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.color,
+    this.titleFontSize = 12,
+    this.valueFontSize = 14,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(16),
+        border: Border(
+          bottom: BorderSide(color: AppColors.primaryVariant, width: 6),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryVariant,
+            spreadRadius: 3,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: Colors.white, size: 28),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: titleFontSize,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: valueFontSize,
+              fontWeight: FontWeight.bold,
+              height: 1.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
