@@ -81,7 +81,7 @@ class _ComodinesPageState extends State<ComodinesPage> {
                             leftValue: 'Podrá tener 5 segundos extras para decir la palabra.',
                             rightAssetPath: 'assets/icons/espada.png',
                             rightTitle: 'Saltar turno',
-                            rightValue: 'Permite saltar el turno e ir hacia la siguiente persona.',
+                            rightValue: 'Permite saltar el turno e ir directamente hacia la siguiente persona.',
                             cardColor: const Color.fromRGBO(97, 90, 199, 1),
                           ),
 
