@@ -74,36 +74,31 @@ class _ComodinesPageState extends State<ComodinesPage> {
                     Expanded(
                       flex: 4,
                       child: Column(
-                        children: [
-                          Expanded(
-                            child: ComodinCards(
-                              leftIcon: Icons.access_time,
-                              leftTitle: 'Tiempo extra',
-                              leftValue:
-                                  'Podrá tener 5 segundos extras para decir la palabra.',
-                              rightIcon: Icons.star_half,
-                              rightTitle: 'Saltar turno',
-                              rightValue:
-                                  'Permite saltar el turno e ir hacia la siguiente persona.',
-                              cardColor: const Color.fromRGBO(97, 90, 199, 1),
-                            ),
+                          children: [
+                           ComodinCards(
+                            leftAssetPath: 'assets/icons/gestion-del-tiempo.png',
+                            leftTitle: 'Tiempo extra',
+                            leftValue: 'Podrá tener 5 segundos extras para decir la palabra.',
+                            rightAssetPath: 'assets/icons/espada.png',
+                            rightTitle: 'Saltar turno',
+                            rightValue: 'Permite saltar el turno e ir hacia la siguiente persona.',
+                            cardColor: const Color.fromRGBO(97, 90, 199, 1),
                           ),
+
 
                           const SizedBox(height: 15),
 
-                          Expanded(
-                            child: ComodinCards(
-                              leftIcon: Icons.bolt,
-                              leftTitle: 'Punto doble',
-                              leftValue:
-                                  'Podrá activar el doble de la puntuación al decir la palabra.',
-                              rightIcon: Icons.block,
-                              rightTitle: 'Castigo leve',
-                              rightValue:
-                                  'Se elige 1 letra y las demás se bloquean para la próxima persona.',
-                              cardColor: AppColors.primary,
-                            ),
+                             ComodinCards(
+                            leftAssetPath: 'assets/icons/apuesta.png',
+                            leftTitle: 'Punto doble',
+                            leftValue: 'Podrá activar el doble de la puntuación al decir la palabra.',
+                            rightAssetPath: 'assets/icons/prision.png',
+                            rightTitle: 'Castigo leve',
+                            rightValue: 'Se elige 1 letra y las demás se bloquean para la próxima persona.',
+                            cardColor: const Color.fromRGBO(97, 90, 199, 1),
                           ),
+
+            
                         ],
                       ),
                     ),

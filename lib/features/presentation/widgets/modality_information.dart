@@ -195,27 +195,29 @@ class StatCard extends StatelessWidget {
 
 /// Widget para mostrar dos comodines en fila
 class ComodinCards extends StatelessWidget {
-  final IconData leftIcon;
+  final IconData? leftIcon;
   final String leftTitle;
   final String leftValue;
-  final IconData rightIcon;
+  final String? leftAssetPath;
+
+  final IconData? rightIcon;
   final String rightTitle;
   final String rightValue;
+  final String? rightAssetPath;
+
   final Color cardColor;
-  final double titleFontSize;
-  final double valueFontSize;
 
   const ComodinCards({
     super.key,
-    required this.leftIcon,
+    this.leftIcon,
+    this.leftAssetPath,
     required this.leftTitle,
     required this.leftValue,
-    required this.rightIcon,
+    this.rightIcon,
+    this.rightAssetPath,
     required this.rightTitle,
     required this.rightValue,
     required this.cardColor,
-    this.titleFontSize = 12,
-    this.valueFontSize = 14,
   });
 
   @override
@@ -223,24 +225,22 @@ class ComodinCards extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: ComodinCard(
+          child: _ComodinCard(
             icon: leftIcon,
+            assetPath: leftAssetPath,
             title: leftTitle,
             value: leftValue,
             color: cardColor,
-            titleFontSize: titleFontSize,
-            valueFontSize: valueFontSize,
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: ComodinCard(
+          child: _ComodinCard(
             icon: rightIcon,
+            assetPath: rightAssetPath,
             title: rightTitle,
             value: rightValue,
             color: cardColor,
-            titleFontSize: titleFontSize,
-            valueFontSize: valueFontSize,
           ),
         ),
       ],
@@ -248,23 +248,19 @@ class ComodinCards extends StatelessWidget {
   }
 }
 
-/// Card individual de comodín
-class ComodinCard extends StatelessWidget {
-  final IconData icon;
+class _ComodinCard extends StatelessWidget {
+  final IconData? icon;
+  final String? assetPath;
   final String title;
   final String value;
   final Color color;
-  final double titleFontSize;
-  final double valueFontSize;
 
-  const ComodinCard({
-    super.key,
-    required this.icon,
+  const _ComodinCard({
+    this.icon,
+    this.assetPath,
     required this.title,
     required this.value,
     required this.color,
-    this.titleFontSize = 12,
-    this.valueFontSize = 14,
   });
 
   @override
@@ -279,33 +275,38 @@ class ComodinCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryVariant,
-            spreadRadius: 3,
+            color: AppColors.primaryVariant.withOpacity(0.4),
+            spreadRadius: 2,
+            blurRadius: 4,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: Colors.white, size: 28),
+          if (assetPath != null)
+            Image.asset(assetPath!, height: 30)
+          else if (icon != null)
+            Icon(icon, color: Colors.white, size: 32),
           const SizedBox(height: 8),
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
-              fontSize: titleFontSize,
-              fontWeight: FontWeight.w500,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 6),
           Text(
             value,
-            textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
-              fontSize: valueFontSize,
-              fontWeight: FontWeight.bold,
-              height: 1.3,
+              fontSize: 12,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
