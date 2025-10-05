@@ -3,6 +3,7 @@ import 'package:programacion_movil/features/presentation/widgets/game/board_info
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/name.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
+import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/category_popup.dart';
 import 'package:provider/provider.dart';
 import 'package:programacion_movil/features/presentation/state/game_team.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
@@ -25,11 +26,17 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   int totalLettersSelected = 0;
   static const int totalLettersInAlphabet = 27;
 
+  List<String> categories = ['Frutas', 'Países', 'Vegetales'];
+  int currentCategoryIndex = 0;
+  bool categoryShown = false;
+
   @override
   void initState() {
     super.initState();
+    categories.shuffle();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeOrderedPlayers();
+      _showCategoryDialog();
     });
   }
 
@@ -58,6 +65,21 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     setState(() {});
   }
 
+  void _showCategoryDialog() {
+    if (currentCategoryIndex >= categories.length) {
+      setState(() {
+        gameEnded = true;
+      });
+      return;
+    }
+
+    CategoryPopup.show(context, categories[currentCategoryIndex], () {
+      setState(() {
+        categoryShown = true;
+      });
+    });
+  }
+
   void _increaseScore() {
     if (orderedPlayers.isEmpty) return;
     final currentPlayer = orderedPlayers[currentPlayerIndex];
@@ -77,7 +99,18 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
       totalLettersSelected++;
 
       if (totalLettersSelected >= totalLettersInAlphabet) {
-        gameEnded = true;
+        totalLettersSelected = 0;
+        currentCategoryIndex++;
+        categoryShown = false;
+
+        if (currentCategoryIndex >= categories.length) {
+          gameEnded = true;
+          return;
+        }
+
+        Future.delayed(const Duration(milliseconds: 300), () {
+          _showCategoryDialog();
+        });
         return;
       }
 
@@ -131,15 +164,43 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 80),
+            const SizedBox(height: 100),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 80),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFF615AC7),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFF615AC7), width: 2),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.category_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    categories[currentCategoryIndex].toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
             PlayerNameWidget(
               name: currentPlayer.name,
               score: score,
               team: currentPlayer.team,
             ),
-
             const SizedBox(height: 20),
-
             ChronometerWidget(
               key: ValueKey('${currentPlayer.id}-$totalLettersSelected'),
               duration: gameTime,
@@ -151,10 +212,8 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
               },
               isActive: !gameEnded && !hasSelectedLetter,
             ),
-
             const SizedBox(height: 20),
             Center(child: BoardPage(onLetterSelected: _onLetterSelected)),
-
             const SizedBox(height: 20),
           ],
         ),
