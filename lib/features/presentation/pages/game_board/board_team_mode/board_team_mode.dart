@@ -7,6 +7,7 @@ import 'package:programacion_movil/features/presentation/pages/game_board/board_
 import 'package:provider/provider.dart';
 import 'package:programacion_movil/features/presentation/state/game_team.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
+import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/end_game_button.dart';
 
 class BoardTeamModePage extends StatefulWidget {
   const BoardTeamModePage({super.key});
@@ -148,6 +149,12 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     );
   }
 
+  void _endGame() {
+    setState(() {
+      gameEnded = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (orderedPlayers.isEmpty) return const SizedBox();
@@ -164,7 +171,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 100),
+            const SizedBox(height: 80),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 80),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -214,6 +221,8 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
             ),
             const SizedBox(height: 20),
             Center(child: BoardPage(onLetterSelected: _onLetterSelected)),
+            const SizedBox(height: 20),
+            EndGameButton(onPressed: _endGame),
             const SizedBox(height: 20),
           ],
         ),
