@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'widgets/team_section.dart';
 import 'widgets/game_mode_selector.dart';
+import 'widgets/validation_dialog.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/home_header.dart';
 
@@ -52,29 +53,103 @@ class _GroupModePageState extends State<GroupModePage> {
         .where((p) => p.trim().isNotEmpty)
         .toList();
 
-    if (validPlayers.length < 2) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Agrega al menos 2 jugadores")),
+    if (validPlayers.isEmpty) {
+      ValidationDialog.show(
+        context,
+        "No puedes comenzar sin jugadores, agrega mínimo 2",
+        ValidationType.noPlayers,
       );
       return;
     }
 
-    final gameTeam = context.read<GameTeam>();
+    if (validPlayers.length < 2) {
+      ValidationDialog.show(
+        context,
+        "Se necesitan al menos 2 jugadores para comenzar",
+        ValidationType.minPlayers,
+      );
+      return;
+    }
 
-    gameTeam.clearPlayers();
+    final uniqueNames = validPlayers.map((p) => p.trim().toLowerCase()).toSet();
+    if (uniqueNames.length != validPlayers.length) {
+      ValidationDialog.show(
+        context,
+        "No puedes repetir nombres de jugadores",
+        ValidationType.duplicateNames,
+      );
+      return;
+    }
 
-    for (int i = 0; i < team1Players.length; i++) {
-      if (team1Players[i].trim().isNotEmpty) {
-        gameTeam.addPlayer(
-          models.Player(id: i + 1, name: team1Players[i], score: 0, team: 1),
+    if (isDetermined) {
+      final team1Valid = team1Players
+          .where((p) => p.trim().isNotEmpty)
+          .toList();
+      final team2Valid = team2Players
+          .where((p) => p.trim().isNotEmpty)
+          .toList();
+
+      if (team1Valid.length != team2Valid.length) {
+        ValidationDialog.show(
+          context,
+          "Los equipos deben tener la misma cantidad de jugadores",
+          ValidationType.unequalTeams,
         );
+        return;
+      }
+    } else {
+      if (validPlayers.length % 2 != 0) {
+        ValidationDialog.show(
+          context,
+          "La cantidad de jugadores debe ser un número par",
+          ValidationType.oddPlayers,
+        );
+        return;
       }
     }
 
-    for (int i = 0; i < team2Players.length; i++) {
-      if (team2Players[i].trim().isNotEmpty) {
+    final gameTeam = context.read<GameTeam>();
+    gameTeam.clearPlayers();
+
+    if (isDetermined) {
+      for (int i = 0; i < team1Players.length; i++) {
+        if (team1Players[i].trim().isNotEmpty) {
+          gameTeam.addPlayer(
+            models.Player(id: i + 1, name: team1Players[i], score: 0, team: 1),
+          );
+        }
+      }
+
+      for (int i = 0; i < team2Players.length; i++) {
+        if (team2Players[i].trim().isNotEmpty) {
+          gameTeam.addPlayer(
+            models.Player(
+              id: i + 100,
+              name: team2Players[i],
+              score: 0,
+              team: 2,
+            ),
+          );
+        }
+      }
+    } else {
+      final shuffledPlayers = List<String>.from(validPlayers)..shuffle();
+      final halfSize = shuffledPlayers.length ~/ 2;
+
+      for (int i = 0; i < halfSize; i++) {
         gameTeam.addPlayer(
-          models.Player(id: i + 100, name: team2Players[i], score: 0, team: 2),
+          models.Player(id: i + 1, name: shuffledPlayers[i], score: 0, team: 1),
+        );
+      }
+
+      for (int i = halfSize; i < shuffledPlayers.length; i++) {
+        gameTeam.addPlayer(
+          models.Player(
+            id: i + 100,
+            name: shuffledPlayers[i],
+            score: 0,
+            team: 2,
+          ),
         );
       }
     }

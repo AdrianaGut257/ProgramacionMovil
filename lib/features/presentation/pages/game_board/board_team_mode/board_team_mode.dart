@@ -21,35 +21,73 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   bool gameEnded = false;
   Map<String, int> playerScores = {};
   bool hasSelectedLetter = false;
+  List<dynamic> orderedPlayers = [];
+  int totalLettersSelected = 0;
+  static const int totalLettersInAlphabet = 27;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeOrderedPlayers();
+    });
+  }
+
+  void _initializeOrderedPlayers() {
+    final players = context.read<GameTeam>().players;
+
+    final team1Players = players.where((p) => p.team == 1).toList();
+    final team2Players = players.where((p) => p.team == 2).toList();
+
+    orderedPlayers = [];
+    final maxLength = team1Players.length > team2Players.length
+        ? team1Players.length
+        : team2Players.length;
+
+    for (int i = 0; i < maxLength; i++) {
+      if (i < team1Players.length) {
+        orderedPlayers.add(team1Players[i]);
+        playerScores[team1Players[i].name] = 0;
+      }
+      if (i < team2Players.length) {
+        orderedPlayers.add(team2Players[i]);
+        playerScores[team2Players[i].name] = 0;
+      }
+    }
+
+    setState(() {});
+  }
 
   void _increaseScore() {
-    final players = context.read<GameTeam>().players;
-    final currentPlayer = players[currentPlayerIndex];
+    if (orderedPlayers.isEmpty) return;
+    final currentPlayer = orderedPlayers[currentPlayerIndex];
 
     setState(() {
       score += 5;
-      playerScores[currentPlayer.name] = score;
+      playerScores[currentPlayer.name] =
+          (playerScores[currentPlayer.name] ?? 0) + 5;
       hasSelectedLetter = false;
     });
   }
 
   void _nextPlayer() {
-    final players = context.read<GameTeam>().players;
-
-    if (gameEnded) return;
+    if (gameEnded || orderedPlayers.isEmpty) return;
 
     setState(() {
-      final currentPlayer = players[currentPlayerIndex];
-      playerScores[currentPlayer.name] = score;
+      totalLettersSelected++;
 
-      currentPlayerIndex++;
-
-      if (currentPlayerIndex >= players.length) {
+      if (totalLettersSelected >= totalLettersInAlphabet) {
         gameEnded = true;
         return;
       }
 
-      score = 0;
+      currentPlayerIndex++;
+
+      if (currentPlayerIndex >= orderedPlayers.length) {
+        currentPlayerIndex = 0;
+      }
+
+      score = playerScores[orderedPlayers[currentPlayerIndex].name] ?? 0;
       gameTime = const Duration(seconds: 5);
       hasSelectedLetter = false;
     });
@@ -79,15 +117,13 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
   @override
   Widget build(BuildContext context) {
-    final players = context.watch<GameTeam>().players;
+    if (orderedPlayers.isEmpty) return const SizedBox();
 
-    if (players.isEmpty) return const SizedBox();
-
-    if (gameEnded || currentPlayerIndex >= players.length) {
+    if (gameEnded) {
       return RankingGame(playerScores: playerScores);
     }
 
-    final currentPlayer = players[currentPlayerIndex];
+    final currentPlayer = orderedPlayers[currentPlayerIndex];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -105,7 +141,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
             const SizedBox(height: 20),
 
             ChronometerWidget(
-              key: ValueKey(currentPlayer.id),
+              key: ValueKey('${currentPlayer.id}-$totalLettersSelected'),
               duration: gameTime,
               onTimeEnd: () {
                 debugPrint("Tiempo terminado para ${currentPlayer.name}");
