@@ -111,18 +111,45 @@ class _GroupModePageState extends State<GroupModePage> {
     final gameTeam = context.read<GameTeam>();
     gameTeam.clearPlayers();
 
-    for (int i = 0; i < team1Players.length; i++) {
-      if (team1Players[i].trim().isNotEmpty) {
+    if (isDetermined) {
+      for (int i = 0; i < team1Players.length; i++) {
+        if (team1Players[i].trim().isNotEmpty) {
+          gameTeam.addPlayer(
+            models.Player(id: i + 1, name: team1Players[i], score: 0, team: 1),
+          );
+        }
+      }
+
+      for (int i = 0; i < team2Players.length; i++) {
+        if (team2Players[i].trim().isNotEmpty) {
+          gameTeam.addPlayer(
+            models.Player(
+              id: i + 100,
+              name: team2Players[i],
+              score: 0,
+              team: 2,
+            ),
+          );
+        }
+      }
+    } else {
+      final shuffledPlayers = List<String>.from(validPlayers)..shuffle();
+      final halfSize = shuffledPlayers.length ~/ 2;
+
+      for (int i = 0; i < halfSize; i++) {
         gameTeam.addPlayer(
-          models.Player(id: i + 1, name: team1Players[i], score: 0, team: 1),
+          models.Player(id: i + 1, name: shuffledPlayers[i], score: 0, team: 1),
         );
       }
-    }
 
-    for (int i = 0; i < team2Players.length; i++) {
-      if (team2Players[i].trim().isNotEmpty) {
+      for (int i = halfSize; i < shuffledPlayers.length; i++) {
         gameTeam.addPlayer(
-          models.Player(id: i + 100, name: team2Players[i], score: 0, team: 2),
+          models.Player(
+            id: i + 100,
+            name: shuffledPlayers[i],
+            score: 0,
+            team: 2,
+          ),
         );
       }
     }
