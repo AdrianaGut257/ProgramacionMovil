@@ -30,6 +30,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   List<String> categories = ['Frutas', 'Países', 'Vegetales'];
   int currentCategoryIndex = 0;
   bool categoryShown = false;
+  bool chronometerActive = false;
 
   @override
   void initState() {
@@ -74,9 +75,14 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
       return;
     }
 
+    setState(() {
+      chronometerActive = false;
+    });
+
     CategoryPopup.show(context, categories[currentCategoryIndex], () {
       setState(() {
         categoryShown = true;
+        chronometerActive = true;
       });
     });
   }
@@ -103,6 +109,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
         totalLettersSelected = 0;
         currentCategoryIndex++;
         categoryShown = false;
+        chronometerActive = false;
 
         if (currentCategoryIndex >= categories.length) {
           gameEnded = true;
@@ -132,6 +139,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
     setState(() {
       hasSelectedLetter = true;
+      chronometerActive = false;
     });
 
     showDialog(
@@ -141,9 +149,15 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
         onCorrect: () {
           _increaseScore();
           _nextPlayer();
+          setState(() {
+            chronometerActive = true;
+          });
         },
         onReset: () {
           _nextPlayer();
+          setState(() {
+            chronometerActive = true;
+          });
         },
       ),
     );
@@ -217,7 +231,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                   _nextPlayer();
                 }
               },
-              isActive: !gameEnded && !hasSelectedLetter,
+              isActive: chronometerActive && !gameEnded && !hasSelectedLetter,
             ),
             const SizedBox(height: 20),
             Center(child: BoardPage(onLetterSelected: _onLetterSelected)),

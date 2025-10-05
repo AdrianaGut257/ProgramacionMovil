@@ -29,7 +29,22 @@ class _ChronometerWidgetState extends State<ChronometerWidget> {
   void initState() {
     super.initState();
     seconds = widget.duration.inSeconds;
-    _startTimer();
+    if (widget.isActive) {
+      _startTimer();
+    }
+  }
+
+  @override
+  void didUpdateWidget(ChronometerWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (!oldWidget.isActive && widget.isActive) {
+      _startTimer();
+    }
+
+    if (oldWidget.isActive && !widget.isActive) {
+      timer?.cancel();
+    }
   }
 
   void _startTimer() {
