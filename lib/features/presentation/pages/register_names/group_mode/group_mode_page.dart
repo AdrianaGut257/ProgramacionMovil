@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'widgets/team_section.dart';
 import 'widgets/game_mode_selector.dart';
+import 'widgets/validation_dialog.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/home_header.dart';
 
@@ -52,15 +53,62 @@ class _GroupModePageState extends State<GroupModePage> {
         .where((p) => p.trim().isNotEmpty)
         .toList();
 
-    if (validPlayers.length < 2) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Agrega al menos 2 jugadores")),
+    if (validPlayers.isEmpty) {
+      ValidationDialog.show(
+        context,
+        "No puedes comenzar sin jugadores, agrega mínimo 2",
+        ValidationType.noPlayers,
       );
       return;
     }
 
-    final gameTeam = context.read<GameTeam>();
+    if (validPlayers.length < 2) {
+      ValidationDialog.show(
+        context,
+        "Se necesitan al menos 2 jugadores para comenzar",
+        ValidationType.minPlayers,
+      );
+      return;
+    }
 
+    final uniqueNames = validPlayers.map((p) => p.trim().toLowerCase()).toSet();
+    if (uniqueNames.length != validPlayers.length) {
+      ValidationDialog.show(
+        context,
+        "No puedes repetir nombres de jugadores",
+        ValidationType.duplicateNames,
+      );
+      return;
+    }
+
+    if (isDetermined) {
+      final team1Valid = team1Players
+          .where((p) => p.trim().isNotEmpty)
+          .toList();
+      final team2Valid = team2Players
+          .where((p) => p.trim().isNotEmpty)
+          .toList();
+
+      if (team1Valid.length != team2Valid.length) {
+        ValidationDialog.show(
+          context,
+          "Los equipos deben tener la misma cantidad de jugadores",
+          ValidationType.unequalTeams,
+        );
+        return;
+      }
+    } else {
+      if (validPlayers.length % 2 != 0) {
+        ValidationDialog.show(
+          context,
+          "La cantidad de jugadores debe ser un número par",
+          ValidationType.oddPlayers,
+        );
+        return;
+      }
+    }
+
+    final gameTeam = context.read<GameTeam>();
     gameTeam.clearPlayers();
 
     for (int i = 0; i < team1Players.length; i++) {
