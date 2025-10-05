@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../config/colors.dart';
+import '../../../../../config/colors.dart';
 
 class GameButtons extends StatelessWidget {
   final VoidCallback onCorrect;

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:programacion_movil/features/presentation/widgets/game/chronometer.dart';
-import 'package:programacion_movil/features/presentation/widgets/game/buttons.dart';
-import 'package:programacion_movil/features/presentation/widgets/game/name.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board_information/chronometer.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board_information/name.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
-import 'package:programacion_movil/features/presentation/pages/home/home_page.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
 import 'package:provider/provider.dart';
 import 'package:programacion_movil/features/presentation/state/game_team.dart';
-import 'package:programacion_movil/config/colors.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
 
 class BoardTeamModePage extends StatefulWidget {
   const BoardTeamModePage({super.key});
@@ -21,14 +20,16 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   Duration gameTime = const Duration(seconds: 5);
   bool gameEnded = false;
   Map<String, int> playerScores = {};
+  bool hasSelectedLetter = false;
 
   void _increaseScore() {
     final players = context.read<GameTeam>().players;
     final currentPlayer = players[currentPlayerIndex];
 
     setState(() {
-      score++;
+      score += 5;
       playerScores[currentPlayer.name] = score;
+      hasSelectedLetter = false;
     });
   }
 
@@ -38,7 +39,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     if (gameEnded) return;
 
     setState(() {
-      // Guardar el puntaje final del jugador actual
       final currentPlayer = players[currentPlayerIndex];
       playerScores[currentPlayer.name] = score;
 
@@ -51,7 +51,30 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
       score = 0;
       gameTime = const Duration(seconds: 5);
+      hasSelectedLetter = false;
     });
+  }
+
+  void _onLetterSelected() {
+    if (hasSelectedLetter) return;
+
+    setState(() {
+      hasSelectedLetter = true;
+    });
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ButtonPopup(
+        onCorrect: () {
+          _increaseScore();
+          _nextPlayer();
+        },
+        onReset: () {
+          _nextPlayer();
+        },
+      ),
+    );
   }
 
   @override
@@ -61,56 +84,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     if (players.isEmpty) return const SizedBox();
 
     if (gameEnded || currentPlayerIndex >= players.length) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('🎉 Resumen del Juego'),
-          automaticallyImplyLeading: false,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Puntajes finales:',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: playerScores.length,
-                  itemBuilder: (context, index) {
-                    final name = playerScores.keys.elementAt(index);
-                    final score = playerScores[name] ?? 0;
-                    return ListTile(
-                      leading: const Icon(Icons.person),
-                      title: Text(name),
-                      trailing: Text(
-                        "$score pts",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.home),
-                  label: const Text('Volver al inicio'),
-                  onPressed: () {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const HomePage()),
-                      );
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      return RankingGame(playerScores: playerScores);
     }
 
     final currentPlayer = players[currentPlayerIndex];
@@ -121,25 +95,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16, top: 16),
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const HomePage()),
-                    );
-                  },
-                  icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                  tooltip: 'Volver',
-                  color: AppColors.textPrimary,
-                  splashRadius: 24,
-                ),
-              ),
-            ),
-            const SizedBox(height: 50),
-
+            const SizedBox(height: 80),
             PlayerNameWidget(
               name: currentPlayer.name,
               score: score,
@@ -152,16 +108,18 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
               key: ValueKey(currentPlayer.id),
               duration: gameTime,
               onTimeEnd: () {
-                debugPrint("⏰ Tiempo terminado para ${currentPlayer.name}");
-                _nextPlayer();
+                debugPrint("Tiempo terminado para ${currentPlayer.name}");
+                if (!hasSelectedLetter) {
+                  _nextPlayer();
+                }
               },
-              isActive: !gameEnded,
+              isActive: !gameEnded && !hasSelectedLetter,
             ),
 
             const SizedBox(height: 20),
-            Center(child: BoardPage()),
+            Center(child: BoardPage(onLetterSelected: _onLetterSelected)),
+
             const SizedBox(height: 20),
-            GameButtons(onCorrect: _increaseScore, onReset: _nextPlayer),
           ],
         ),
       ),

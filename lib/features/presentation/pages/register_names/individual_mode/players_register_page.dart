@@ -30,19 +30,27 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
   }
 
   Future<void> _startGame() async {
+    if (kDebugMode) {
+      print("inicio de _startGame");
+    }
+    if (kDebugMode) {
+      print(
+      "estas son las categorias: ${await AppDatabase.instance.getCategories()}",
+    );
+    }
+
     final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
     if (validPlayers.isEmpty) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Agrega al menos un jugador")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Agrega al menos un jugador")),
+      );
       return;
     }
 
-    final playersToInsert = validPlayers.map((name) => Player(
-      name: name.trim(),
-      score: 0,
-      team: 1,
-    )).toList();
+    final playersToInsert = validPlayers
+        .map((name) => Player(name: name.trim(), score: 0, team: 1))
+        .toList();
 
     try {
       await AppDatabase.instance.insertPlayers(playersToInsert);
@@ -71,7 +79,7 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const HomeHeader(),
+              HomeHeader(onBackPressed: () => context.pop()),
               Text(
                 "Ingresar nombres",
                 style: TextStyle(

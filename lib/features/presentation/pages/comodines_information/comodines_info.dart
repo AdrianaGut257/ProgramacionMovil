@@ -40,12 +40,7 @@ class _ComodinesPageState extends State<ComodinesPage> {
         child: Column(
           children: [
             // Header
-            HomeHeader(
-              title: 'StopWords',
-              onBackPressed: () {
-                context.pop();
-              },
-            ),
+            HomeHeader(onBackPressed: () => context.pop()),
 
             // Contenido
             Expanded(
@@ -55,7 +50,7 @@ class _ComodinesPageState extends State<ComodinesPage> {
                   children: [
                     Text(
                       "Tipos de Comodines",
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.deepPurple,
@@ -65,9 +60,9 @@ class _ComodinesPageState extends State<ComodinesPage> {
 
                     const SizedBox(height: 4),
 
-                    Text(
+                    const Text(
                       "Los comodines aparecen aleatoriamente en el tablero del juego, solo tienes que apretar el botón que aparece.",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: Color.fromARGB(96, 0, 0, 0),
                       ),
@@ -79,36 +74,31 @@ class _ComodinesPageState extends State<ComodinesPage> {
                     Expanded(
                       flex: 4,
                       child: Column(
-                        children: [
-                          Expanded(
-                            child: StatsCards(
-                              timeIcon: Icons.access_time,
-                              timeTitle: 'Tiempo extra',
-                              timeValue:
-                                  'Podrá tener 5 segundos extras para decir la palabra.',
-                              levelIcon: Icons.star_half,
-                              levelTitle: 'Saltar turno',
-                              levelValue:
-                                  'Permite saltar el turno e ir hacia la siguiente persona.',
-                              cardColor: const Color.fromRGBO(97, 90, 199, 1),
-                            ),
+                          children: [
+                           ComodinCards(
+                            leftAssetPath: 'assets/icons/gestion-del-tiempo.png',
+                            leftTitle: 'Tiempo extra',
+                            leftValue: 'Podrá tener 5 segundos extras para decir la palabra.',
+                            rightAssetPath: 'assets/icons/espada.png',
+                            rightTitle: 'Saltar turno',
+                            rightValue: 'Permite saltar el turno e ir directamente hacia la siguiente persona.',
+                            cardColor: const Color.fromRGBO(97, 90, 199, 1),
                           ),
+
 
                           const SizedBox(height: 15),
 
-                          Expanded(
-                            child: StatsCards(
-                              timeIcon: Icons.bolt,
-                              timeTitle: 'Punto doble',
-                              timeValue:
-                                  'Podrá activar el doble de la puntuación al decir la palabra.',
-                              levelIcon: Icons.block,
-                              levelTitle: 'Castigo leve',
-                              levelValue:
-                                  'Se elige 1 letra y las demás se bloquean para la próxima persona.',
-                              cardColor: AppColors.primary,
-                            ),
+                             ComodinCards(
+                            leftAssetPath: 'assets/icons/apuesta.png',
+                            leftTitle: 'Punto doble',
+                            leftValue: 'Podrá activar el doble de la puntuación al decir la palabra.',
+                            rightAssetPath: 'assets/icons/prision.png',
+                            rightTitle: 'Castigo leve',
+                            rightValue: 'Se elige 1 letra y las demás se bloquean para la próxima persona.',
+                            cardColor: const Color.fromRGBO(97, 90, 199, 1),
                           ),
+
+            
                         ],
                       ),
                     ),
