@@ -5,6 +5,7 @@ import 'package:programacion_movil/features/presentation/widgets/category/styles
 import 'package:programacion_movil/features/presentation/widgets/category/widgets/pred_category.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/widgets/category_selector.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/widgets/create_category.dart';
+import 'package:programacion_movil/features/presentation/widgets/category/widgets/selected_category.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
 import '../home_header.dart';
 
@@ -35,8 +36,8 @@ class _CategoryState extends State<Category> {
     selectedCategories.value = current;
   }
 
-  void _onModeChanged(bool isPred) {
-    setState(() => _currentIndex = isPred ? 0 : 1);
+  void _onTabChanged(int index) {
+    setState(() => _currentIndex = index);
   }
 
   @override
@@ -57,8 +58,8 @@ class _CategoryState extends State<Category> {
                   const SizedBox(height: 15),
 
                   CategorySelector(
-                    isPredSelected: _currentIndex == 0,
-                    onModeChanged: _onModeChanged,
+                    currentIndex: _currentIndex,
+                    onTabChanged: _onTabChanged,
                   ),
                   const SizedBox(height: 20),
 
@@ -66,6 +67,10 @@ class _CategoryState extends State<Category> {
                     child: IndexedStack(
                       index: _currentIndex,
                       children: [
+                        SelectedCategory(
+                          selectedCategories: selected,
+                          onToggle: toggleCategory,
+                        ),
                         PredCategory(
                           selectedCategories: selected,
                           onToggle: toggleCategory,
@@ -82,7 +87,6 @@ class _CategoryState extends State<Category> {
 
                   CustomButton(
                     text: "Jugar",
-                    icon: Icons.play_arrow_rounded,
                     onPressed: () => context.push('/board-gamee'),
                   ),
                 ],

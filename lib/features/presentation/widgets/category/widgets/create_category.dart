@@ -124,20 +124,32 @@ class _CreateCategoryState extends State<CreateCategory> {
     );
   }
 
-  Widget _childListPadding(String category, bool isSelected) {
+  Widget _categoryCard(String category, bool isSelected) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Card(
-          color: const Color(0xFF524BBB),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Text(
-              category,
-              style: const TextStyle(color: Colors.white, fontSize: 18),
+        Flexible(
+          child: Card(
+            color: const Color(0xFF524BBB),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.label, color: Colors.white, size: 20),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      category,
+                      style: const TextStyle(color: Colors.white, fontSize: 18),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -160,22 +172,34 @@ class _CreateCategoryState extends State<CreateCategory> {
           Text('Crea tu categoría', style: categorySubtitleStyle),
           const SizedBox(height: 15),
           _inputField(),
-          const SizedBox(height: 45),
+          const SizedBox(height: 30),
           Text("Tus categorías creadas", style: categorySubtitleStyle),
-          const SizedBox(height: 10),
+          const SizedBox(height: 15),
           Expanded(
-            child: ListView.builder(
-              itemCount: _createdCategories.length,
-              itemBuilder: (context, index) {
-                final category = _createdCategories[index];
-                final isSelected =
-                    widget.selectedCategories.contains(category);
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: _childListPadding(category, isSelected),
-                );
-              },
-            ),
+            child: _createdCategories.isEmpty
+                ? Center(
+                    child: Text(
+                      "No hay categorías creadas aún",
+                      style: TextStyle(color: Colors.grey, fontSize: 18),
+                    ),
+                  )
+                : GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 2.5,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                        ),
+                    itemCount: _createdCategories.length,
+                    itemBuilder: (context, index) {
+                      final category = _createdCategories[index];
+                      final isSelected = widget.selectedCategories.contains(
+                        category,
+                      );
+                      return _categoryCard(category, isSelected);
+                    },
+                  ),
           ),
         ],
       ),
