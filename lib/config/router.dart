@@ -1,15 +1,16 @@
 import 'package:go_router/go_router.dart';
 import 'package:programacion_movil/features/presentation/pages/comodines_information/comodines_info.dart';
-import 'package:programacion_movil/features/presentation/pages/ranking/ranking.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/category.dart';
 import 'package:programacion_movil/features/presentation/pages/register_names/individual_mode/players_register_page.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
 import '../features/presentation/pages/home/home_page.dart';
 import '../features/presentation/pages/register_names/group_mode/group_mode_page.dart';
 import '../features/presentation/pages/modality_information/hard_mode.dart';
 import '../features/presentation/pages/modality_information/easy_mode.dart';
 import '../features/presentation/pages/modality_information/team_mode.dart';
 import '../features/presentation/pages/game_board/board_team_mode/board_team_mode.dart';
+
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -52,10 +53,18 @@ class AppRouter {
         path: '/comodines-info',
         builder: (context, state) => const ComodinesPage(),
       ),
-       GoRoute(
-        path: '/ranking',
-        builder: (context, state) => const StopWordsWinnersScreen(),
-      ),
+      GoRoute(
+  path: '/ranking',
+  name: 'ranking',
+  builder: (context, state) => RankingGame(
+    playerScores: {
+      'Ariel': 120,
+      'Lizeth': 95,
+      'Dayana': 85,
+      'Romina': 70,
+    },
+  ),
+),
     ],
   );
 }

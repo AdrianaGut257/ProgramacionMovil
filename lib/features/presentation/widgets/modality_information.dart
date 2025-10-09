@@ -19,7 +19,6 @@ class GameModeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final height = size.height;
-    final width = size.width;
     double scale(double v) => v * (height / 800);
 
     return Container(
