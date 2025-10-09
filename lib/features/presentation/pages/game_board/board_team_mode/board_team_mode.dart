@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/chronometer.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/name.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
@@ -249,7 +250,47 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
             ),
 
             const SizedBox(height: 20),
+
+            ElevatedButton.icon(
+              onPressed: () {
+                final categories = context.read<GameTeam>().categories;
+                setState(() {
+                  if (currentCategoryIndex < categories.length - 1) {
+                    currentCategoryIndex++;
+                    totalLettersSelected = 0;
+                    categoryShown = false;
+                    chronometerActive = false;
+                    _showCategoryDialog();
+                  } else {
+                    gameEnded = true;
+                  }
+                });
+              },
+              icon: const Icon(Icons.skip_next, color: Colors.white),
+              label: const Text(
+                "Siguiente categoría",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
             EndGameButton(onPressed: _endGame),
+
             const SizedBox(height: 20),
           ],
         ),
