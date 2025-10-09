@@ -69,18 +69,9 @@ class HomePage extends StatelessWidget {
                           context.push('/comodines-info');
                         },
                       ),
-                      SizedBox(height: isSmallScreen ? 10 : 20),
+                      
 
-                      CustomButton(
-                        text: "Ranking",
-                        icon: Icons.leaderboard,
-                        onPressed: () {
-                          context.push('/ranking');
-                        },
-                      ),
-
-                      // Un poco de espacio al final para pantallas con notch o teclado
-                      SizedBox(height: height * 0.05),
+                    
                     ],
                   ),
                 ),

@@ -138,7 +138,7 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
 
                 SizedBox(height: size.height * 0.03),
 
-                // 🏆 Podio animado
+                // Podio animado
                 AnimatedBuilder(
                   animation: _podiumController,
                   builder: (context, child) {
@@ -192,7 +192,7 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
 
                 SizedBox(height: size.height * 0.04),
 
-                // 📋 Lista de rankings dinámica
+                // Lista de rankings dinámica
                 SlideTransition(
                   position: _slideAnimation,
                   child: FadeTransition(
@@ -218,7 +218,7 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
 
                 SizedBox(height: size.height * 0.05),
 
-                // 🔘 Botones
+                // Botones
                 Row(
                   children: [
                     Expanded(
@@ -243,9 +243,6 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
     );
   }
 
-  // -------------------------------
-  // 🔹 MÉTODOS AUXILIARES
-  // -------------------------------
 
   Color _getColorByPosition(int index) {
     switch (index) {
@@ -312,6 +309,7 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
+                    // ignore: deprecated_member_use
                     colors: [color, color.withOpacity(0.8)],
                   ),
                   borderRadius: const BorderRadius.only(
@@ -361,6 +359,7 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
+                  // ignore: deprecated_member_use
                   colors: [color, color.withOpacity(0.85)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
