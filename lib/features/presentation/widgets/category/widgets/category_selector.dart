@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:programacion_movil/config/colors.dart';
 
 class CategorySelector extends StatelessWidget {
   final int currentIndex;
@@ -21,7 +22,7 @@ class CategorySelector extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 7),
               decoration: BoxDecoration(
                 color: currentIndex == 0
-                    ? const Color(0xFF28D4B1)
+                    ? AppColors.secondary
                     : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(25),
               ),
@@ -47,7 +48,7 @@ class CategorySelector extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 7),
               decoration: BoxDecoration(
                 color: currentIndex == 1
-                    ? const Color(0xFF28D4B1)
+                    ? AppColors.secondary
                     : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(25),
               ),
@@ -73,7 +74,7 @@ class CategorySelector extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 7),
               decoration: BoxDecoration(
                 color: currentIndex == 2
-                    ? const Color(0xFF28D4B1)
+                    ? AppColors.secondary
                     : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(25),
               ),

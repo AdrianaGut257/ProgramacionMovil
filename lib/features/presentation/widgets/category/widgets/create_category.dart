@@ -106,21 +106,7 @@ class _CreateCategoryState extends State<CreateCategory> {
           ),
         ),
         const SizedBox(width: 15),
-        SizedBox(
-          width: 45,
-          height: 45,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF28D4B1),
-              padding: EdgeInsets.zero,
-              shape: const CircleBorder(
-                side: BorderSide(color: Color(0xFF1EA58A), width: 2),
-              ),
-            ),
-            onPressed: _saveCategory,
-            child: const Icon(Icons.add, color: Colors.white, size: 35),
-          ),
-        ),
+        AddRemoveButton(isAdd: true, onPressed: _saveCategory),
       ],
     );
   }
