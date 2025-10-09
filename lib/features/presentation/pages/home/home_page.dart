@@ -54,6 +54,13 @@ class HomePage extends StatelessWidget {
                   context.push('/comodines-info');
                 },
               ),
+                const SizedBox(height: 20),
+              CustomButton(
+                text: "Ranking",
+                onPressed: () {
+                  context.push('/ranking');
+                },
+              ),
             ],
           ),
         ),
