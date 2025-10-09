@@ -8,61 +8,85 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+   
+    // Escala de tamaño dinámico (para pantallas pequeñas)
+    final isSmallScreen = height < 700;
+
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              HomeHeader(),
-              const SizedBox(height: 20),
-              const Spacer(),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      HomeHeader(),
+                      SizedBox(height: isSmallScreen ? 10 : 20),
 
-              CustomButton(
-                text: "Modo facil",
-                icon: Icons.person,
-                onPressed: () {
-                  context.push('/modality-information-normal');
-                },
+                      // Espacio adaptable
+                      SizedBox(height: height * 0.03),
+
+                      // Botones principales
+                      CustomButton(
+                        text: "Modo fácil",
+                        icon: Icons.person,
+                        onPressed: () {
+                          context.push('/modality-information-normal');
+                        },
+                      ),
+                      SizedBox(height: isSmallScreen ? 10 : 20),
+
+                      CustomButton(
+                        text: "Modo difícil",
+                        icon: Icons.person,
+                        onPressed: () {
+                          context.push('/modality-information-hard');
+                        },
+                      ),
+                      SizedBox(height: isSmallScreen ? 10 : 20),
+
+                      CustomButton(
+                        text: "Modo grupal",
+                        icon: Icons.group,
+                        onPressed: () {
+                          context.push('/modality-information-team');
+                        },
+                      ),
+                      SizedBox(height: isSmallScreen ? 10 : 20),
+
+                      CustomButton(
+                        text: "Comodines",
+                        icon: Icons.star,
+                        onPressed: () {
+                          context.push('/comodines-info');
+                        },
+                      ),
+                      SizedBox(height: isSmallScreen ? 10 : 20),
+
+                      CustomButton(
+                        text: "Ranking",
+                        icon: Icons.leaderboard,
+                        onPressed: () {
+                          context.push('/ranking');
+                        },
+                      ),
+
+                      // Un poco de espacio al final para pantallas con notch o teclado
+                      SizedBox(height: height * 0.05),
+                    ],
+                  ),
+                ),
               ),
-
-              const SizedBox(height: 20),
-
-              CustomButton(
-                text: "Modo dificil",
-                icon: Icons.person,
-                onPressed: () {
-                  context.push('/modality-information-hard');
-                },
-              ),
-
-              const SizedBox(height: 20),
-
-              CustomButton(
-                text: "Modo grupal",
-                icon: Icons.group,
-                onPressed: () {
-                  context.push('/modality-information-team');
-                },
-              ),
-
-              const SizedBox(height: 20),
-              CustomButton(
-                text: "Comodines",
-                onPressed: () {
-                  context.push('/comodines-info');
-                },
-              ),
-                const SizedBox(height: 20),
-              CustomButton(
-                text: "Ranking",
-                onPressed: () {
-                  context.push('/ranking');
-                },
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

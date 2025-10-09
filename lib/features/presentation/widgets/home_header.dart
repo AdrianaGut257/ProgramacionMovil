@@ -76,18 +76,27 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    // Obtener tamaño de pantalla
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final width = size.width;
+
+    // Escalar tamaño de fuente según el ancho
+    final double responsiveFontSize =
+        (width * 0.1).clamp(28.0, 48.0); // Mínimo 28, máximo 48
+
+    // Reducir márgenes en pantallas pequeñas
+    final bool isSmallScreen = height < 700;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.transparent, Colors.transparent],
-        ),
+      padding: EdgeInsets.symmetric(
+        vertical: isSmallScreen ? 10 : 20,
+        horizontal: 20,
       ),
       child: Column(
         children: [
+          // Botón de volver (animado)
           SlideTransition(
             position: _slideAnimation,
             child: FadeTransition(
@@ -121,23 +130,23 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
             ),
           ),
 
-          const SizedBox(height: 40),
+          SizedBox(height: isSmallScreen ? 20 : 40),
 
+          // Título animado
           ScaleTransition(
             scale: _scaleAnimation,
             child: FadeTransition(
               opacity: _fadeAnimation,
               child: Center(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 24,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: width * 0.08,
+                        vertical: height * 0.025,
                       ),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
+                        gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [Colors.white, Colors.white],
@@ -149,35 +158,39 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.textPrimary,
+                            // ignore: deprecated_member_use
+                            color: AppColors.textPrimary.withOpacity(0.6),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
                         ],
                       ),
-                      child: ShaderMask(
-                        shaderCallback: (bounds) => LinearGradient(
-                          colors: [
-                            AppColors.textPrimary,
-                            AppColors.textPrimary,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ).createShader(bounds),
-                        child: Text(
-                          widget.title,
-                          style: GoogleFonts.blackOpsOne().copyWith(
-                            fontSize: 45,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: -1.5,
-                            height: 1.1,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: ShaderMask(
+                          shaderCallback: (bounds) => LinearGradient(
+                            colors: [
+                              AppColors.textPrimary,
+                              AppColors.textPrimary,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(bounds),
+                          child: Text(
+                            widget.title,
+                            style: GoogleFonts.blackOpsOne().copyWith(
+                              fontSize: responsiveFontSize,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              letterSpacing: -1.5,
+                              height: 1.1,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: isSmallScreen ? 10 : 16),
                   ],
                 ),
               ),

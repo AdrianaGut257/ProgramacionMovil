@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Ranking extends StatelessWidget {
-  const Ranking({Key? key}) : super(key: key);
+  const Ranking({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class Ranking extends StatelessWidget {
 }
 
 class StopWordsWinnersScreen extends StatefulWidget {
-  const StopWordsWinnersScreen({Key? key}) : super(key: key);
+  const StopWordsWinnersScreen({super.key});
 
   @override
   State<StopWordsWinnersScreen> createState() => _StopWordsWinnersScreenState();
@@ -282,6 +282,7 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
+                    // ignore: deprecated_member_use
                     colors: [color, color.withOpacity(0.8)],
                   ),
                   borderRadius: const BorderRadius.only(
@@ -331,6 +332,7 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
+                  // ignore: deprecated_member_use
                   colors: [color, color.withOpacity(0.85)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
