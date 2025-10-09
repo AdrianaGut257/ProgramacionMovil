@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:programacion_movil/config/icons.dart';
+import 'package:programacion_movil/data/repositories/category_repository.dart';
 
 class PredCategory extends StatefulWidget {
   final List<String> selectedCategories;
   final void Function(String) onToggle;
+
   const PredCategory({
     super.key,
     required this.selectedCategories,
@@ -17,22 +20,39 @@ class PredCategory extends StatefulWidget {
 }
 
 class _PredCategoryState extends State<PredCategory> {
-  final Map<String, IconData> allPredCategories = {
-    "Música": Icons.music_note,
-    "Animales": Icons.pets,
-    "Países": Icons.flag,
-    "Frutas": Icons.apple,
-    "Vegetales": Icons.eco,
-    "Apellidos": Icons.person,
-    "Colores": Icons.palette,
-    "Profesiones": Icons.work,
-    "Ropa": Icons.checkroom,
-    "Peliculas": Icons.movie,
-    "Comidas": Icons.restaurant,
-    "Canciones": Icons.queue_music,
-  };
+  final CategoryRepository _repository = CategoryRepository();
+  List<String> _defaultCategories = [];
+  bool _isLoading = true;
 
-  Widget _categoryCard(String category, IconData icon) {
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final categories = await _repository
+          .getDefaultCategories(); // ⬅️ SOLO PREDETERMINADAS
+      setState(() {
+        _defaultCategories = categories
+            .map((c) => c['name'] as String)
+            .toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al cargar categorías: $e')),
+        );
+      }
+    }
+  }
+
+  Widget _categoryCard(String category) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -47,7 +67,11 @@ class _PredCategoryState extends State<PredCategory> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, color: Colors.white, size: 18),
+                  Icon(
+                    GlobalIcons.getIcon(category),
+                    color: Colors.white,
+                    size: 18,
+                  ),
                   const SizedBox(width: 5),
                   Flexible(
                     child: Text(
@@ -72,9 +96,13 @@ class _PredCategoryState extends State<PredCategory> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     // Filtrar solo las categorías predeterminadas NO seleccionadas
-    final availableCategories = allPredCategories.entries
-        .where((entry) => !widget.selectedCategories.contains(entry.key))
+    final availableCategories = _defaultCategories
+        .where((category) => !widget.selectedCategories.contains(category))
         .toList();
 
     return Padding(
@@ -89,7 +117,7 @@ class _PredCategoryState extends State<PredCategory> {
           const SizedBox(height: 15),
           Expanded(
             child: availableCategories.isEmpty
-                ? Center(
+                ? const Center(
                     child: Text(
                       "Todas las categorías predeterminadas han sido seleccionadas",
                       textAlign: TextAlign.center,
@@ -106,8 +134,7 @@ class _PredCategoryState extends State<PredCategory> {
                         ),
                     itemCount: availableCategories.length,
                     itemBuilder: (context, index) {
-                      final entry = availableCategories[index];
-                      return _categoryCard(entry.key, entry.value);
+                      return _categoryCard(availableCategories[index]);
                     },
                   ),
           ),

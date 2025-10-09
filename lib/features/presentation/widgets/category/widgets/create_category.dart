@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:programacion_movil/data/datasources/app_database.dart';
+import 'package:programacion_movil/data/repositories/category_repository.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
 import 'package:programacion_movil/config/colors.dart';
@@ -20,8 +20,10 @@ class CreateCategory extends StatefulWidget {
 }
 
 class _CreateCategoryState extends State<CreateCategory> {
+  final CategoryRepository _repository = CategoryRepository();
   final TextEditingController _nameController = TextEditingController();
-  final List<String> _createdCategories = [];
+  final List<String> _customCategories = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -35,38 +37,59 @@ class _CreateCategoryState extends State<CreateCategory> {
     super.dispose();
   }
 
-  /// Cargar categorías desde la base de datos
+  /// Cargar categorías creadas por el usuario desde la base de datos
   Future<void> _loadCategories() async {
-    final db = await AppDatabase.instance.database;
-    final result = await db.query("category");
-    final categories = result.map((e) => e['name'] as String).toList();
+    try {
+      final categories = await _repository
+          .getCustomCategories(); // ⬅️ SOLO CREADAS
+      setState(() {
+        _customCategories.clear();
+        _customCategories.addAll(
+          categories.map((c) => c['name'] as String).toList(),
+        );
+        _isLoading = false;
+      });
 
-    setState(() {
-      _createdCategories.clear();
-      _createdCategories.addAll(categories);
-    });
-
-    if (kDebugMode) {
-      print("Categorías cargadas: $_createdCategories");
+      if (kDebugMode) {
+        print("Categorías personalizadas cargadas: $_customCategories");
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (kDebugMode) {
+        print("Error al cargar categorías: $e");
+      }
     }
   }
 
   /// Guardar nueva categoría
   Future<void> _saveCategory() async {
     final name = _nameController.text.trim();
-    if (name.isEmpty) return;
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('El nombre no puede estar vacío')),
+      );
+      return;
+    }
 
-    if (_createdCategories.contains(name)) {
-      if (kDebugMode) {
-        print("La categoría '$name' ya existe");
+    // Verificar en todas las categorías (predeterminadas + creadas)
+    final allCategories = await _repository.getAllCategories();
+    final allNames = allCategories.map((c) => c['name'] as String).toList();
+
+    if (allNames.contains(name)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('La categoría "$name" ya existe')),
+        );
       }
       return;
     }
 
-    await AppDatabase.instance.insertCategory(name);
+    await _repository.addCategory(name);
 
     setState(() {
-      _createdCategories.add(name);
+      _customCategories.add(name);
       _nameController.clear();
     });
 
@@ -163,8 +186,10 @@ class _CreateCategoryState extends State<CreateCategory> {
           Text("Tus categorías creadas", style: categorySubtitleStyle),
           const SizedBox(height: 15),
           Expanded(
-            child: _createdCategories.isEmpty
-                ? Center(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _customCategories.isEmpty
+                ? const Center(
                     child: Text(
                       "No hay categorías creadas aún",
                       style: TextStyle(color: Colors.grey, fontSize: 18),
@@ -178,9 +203,9 @@ class _CreateCategoryState extends State<CreateCategory> {
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
                         ),
-                    itemCount: _createdCategories.length,
+                    itemCount: _customCategories.length,
                     itemBuilder: (context, index) {
-                      final category = _createdCategories[index];
+                      final category = _customCategories[index];
                       final isSelected = widget.selectedCategories.contains(
                         category,
                       );

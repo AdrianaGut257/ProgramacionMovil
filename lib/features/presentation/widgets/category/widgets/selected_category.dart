@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:programacion_movil/config/icons.dart';
 
 class SelectedCategory extends StatelessWidget {
   final List<String> selectedCategories;
@@ -13,24 +14,6 @@ class SelectedCategory extends StatelessWidget {
     required this.onToggle,
   });
 
-  IconData _getCategoryIcon(String category) {
-    final iconMap = {
-      "Música": Icons.music_note,
-      "Animales": Icons.pets,
-      "Países": Icons.flag,
-      "Frutas": Icons.apple,
-      "Vegetales": Icons.eco,
-      "Apellidos": Icons.person,
-      "Colores": Icons.palette,
-      "Profesiones": Icons.work,
-      "Ropa": Icons.checkroom,
-      "Peliculas": Icons.movie,
-      "Comidas": Icons.restaurant,
-      "Canciones": Icons.queue_music,
-    };
-    return iconMap[category] ?? Icons.label;
-  }
-
   Widget _categoryCard(String category) {
     return Card(
       color: AppColors.primary,
@@ -40,7 +23,7 @@ class SelectedCategory extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(_getCategoryIcon(category), color: Colors.white, size: 18),
+            Icon(GlobalIcons.getIcon(category), color: Colors.white, size: 18),
             const SizedBox(width: 5),
             Flexible(
               child: Text(
@@ -63,7 +46,7 @@ class SelectedCategory extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Todas tus categorías seleccionadas",
+            "Todas tus categorías seleccionadas para jugar",
             style: categorySubtitleStyle,
           ),
           const SizedBox(height: 15),

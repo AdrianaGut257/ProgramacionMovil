@@ -27,7 +27,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   int totalLettersSelected = 0;
   static const int totalLettersInAlphabet = 27;
 
-  List<String> categories = ['Frutas', 'Países', 'Vegetales'];
   int currentCategoryIndex = 0;
   bool categoryShown = false;
   bool chronometerActive = false;
@@ -35,7 +34,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   @override
   void initState() {
     super.initState();
-    categories.shuffle();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeOrderedPlayers();
       _showCategoryDialog();
@@ -68,18 +66,16 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   }
 
   void _showCategoryDialog() {
+    final categories = context.read<GameTeam>().categories;
+
     if (currentCategoryIndex >= categories.length) {
-      setState(() {
-        gameEnded = true;
-      });
+      setState(() => gameEnded = true);
       return;
     }
 
-    setState(() {
-      chronometerActive = false;
-    });
+    setState(() => chronometerActive = false);
 
-    CategoryPopup.show(context, categories[currentCategoryIndex], () {
+    CategoryPopup.show(context, categories[currentCategoryIndex].name, () {
       setState(() {
         categoryShown = true;
         chronometerActive = true;
@@ -87,20 +83,10 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     });
   }
 
-  void _increaseScore() {
-    if (orderedPlayers.isEmpty) return;
-    final currentPlayer = orderedPlayers[currentPlayerIndex];
-
-    setState(() {
-      score += 5;
-      playerScores[currentPlayer.name] =
-          (playerScores[currentPlayer.name] ?? 0) + 5;
-      hasSelectedLetter = false;
-    });
-  }
-
   void _nextPlayer() {
     if (gameEnded || orderedPlayers.isEmpty) return;
+
+    final categories = context.read<GameTeam>().categories;
 
     setState(() {
       totalLettersSelected++;
@@ -123,7 +109,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
       }
 
       currentPlayerIndex++;
-
       if (currentPlayerIndex >= orderedPlayers.length) {
         currentPlayerIndex = 0;
       }
@@ -132,6 +117,23 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
       gameTime = const Duration(seconds: 5);
       hasSelectedLetter = false;
     });
+  }
+
+  void _increaseScore() {
+    if (orderedPlayers.isEmpty) return;
+
+    final currentPlayer = orderedPlayers[currentPlayerIndex];
+    final playerName = currentPlayer.name;
+
+    setState(() {
+      score += 5;
+      playerScores[playerName] = (playerScores[playerName] ?? 0) + 5;
+      hasSelectedLetter = false;
+    });
+
+    final gameTeam = context.read<GameTeam>();
+    final player = gameTeam.players.firstWhere((p) => p.name == playerName);
+    gameTeam.updatePlayerScore(player.id!, playerScores[playerName]!);
   }
 
   void _onLetterSelected() {
@@ -171,11 +173,16 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
   @override
   Widget build(BuildContext context) {
+    final categories = context.watch<GameTeam>().categories;
+    if (categories.isEmpty) {
+      return const Scaffold(
+        body: Center(child: Text('No hay categorías disponibles')),
+      );
+    }
+
     if (orderedPlayers.isEmpty) return const SizedBox();
 
-    if (gameEnded) {
-      return RankingGame(playerScores: playerScores);
-    }
+    if (gameEnded) return RankingGame(playerScores: playerScores);
 
     final currentPlayer = orderedPlayers[currentPlayerIndex];
 
@@ -204,7 +211,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    categories[currentCategoryIndex].toUpperCase(),
+                    categories[currentCategoryIndex].name.toUpperCase(),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -234,7 +241,13 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
               isActive: chronometerActive && !gameEnded && !hasSelectedLetter,
             ),
             const SizedBox(height: 20),
-            Center(child: BoardPage(onLetterSelected: _onLetterSelected)),
+            Center(
+              child: BoardPage(
+                key: ValueKey('board-${categories[currentCategoryIndex].name}'),
+                onLetterSelected: _onLetterSelected,
+              ),
+            ),
+
             const SizedBox(height: 20),
             EndGameButton(onPressed: _endGame),
             const SizedBox(height: 20),
