@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
+import 'package:programacion_movil/config/colors.dart';
 
 class SelectedCategory extends StatelessWidget {
   final List<String> selectedCategories;
@@ -32,19 +33,19 @@ class SelectedCategory extends StatelessWidget {
 
   Widget _categoryCard(String category) {
     return Card(
-      color: const Color(0xFF524BBB),
+      color: AppColors.primary,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(_getCategoryIcon(category), color: Colors.white, size: 20),
-            const SizedBox(width: 8),
+            Icon(_getCategoryIcon(category), color: Colors.white, size: 18),
+            const SizedBox(width: 5),
             Flexible(
               child: Text(
                 category,
-                style: const TextStyle(color: Colors.white, fontSize: 18),
+                style: const TextStyle(color: Colors.white, fontSize: 15),
                 overflow: TextOverflow.ellipsis,
               ),
             ),

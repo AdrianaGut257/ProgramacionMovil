@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
+import 'package:programacion_movil/config/colors.dart';
 
 class CreateCategory extends StatefulWidget {
   final List<String> selectedCategories;
@@ -78,7 +79,7 @@ class _CreateCategoryState extends State<CreateCategory> {
     return Row(
       children: [
         SizedBox(
-          width: 150,
+          width: 280,
           height: 45,
           child: TextField(
             controller: _nameController,
@@ -86,7 +87,7 @@ class _CreateCategoryState extends State<CreateCategory> {
             textAlignVertical: TextAlignVertical.center,
             decoration: InputDecoration(
               filled: true,
-              fillColor: const Color(0xFF615AC7),
+              fillColor: AppColors.primary,
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 0,
                 horizontal: 12,
@@ -94,7 +95,7 @@ class _CreateCategoryState extends State<CreateCategory> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(
-                  color: Color(0xFF524BBB),
+                  color: AppColors.primaryVariant,
                   width: 4,
                 ),
               ),
@@ -130,21 +131,21 @@ class _CreateCategoryState extends State<CreateCategory> {
       children: [
         Flexible(
           child: Card(
-            color: const Color(0xFF524BBB),
+            color: AppColors.primary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.label, color: Colors.white, size: 20),
-                  const SizedBox(width: 8),
+                  const Icon(Icons.label, color: Colors.white, size: 18),
+                  const SizedBox(width: 5),
                   Flexible(
                     child: Text(
                       category,
-                      style: const TextStyle(color: Colors.white, fontSize: 18),
+                      style: const TextStyle(color: Colors.white, fontSize: 15),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),

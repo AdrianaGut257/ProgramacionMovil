@@ -65,7 +65,7 @@ class CategorySelector extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 5),
         Expanded(
           child: GestureDetector(
             onTap: () => onTabChanged(2),
