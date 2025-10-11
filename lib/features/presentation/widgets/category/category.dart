@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart'; // ⬅️ Agregar
 
 import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/widgets/pred_category.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/widgets/category_selector.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/widgets/create_category.dart';
+import 'package:programacion_movil/features/presentation/widgets/category/widgets/selected_category.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
+import 'package:programacion_movil/features/presentation/state/game_team.dart'; // ⬅️ Agregar
+import 'package:programacion_movil/data/models/category.dart'
+    as models; // ⬅️ Agregar
+import 'package:programacion_movil/data/repositories/category_repository.dart'; // ⬅️ Agregar
 import '../home_header.dart';
 
 class Category extends StatefulWidget {
@@ -17,14 +23,15 @@ class Category extends StatefulWidget {
 
 class _CategoryState extends State<Category> {
   final ValueNotifier<List<String>> selectedCategories = ValueNotifier([
-    "Música",
+    "Musica",
     "Animales",
-    "Países",
+    "Paises",
     "Frutas",
     "Vegetales",
-    "Apellidos",
+    "Colores",
   ]);
 
+  final CategoryRepository _repository = CategoryRepository();
   int _currentIndex = 0;
 
   void toggleCategory(String category) {
@@ -35,8 +42,50 @@ class _CategoryState extends State<Category> {
     selectedCategories.value = current;
   }
 
-  void _onModeChanged(bool isPred) {
-    setState(() => _currentIndex = isPred ? 0 : 1);
+  void _onTabChanged(int index) {
+    setState(() => _currentIndex = index);
+  }
+
+  Future<void> _saveCategoriesToGameState() async {
+    if (selectedCategories.value.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debes seleccionar al menos una categoría'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Obtener todas las categorías de la BD
+      final allCategoriesMap = await _repository.getAllCategories();
+
+      // Filtrar solo las seleccionadas y convertirlas al modelo Category
+      final selectedCategoryObjects = allCategoriesMap
+          .where((catMap) => selectedCategories.value.contains(catMap['name']))
+          .map((catMap) => models.Category.fromMap(catMap))
+          .toList();
+
+      // ⬇️ GUARDAR REFERENCIA AL GAMESTATE ANTES DE VERIFICAR MOUNTED
+      if (!mounted) return;
+
+      final gameTeam = context.read<GameTeam>();
+
+      // Agregar las nuevas categorías
+      for (final category in selectedCategoryObjects) {
+        gameTeam.addCategory(category);
+      }
+
+      // ⬇️ VERIFICAR MOUNTED ANTES DE USAR CONTEXT PARA NAVEGACIÓN
+      if (!mounted) return;
+      context.push('/board-gamee');
+    } catch (e) {
+      // ⬇️ VERIFICAR MOUNTED ANTES DE MOSTRAR EL SNACKBAR
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error al cargar categorías: $e')));
+    }
   }
 
   @override
@@ -57,8 +106,8 @@ class _CategoryState extends State<Category> {
                   const SizedBox(height: 15),
 
                   CategorySelector(
-                    isPredSelected: _currentIndex == 0,
-                    onModeChanged: _onModeChanged,
+                    currentIndex: _currentIndex,
+                    onTabChanged: _onTabChanged,
                   ),
                   const SizedBox(height: 20),
 
@@ -66,6 +115,10 @@ class _CategoryState extends State<Category> {
                     child: IndexedStack(
                       index: _currentIndex,
                       children: [
+                        SelectedCategory(
+                          selectedCategories: selected,
+                          onToggle: toggleCategory,
+                        ),
                         PredCategory(
                           selectedCategories: selected,
                           onToggle: toggleCategory,
@@ -82,8 +135,7 @@ class _CategoryState extends State<Category> {
 
                   CustomButton(
                     text: "Jugar",
-                    icon: Icons.play_arrow_rounded,
-                    onPressed: () => context.push('/board-gamee'),
+                    onPressed: _saveCategoriesToGameState, // ⬅️ CAMBIAR AQUÍ
                   ),
                 ],
               ),

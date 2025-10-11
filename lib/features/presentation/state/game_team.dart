@@ -42,4 +42,9 @@ class GameTeam extends ChangeNotifier {
     _categories.clear();
     notifyListeners();
   }
+
+  void clearCategories() {
+    _categories.clear();
+    notifyListeners();
+  }
 }

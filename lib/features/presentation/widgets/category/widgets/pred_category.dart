@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
+import 'package:programacion_movil/config/colors.dart';
+import 'package:programacion_movil/config/icons.dart';
+import 'package:programacion_movil/data/repositories/category_repository.dart';
 
 class PredCategory extends StatefulWidget {
   final List<String> selectedCategories;
   final void Function(String) onToggle;
+
   const PredCategory({
     super.key,
     required this.selectedCategories,
@@ -16,35 +20,74 @@ class PredCategory extends StatefulWidget {
 }
 
 class _PredCategoryState extends State<PredCategory> {
-  final List<String> predCategories = [
-    "Colores",
-    "Profesiones",
-    "Ropa",
-    "Peliculas",
-    "Comidas",
-    "Canciones",
-  ];
+  final CategoryRepository _repository = CategoryRepository();
+  List<String> _defaultCategories = [];
+  bool _isLoading = true;
 
-  Widget _childListPadding(String category, bool buttonState) {
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final categories = await _repository
+          .getDefaultCategories(); // ⬅️ SOLO PREDETERMINADAS
+      setState(() {
+        _defaultCategories = categories
+            .map((c) => c['name'] as String)
+            .toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al cargar categorías: $e')),
+        );
+      }
+    }
+  }
+
+  Widget _categoryCard(String category) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Card(
-          color: const Color(0xFF524BBB),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Text(
-              category,
-              style: const TextStyle(color: Colors.white, fontSize: 18),
+        Flexible(
+          child: Card(
+            color: AppColors.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    GlobalIcons.getIcon(category),
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 5),
+                  Flexible(
+                    child: Text(
+                      category,
+                      style: const TextStyle(color: Colors.white, fontSize: 15),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 5),
         AddRemoveButton(
-          isAdd: !buttonState,
+          isAdd: true,
           onPressed: () => widget.onToggle(category),
         ),
       ],
@@ -53,48 +96,47 @@ class _PredCategoryState extends State<PredCategory> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // Filtrar solo las categorías predeterminadas NO seleccionadas
+    final availableCategories = _defaultCategories
+        .where((category) => !widget.selectedCategories.contains(category))
+        .toList();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Categorias Seleccionadas", style: categorySubtitleStyle),
-          const SizedBox(height: 15),
-          Expanded(
-            flex: 1,
-            child: widget.selectedCategories.isEmpty
-                ? Center(
-                    child: Text(
-                      "No hay categorías seleccionadas",
-                      style: TextStyle(color: Colors.grey, fontSize: 20),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: widget.selectedCategories.length,
-                    itemBuilder: (context, index) {
-                      final category = widget.selectedCategories[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        child: _childListPadding(category, true),
-                      );
-                    },
-                  ),
+          Text(
+            "Categorías predeterminadas disponibles",
+            style: categorySubtitleStyle,
           ),
           const SizedBox(height: 15),
-          Text("Añade más categorias!", style: categorySubtitleStyle),
           Expanded(
-            flex: 1,
-            child: ListView.builder(
-              itemCount: predCategories.length,
-              itemBuilder: (context, index) {
-                final category = predCategories[index];
-                final isSelected = widget.selectedCategories.contains(category);
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: _childListPadding(category, isSelected),
-                );
-              },
-            ),
+            child: availableCategories.isEmpty
+                ? const Center(
+                    child: Text(
+                      "Todas las categorías predeterminadas han sido seleccionadas",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey, fontSize: 18),
+                    ),
+                  )
+                : GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 2.5,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                        ),
+                    itemCount: availableCategories.length,
+                    itemBuilder: (context, index) {
+                      return _categoryCard(availableCategories[index]);
+                    },
+                  ),
           ),
         ],
       ),
