@@ -82,8 +82,10 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
     final width = size.width;
 
     // Escalar tamaño de fuente según el ancho
-    final double responsiveFontSize =
-        (width * 0.1).clamp(28.0, 48.0); // Mínimo 28, máximo 48
+    final double responsiveFontSize = (width * 0.1).clamp(
+      28.0,
+      48.0,
+    ); // Mínimo 28, máximo 48
 
     // Reducir márgenes en pantallas pequeñas
     final bool isSmallScreen = height < 700;
@@ -96,7 +98,6 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
       ),
       child: Column(
         children: [
-          // Botón de volver (animado)
           SlideTransition(
             position: _slideAnimation,
             child: FadeTransition(
