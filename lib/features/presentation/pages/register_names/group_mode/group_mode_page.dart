@@ -10,6 +10,7 @@ import '../../../../../features/presentation/state/game_team.dart';
 import '../../../../../data/models/player.dart' as models;
 
 import 'package:go_router/go_router.dart';
+import 'package:programacion_movil/config/colors.dart';
 
 class GroupModePage extends StatefulWidget {
   const GroupModePage({super.key});
@@ -159,78 +160,107 @@ class _GroupModePageState extends State<GroupModePage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final isSmallScreen = height < 700;
+
     return Scaffold(
+      backgroundColor: AppColors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              HomeHeader(onBackPressed: () => context.pop()),
-
-              const Text(
-                'Elige una opción',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-              const SizedBox(height: 10),
-
-              GameModeSelector(
-                isDetermined: isDetermined,
-                onModeChanged: (value) {
-                  setState(() {
-                    if (value == false && isDetermined == true) {
-                      randomPlayers = [
-                        ...team1Players.where((p) => p.isNotEmpty),
-                        ...team2Players.where((p) => p.isNotEmpty),
-                      ];
-                      if (randomPlayers.isEmpty) randomPlayers = [''];
-                    }
-                    isDetermined = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 30),
-
-              Expanded(
-                child: SingleChildScrollView(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (isDetermined) ...[
-                        TeamSection(
-                          title: 'Equipo 1',
-                          players: team1Players,
-                          onUpdatePlayer: (i, v) =>
-                              _updatePlayer(team1Players, i, v),
-                          onAddPlayer: () => _addPlayer(team1Players),
-                          onRemovePlayer: (i) => _removePlayer(team1Players, i),
+                      HomeHeader(onBackPressed: () => context.pop()),
+
+                      SizedBox(height: isSmallScreen ? 8 : 12),
+
+                      const Text(
+                        'Elige una opción',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
+
+                      SizedBox(height: isSmallScreen ? 8 : 10),
+
+                      GameModeSelector(
+                        isDetermined: isDetermined,
+                        onModeChanged: (value) {
+                          setState(() {
+                            if (value == false && isDetermined == true) {
+                              randomPlayers = [
+                                ...team1Players.where((p) => p.isNotEmpty),
+                                ...team2Players.where((p) => p.isNotEmpty),
+                              ];
+                              if (randomPlayers.isEmpty) randomPlayers = [''];
+                            }
+                            isDetermined = value;
+                          });
+                        },
+                      ),
+
+                      SizedBox(height: isSmallScreen ? 15 : 20),
+
+                      ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: height * 0.30),
+                        child: Column(
+                          children: [
+                            if (isDetermined) ...[
+                              TeamSection(
+                                title: 'Equipo 1',
+                                players: team1Players,
+                                onUpdatePlayer: (i, v) =>
+                                    _updatePlayer(team1Players, i, v),
+                                onAddPlayer: () => _addPlayer(team1Players),
+                                onRemovePlayer: (i) =>
+                                    _removePlayer(team1Players, i),
+                              ),
+                              SizedBox(height: isSmallScreen ? 15 : 20),
+                              TeamSection(
+                                title: 'Equipo 2',
+                                players: team2Players,
+                                onUpdatePlayer: (i, v) =>
+                                    _updatePlayer(team2Players, i, v),
+                                onAddPlayer: () => _addPlayer(team2Players),
+                                onRemovePlayer: (i) =>
+                                    _removePlayer(team2Players, i),
+                              ),
+                            ] else ...[
+                              TeamSection(
+                                title: 'Ingresar nombres',
+                                players: randomPlayers,
+                                onUpdatePlayer: (i, v) =>
+                                    _updatePlayer(randomPlayers, i, v),
+                                onAddPlayer: () => _addPlayer(randomPlayers),
+                                onRemovePlayer: (i) =>
+                                    _removePlayer(randomPlayers, i),
+                              ),
+                            ],
+                          ],
                         ),
-                        const SizedBox(height: 20),
-                        TeamSection(
-                          title: 'Equipo 2',
-                          players: team2Players,
-                          onUpdatePlayer: (i, v) =>
-                              _updatePlayer(team2Players, i, v),
-                          onAddPlayer: () => _addPlayer(team2Players),
-                          onRemovePlayer: (i) => _removePlayer(team2Players, i),
-                        ),
-                      ] else ...[
-                        TeamSection(
-                          title: 'Ingresar nombres',
-                          players: randomPlayers,
-                          onUpdatePlayer: (i, v) =>
-                              _updatePlayer(randomPlayers, i, v),
-                          onAddPlayer: () => _addPlayer(randomPlayers),
-                          onRemovePlayer: (i) =>
-                              _removePlayer(randomPlayers, i),
-                        ),
-                      ],
+                      ),
+
+                      SizedBox(height: isSmallScreen ? 20 : 30),
+
+                      CustomButton(
+                        text: "Jugar",
+                        icon: Icons.gamepad,
+                        onPressed: _startGame,
+                      ),
+
+                      SizedBox(height: height * 0.05),
                     ],
                   ),
                 ),
               ),
-              CustomButton(text: "Jugar", onPressed: _startGame),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

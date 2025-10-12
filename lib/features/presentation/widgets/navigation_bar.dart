@@ -10,7 +10,7 @@ class CustomNavigationBar extends StatelessWidget {
     final currentLocation = GoRouterState.of(context).matchedLocation;
 
     return Container(
-      height: 60,
+      height: 50,
       decoration: BoxDecoration(
         color: AppColors.white,
         boxShadow: [
