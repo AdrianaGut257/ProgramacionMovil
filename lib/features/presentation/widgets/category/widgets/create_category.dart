@@ -4,6 +4,7 @@ import 'package:programacion_movil/data/repositories/category_repository.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CreateCategory extends StatefulWidget {
   final List<String> selectedCategories;
@@ -179,11 +180,29 @@ class _CreateCategoryState extends State<CreateCategory> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Crea tu categoría', style: categorySubtitleStyle),
+          Text(
+            'Crea tu categoría',
+            style: GoogleFonts.titanOne().copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: AppColors.primary,
+              letterSpacing: 0,
+              height: 1.1,
+            ),
+          ),
           const SizedBox(height: 15),
           _inputField(),
           const SizedBox(height: 30),
-          Text("Tus categorías creadas", style: categorySubtitleStyle),
+          Text(
+            "Tus categorías creadas",
+            style: GoogleFonts.titanOne().copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: AppColors.primary,
+              letterSpacing: 0,
+              height: 1.1,
+            ),
+          ),
           const SizedBox(height: 15),
           Expanded(
             child: _isLoading

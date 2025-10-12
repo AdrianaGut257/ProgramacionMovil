@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/config/icons.dart';
 import 'package:programacion_movil/data/repositories/category_repository.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PredCategory extends StatefulWidget {
   final List<String> selectedCategories;
@@ -112,7 +112,13 @@ class _PredCategoryState extends State<PredCategory> {
         children: [
           Text(
             "Categorías predeterminadas disponibles",
-            style: categorySubtitleStyle,
+            style: GoogleFonts.titanOne().copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: AppColors.primary,
+              letterSpacing: 0,
+              height: 1.1,
+            ),
           ),
           const SizedBox(height: 15),
           Expanded(

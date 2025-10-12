@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CategorySelector extends StatelessWidget {
   final int currentIndex;
@@ -23,18 +24,18 @@ class CategorySelector extends StatelessWidget {
               decoration: BoxDecoration(
                 color: currentIndex == 0
                     ? AppColors.secondary
-                    : Colors.grey.shade300,
+                    : AppColors.lightGrey,
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Text(
                 'Seleccionadas',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: currentIndex == 0
-                      ? Colors.white
-                      : Colors.grey.shade600,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
+                style: GoogleFonts.rubik().copyWith(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: currentIndex == 0 ? AppColors.white : AppColors.grey,
+                  letterSpacing: 0,
+                  height: 1.1,
                 ),
               ),
             ),
@@ -49,18 +50,18 @@ class CategorySelector extends StatelessWidget {
               decoration: BoxDecoration(
                 color: currentIndex == 1
                     ? AppColors.secondary
-                    : Colors.grey.shade300,
+                    : AppColors.lightGrey,
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Text(
                 'Predeterminadas',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: currentIndex == 1
-                      ? Colors.white
-                      : Colors.grey.shade600,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
+                style: GoogleFonts.rubik().copyWith(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: currentIndex == 1 ? AppColors.white : AppColors.grey,
+                  letterSpacing: 0,
+                  height: 1.1,
                 ),
               ),
             ),
@@ -75,18 +76,18 @@ class CategorySelector extends StatelessWidget {
               decoration: BoxDecoration(
                 color: currentIndex == 2
                     ? AppColors.secondary
-                    : Colors.grey.shade300,
+                    : AppColors.lightGrey,
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Text(
                 'Creadas',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: currentIndex == 2
-                      ? Colors.white
-                      : Colors.grey.shade600,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
+                style: GoogleFonts.rubik().copyWith(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: currentIndex == 2 ? AppColors.white : AppColors.grey,
+                  letterSpacing: 0,
+                  height: 1.1,
                 ),
               ),
             ),

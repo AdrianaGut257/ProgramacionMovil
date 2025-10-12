@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/config/icons.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SelectedCategory extends StatelessWidget {
   final List<String> selectedCategories;
@@ -47,7 +47,13 @@ class SelectedCategory extends StatelessWidget {
         children: [
           Text(
             "Todas tus categorías seleccionadas para jugar",
-            style: categorySubtitleStyle,
+            style: GoogleFonts.titanOne().copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: AppColors.primary,
+              letterSpacing: 0,
+              height: 1.1,
+            ),
           ),
           const SizedBox(height: 15),
           Expanded(

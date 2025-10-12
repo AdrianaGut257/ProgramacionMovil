@@ -28,7 +28,7 @@ class GameModeSelector extends StatelessWidget {
               child: Text(
                 'Determinado',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.titanOne().copyWith(
+                style: GoogleFonts.rubik().copyWith(
                   fontSize: 15,
                   fontWeight: FontWeight.w900,
                   color: isDetermined ? AppColors.white : AppColors.grey,
@@ -54,10 +54,10 @@ class GameModeSelector extends StatelessWidget {
               child: Text(
                 'Aleatorio',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.titanOne().copyWith(
+                style: GoogleFonts.rubik().copyWith(
                   fontSize: 15,
                   fontWeight: FontWeight.w900,
-                  color: !isDetermined ? AppColors.white : AppColors.lightGrey,
+                  color: !isDetermined ? AppColors.white : AppColors.grey,
                   letterSpacing: 0,
                   height: 1.1,
                 ),
