@@ -80,6 +80,7 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
+    double scale(double v) => v * (height / 800);
 
     // Escalar tamaño de fuente según el ancho
     final double responsiveFontSize = (width * 0.1).clamp(
@@ -153,18 +154,12 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
                           colors: [Colors.white, Colors.white],
                         ),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: AppColors.textPrimary,
-                          width: 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            // ignore: deprecated_member_use
-                            color: AppColors.textPrimary.withOpacity(0.6),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: AppColors.tertiaryVariant,
+                            width: scale(6),
                           ),
-                        ],
+                        ),
                       ),
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
