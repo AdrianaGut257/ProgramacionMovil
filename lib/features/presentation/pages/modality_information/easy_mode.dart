@@ -10,42 +10,57 @@ class EasyMode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final isSmallScreen = height < 700;
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              HomeHeader(onBackPressed: () => context.pop()),
-              const GameModeCard(
-                title: 'Modo fácil',
-                description:
-                    'El modo clásico donde puedes fallar algunas veces antes de que termine la partida.',
-                badgeText: 'CLASSIC',
-                icon: Icons.play_circle_outline,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      HomeHeader(onBackPressed: () => context.pop()),
+                      SizedBox(height: isSmallScreen ? 10 : 20),
+                      const GameModeCard(
+                        title: 'Modo fácil',
+                        description:
+                            'El modo clásico donde puedes fallar algunas veces antes de que termine la partida.',
+                        badgeText: 'CLASSIC',
+                        icon: Icons.play_circle_outline,
+                      ),
+                      SizedBox(height: isSmallScreen ? 20 : 30),
+                      const StatsCards(
+                        timeIcon: Icons.access_time,
+                        timeTitle: 'Tiempo',
+                        timeValue: '10 seg',
+                        levelIcon: Icons.star_half,
+                        levelTitle: 'Dificultad',
+                        levelValue: 'moderado',
+                        cardColor: AppColors.primary,
+                      ),
+                      SizedBox(height: isSmallScreen ? 30 : 40),
+                      CustomButton(
+                        text: "Jugar",
+                        icon: Icons.group,
+                        onPressed: () {
+                          context.push('/player-register');
+                        },
+                      ),
+                      SizedBox(height: height * 0.05),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 30),
-              const StatsCards(
-                timeIcon: Icons.access_time,
-                timeTitle: 'Tiempo',
-                timeValue: '10 seg',
-                levelIcon: Icons.star_half,
-                levelTitle: 'Dificultad',
-                levelValue: 'moderado',
-                cardColor: AppColors.primary,
-              ),
-              const Spacer(),
-              const SizedBox(height: 20),
-              CustomButton(
-                text: "Jugar",
-                icon: Icons.group,
-                onPressed: () {
-                  context.push('/player-register');
-                },
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
