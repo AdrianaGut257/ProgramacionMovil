@@ -16,8 +16,8 @@ class AddRemoveButton extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 40,
-        height: 40,
+        width: 35,
+        height: 35,
         decoration: BoxDecoration(
           color: isAdd ? AppColors.success : AppColors.errorPrimary,
           shape: BoxShape.circle,
