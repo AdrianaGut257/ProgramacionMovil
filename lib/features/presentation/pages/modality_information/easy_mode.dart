@@ -38,7 +38,7 @@ class EasyMode extends StatelessWidget {
                       ),
                       SizedBox(height: isSmallScreen ? 20 : 30),
                       const StatsCards(
-                        timeIcon: Icons.access_time,
+                        timeIcon: Icons.timer,
                         timeTitle: 'Tiempo',
                         timeValue: '10 seg',
                         levelIcon: Icons.star_half,
