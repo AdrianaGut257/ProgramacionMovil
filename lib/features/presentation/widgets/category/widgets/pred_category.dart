@@ -32,8 +32,7 @@ class _PredCategoryState extends State<PredCategory> {
 
   Future<void> _loadCategories() async {
     try {
-      final categories = await _repository
-          .getDefaultCategories(); // ⬅️ SOLO PREDETERMINADAS
+      final categories = await _repository.getDefaultCategories();
       setState(() {
         _defaultCategories = categories
             .map((c) => c['name'] as String)
@@ -53,44 +52,49 @@ class _PredCategoryState extends State<PredCategory> {
   }
 
   Widget _categoryCard(String category) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: Card(
-            color: AppColors.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    GlobalIcons.getIcon(category),
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 5),
-                  Flexible(
-                    child: Text(
-                      category,
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.primaryVariant,
+        borderRadius: BorderRadius.circular(25),
+        border: Border(
+          bottom: BorderSide(color: AppColors.primaryVariant, width: 4),
+        ),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(25),
+          border: Border(
+            bottom: BorderSide(color: AppColors.primaryVariant, width: 3),
           ),
         ),
-        const SizedBox(width: 5),
-        AddRemoveButton(
-          isAdd: true,
-          onPressed: () => widget.onToggle(category),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                GlobalIcons.getIcon(category),
+                color: Colors.white,
+                size: 18,
+              ),
+              const SizedBox(width: 10),
+              Flexible(
+                child: Text(
+                  category,
+                  style: const TextStyle(color: Colors.white, fontSize: 15),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 15),
+              AddRemoveButton(
+                isAdd: true,
+                onPressed: () => widget.onToggle(category),
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 

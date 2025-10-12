@@ -15,24 +15,47 @@ class SelectedCategory extends StatelessWidget {
   });
 
   Widget _categoryCard(String category) {
-    return Card(
-      color: AppColors.primary,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(GlobalIcons.getIcon(category), color: Colors.white, size: 18),
-            const SizedBox(width: 5),
-            Flexible(
-              child: Text(
-                category,
-                style: const TextStyle(color: Colors.white, fontSize: 15),
-                overflow: TextOverflow.ellipsis,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.primaryVariant,
+        borderRadius: BorderRadius.circular(25),
+        border: Border(
+          bottom: BorderSide(color: AppColors.primaryVariant, width: 4),
+        ),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(25),
+          border: Border(
+            bottom: BorderSide(color: AppColors.primaryVariant, width: 3),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                GlobalIcons.getIcon(category),
+                color: AppColors.white,
+                size: 18,
               ),
-            ),
-          ],
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  category,
+                  style: const TextStyle(color: AppColors.white, fontSize: 15),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 28),
+              AddRemoveButton(
+                isAdd: false,
+                onPressed: () => onToggle(category),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -61,7 +84,7 @@ class SelectedCategory extends StatelessWidget {
                 ? Center(
                     child: Text(
                       "No hay categorías seleccionadas",
-                      style: TextStyle(color: Colors.grey, fontSize: 20),
+                      style: TextStyle(color: AppColors.grey, fontSize: 20),
                     ),
                   )
                 : GridView.builder(
@@ -75,17 +98,7 @@ class SelectedCategory extends StatelessWidget {
                     itemCount: selectedCategories.length,
                     itemBuilder: (context, index) {
                       final category = selectedCategories[index];
-                      return Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(child: _categoryCard(category)),
-                          const SizedBox(width: 8),
-                          AddRemoveButton(
-                            isAdd: false,
-                            onPressed: () => onToggle(category),
-                          ),
-                        ],
-                      );
+                      return _categoryCard(category);
                     },
                   ),
           ),
