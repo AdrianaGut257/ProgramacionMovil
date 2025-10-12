@@ -36,7 +36,6 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
   @override
   void didUpdateWidget(PlayerInputField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Si el valor cambió desde afuera, actualizar el controller
     if (oldWidget.initialValue != widget.initialValue) {
       _controller.text = widget.initialValue;
     }
@@ -52,23 +51,35 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(25),
-                border: Border(
-                  bottom: BorderSide(color: AppColors.primaryVariant, width: 5),
-                ),
-              ),
+
+      decoration: BoxDecoration(
+        color: AppColors.primaryVariant,
+        borderRadius: BorderRadius.circular(25),
+        border: Border(
+          bottom: BorderSide(color: AppColors.primaryVariant, width: 4),
+        ),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(25),
+          border: Border(
+            bottom: BorderSide(color: AppColors.primaryVariant, width: 3),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
               child: TextField(
                 controller: _controller,
                 onChanged: widget.onChanged,
                 decoration: const InputDecoration(
                   hintText: 'Escribe aquí',
                   hintStyle: TextStyle(color: Colors.white70),
+                  prefixIcon: Icon(
+                    Icons.person_outline_rounded,
+                    color: Colors.white,
+                  ),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 20,
@@ -78,13 +89,15 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
                 style: const TextStyle(color: Colors.white),
               ),
             ),
-          ),
-          const SizedBox(width: 10),
-          AddRemoveButton(
-            isAdd: widget.isLast,
-            onPressed: widget.isLast ? widget.onAdd : widget.onRemove,
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.only(right: 9),
+              child: AddRemoveButton(
+                isAdd: widget.isLast,
+                onPressed: widget.isLast ? widget.onAdd : widget.onRemove,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

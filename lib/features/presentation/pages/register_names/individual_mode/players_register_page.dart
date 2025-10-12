@@ -7,6 +7,7 @@ import '../../../widgets/Inputs/player_input_field.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/home_header.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PlayersRegisterScreen extends StatefulWidget {
   const PlayersRegisterScreen({super.key});
@@ -35,8 +36,8 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
     }
     if (kDebugMode) {
       print(
-      "estas son las categorias: ${await AppDatabase.instance.getCategories()}",
-    );
+        "estas son las categorias: ${await AppDatabase.instance.getCategories()}",
+      );
     }
 
     final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
@@ -71,42 +72,75 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final isSmallScreen = height < 700;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              HomeHeader(onBackPressed: () => context.pop()),
-              Text(
-                "Ingresar nombres",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      HomeHeader(onBackPressed: () => context.pop()),
+
+                      SizedBox(height: isSmallScreen ? 8 : 12),
+
+                      Text(
+                        "Ingresar nombres",
+                        style: GoogleFonts.titanOne().copyWith(
+                          fontSize: 23,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primary,
+                          letterSpacing: 0,
+                          height: 1.1,
+                        ),
+                      ),
+
+                      SizedBox(height: isSmallScreen ? 15 : 20),
+
+                      ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: height * 0.35),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: players.length,
+                          itemBuilder: (context, index) {
+                            return PlayerInputField(
+                              index: index,
+                              isLast: index == players.length - 1,
+                              initialValue: players[index],
+                              onChanged: (value) => _updatePlayer(index, value),
+                              onAdd: () => _addPlayer(),
+                              onRemove: () => _removePlayer(index),
+                            );
+                          },
+                        ),
+                      ),
+
+                      SizedBox(height: isSmallScreen ? 20 : 30),
+
+                      CustomButton(
+                        text: "Jugar",
+                        icon: Icons.gamepad,
+                        onPressed: _startGame,
+                      ),
+
+                      SizedBox(height: height * 0.05),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: players.length,
-                  itemBuilder: (context, index) {
-                    return PlayerInputField(
-                      index: index,
-                      isLast: index == players.length - 1,
-                      initialValue: players[index],
-                      onChanged: (value) => _updatePlayer(index, value),
-                      onAdd: () => _addPlayer(),
-                      onRemove: () => _removePlayer(index),
-                    );
-                  },
-                ),
-              ),
-              CustomButton(text: "Jugar", onPressed: _startGame),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

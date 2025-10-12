@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/data/repositories/category_repository.dart';
-import 'package:programacion_movil/features/presentation/widgets/category/styles/text_styles.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CreateCategory extends StatefulWidget {
   final List<String> selectedCategories;
@@ -37,11 +37,9 @@ class _CreateCategoryState extends State<CreateCategory> {
     super.dispose();
   }
 
-  /// Cargar categorías creadas por el usuario desde la base de datos
   Future<void> _loadCategories() async {
     try {
-      final categories = await _repository
-          .getCustomCategories(); // ⬅️ SOLO CREADAS
+      final categories = await _repository.getCustomCategories();
       setState(() {
         _customCategories.clear();
         _customCategories.addAll(
@@ -63,7 +61,6 @@ class _CreateCategoryState extends State<CreateCategory> {
     }
   }
 
-  /// Guardar nueva categoría
   Future<void> _saveCategory() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
@@ -73,7 +70,6 @@ class _CreateCategoryState extends State<CreateCategory> {
       return;
     }
 
-    // Verificar en todas las categorías (predeterminadas + creadas)
     final allCategories = await _repository.getAllCategories();
     final allNames = allCategories.map((c) => c['name'] as String).toList();
 
@@ -99,76 +95,104 @@ class _CreateCategoryState extends State<CreateCategory> {
   }
 
   Widget _inputField() {
-    return Row(
-      children: [
-        SizedBox(
-          width: 280,
-          height: 45,
-          child: TextField(
-            controller: _nameController,
-            style: const TextStyle(color: Colors.white, fontSize: 20),
-            textAlignVertical: TextAlignVertical.center,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: AppColors.primary,
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 0,
-                horizontal: 12,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: AppColors.primaryVariant,
-                  width: 4,
-                ),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
+    return Container(
+      width: 280,
+      decoration: BoxDecoration(
+        color: AppColors.primaryVariant,
+        borderRadius: BorderRadius.circular(25),
+        border: Border(
+          bottom: BorderSide(color: AppColors.primaryVariant, width: 4),
+        ),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(25),
+          border: Border(
+            bottom: BorderSide(color: AppColors.primaryVariant, width: 3),
           ),
         ),
-        const SizedBox(width: 15),
-        AddRemoveButton(isAdd: true, onPressed: _saveCategory),
-      ],
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _nameController,
+                style: const TextStyle(color: Colors.white, fontSize: 20),
+                textAlignVertical: TextAlignVertical.center,
+                decoration: const InputDecoration(
+                  hintText: 'Escribe aquí',
+                  hintStyle: TextStyle(color: Colors.white70),
+                  prefixIcon: Icon(
+                    Icons.category_outlined,
+                    color: Colors.white,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 15,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 9),
+              child: AddRemoveButton(isAdd: true, onPressed: _saveCategory),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _categoryCard(String category, bool isSelected) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: Card(
-            color: AppColors.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.label, color: Colors.white, size: 18),
-                  const SizedBox(width: 5),
-                  Flexible(
-                    child: Text(
-                      category,
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.primaryVariant,
+        borderRadius: BorderRadius.circular(25),
+        border: Border(
+          bottom: BorderSide(color: AppColors.primaryVariant, width: 4),
+        ),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(25),
+          border: Border(
+            bottom: BorderSide(color: AppColors.primaryVariant, width: 3),
           ),
         ),
-        const SizedBox(width: 8),
-        AddRemoveButton(
-          isAdd: !isSelected,
-          onPressed: () => widget.onToggle(category),
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 16,
+            top: 12,
+            bottom: 12,
+            right: 9,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.label, color: Colors.white, size: 20),
+              const SizedBox(width: 10),
+              Flexible(
+                child: Text(
+                  category,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 50),
+              AddRemoveButton(
+                isAdd: !isSelected,
+                onPressed: () => widget.onToggle(category),
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 
@@ -179,11 +203,29 @@ class _CreateCategoryState extends State<CreateCategory> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Crea tu categoría', style: categorySubtitleStyle),
+          Text(
+            'Crea tu categoría',
+            style: GoogleFonts.titanOne().copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: AppColors.primary,
+              letterSpacing: 0,
+              height: 1.1,
+            ),
+          ),
           const SizedBox(height: 15),
           _inputField(),
           const SizedBox(height: 30),
-          Text("Tus categorías creadas", style: categorySubtitleStyle),
+          Text(
+            "Tus categorías creadas",
+            style: GoogleFonts.titanOne().copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: AppColors.primary,
+              letterSpacing: 0,
+              height: 1.1,
+            ),
+          ),
           const SizedBox(height: 15),
           Expanded(
             child: _isLoading

@@ -46,21 +46,13 @@ class _CustomButtonState extends State<CustomButton>
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.95,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
-    _shadowAnimation = Tween<double>(
-      begin: 8.0,
-      end: 4.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _shadowAnimation = Tween<double>(begin: 8.0, end: 4.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
   }
 
   @override
@@ -99,10 +91,15 @@ class _CustomButtonState extends State<CustomButton>
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+
+    double scale(double v) => v * (height / 800);
+
     final effectiveBackgroundColor = widget.isEnabled
         ? (widget.backgroundColor ?? AppColors.secondary)
         : Colors.grey[400]!;
-    
+
     final effectiveTextColor = widget.isEnabled
         ? (widget.textColor ?? Colors.white)
         : Colors.grey[600]!;
@@ -145,9 +142,12 @@ class _CustomButtonState extends State<CustomButton>
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
-                    border: Border.all(
-                      color: effectiveBorderColor,
-                      width: 3.5,
+
+                    border: Border(
+                      bottom: BorderSide(
+                        color: effectiveBorderColor,
+                        width: scale(6),
+                      ),
                     ),
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -167,8 +167,12 @@ class _CustomButtonState extends State<CustomButton>
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(30),
                     child: Container(
-                      padding: widget.padding ??
-                          const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                      padding:
+                          widget.padding ??
+                          const EdgeInsets.symmetric(
+                            vertical: 18,
+                            horizontal: 16,
+                          ),
                       alignment: Alignment.center,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -178,7 +182,9 @@ class _CustomButtonState extends State<CustomButton>
                             Container(
                               padding: const EdgeInsets.all(2),
                               decoration: BoxDecoration(
-                                color: effectiveTextColor.withValues(alpha: 0.1),
+                                color: effectiveTextColor.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
