@@ -109,7 +109,7 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
                   if (widget.onBackPressed != null)
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border(
                           bottom: BorderSide(

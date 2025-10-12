@@ -10,50 +10,74 @@ import '../features/presentation/pages/modality_information/hard_mode.dart';
 import '../features/presentation/pages/modality_information/easy_mode.dart';
 import '../features/presentation/pages/modality_information/team_mode.dart';
 import '../features/presentation/pages/game_board/board_team_mode/board_team_mode.dart';
+import '../features/presentation/pages/record/record.dart';
 
+import '../features/presentation/widgets/navigation_bar.dart';
+import 'package:flutter/material.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
     routes: [
-      //prueba
-      GoRoute(path: '/', builder: (context, state) => const HomePage()),
-      GoRoute(
-        path: '/group-mode',
-        builder: (context, state) => const GroupModePage(),
+      ShellRoute(
+        builder: (context, state, child) {
+          return Stack(
+            children: [
+              child,
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: const CustomNavigationBar(),
+              ),
+            ],
+          );
+        },
+        routes: [
+          // Rutas principales de la barra de navegación
+          GoRoute(path: '/', builder: (context, state) => const HomePage()),
+          GoRoute(
+            path: '/record',
+            builder: (context, state) => const RecordPage(),
+          ),
+
+          GoRoute(
+            path: '/group-mode',
+            builder: (context, state) => const GroupModePage(),
+          ),
+          GoRoute(
+            path: '/player-register',
+            builder: (context, state) => const PlayersRegisterScreen(),
+          ),
+          GoRoute(
+            path: '/board-game',
+            builder: (context, state) => const BoardPage(),
+          ),
+          GoRoute(
+            path: '/select-categories',
+            builder: (context, state) => const Category(),
+          ),
+          GoRoute(
+            path: '/modality-information-hard',
+            builder: (context, state) => const HardModePage(),
+          ),
+          GoRoute(
+            path: '/modality-information-normal',
+            builder: (context, state) => const EasyMode(),
+          ),
+          GoRoute(
+            path: '/modality-information-team',
+            builder: (context, state) => const TeamModePage(),
+          ),
+          GoRoute(
+            path: '/board-gamee',
+            builder: (context, state) => const BoardTeamModePage(),
+          ),
+          GoRoute(
+            path: '/comodines-info',
+            builder: (context, state) => const ComodinesPage(),
+          ),
+        ],
       ),
-      GoRoute(
-        path: '/player-register',
-        builder: (context, state) => const PlayersRegisterScreen(),
-      ),
-      GoRoute(
-        path: '/board-game',
-        builder: (context, state) => const BoardPage(),
-      ),
-      GoRoute(
-        path: '/select-categories',
-        builder: (context, state) => const Category(),
-      ),
-      GoRoute(
-        path: '/modality-information-hard',
-        builder: (context, state) => const HardModePage(),
-      ),
-      GoRoute(
-        path: '/modality-information-normal',
-        builder: (context, state) => const EasyMode(),
-      ),
-      GoRoute(
-        path: '/modality-information-team',
-        builder: (context, state) => const TeamModePage(),
-      ),
-      GoRoute(
-        path: '/board-gamee',
-        builder: (context, state) => const BoardTeamModePage(),
-      ),
-      GoRoute(
-        path: '/comodines-info',
-        builder: (context, state) => const ComodinesPage(),
-      ),
-      
     ],
   );
 }
