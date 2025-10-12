@@ -7,6 +7,7 @@ import '../../../widgets/Inputs/player_input_field.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/home_header.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PlayersRegisterScreen extends StatefulWidget {
   const PlayersRegisterScreen({super.key});
@@ -95,10 +96,12 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
 
                       Text(
                         "Ingresar nombres",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                        style: GoogleFonts.titanOne().copyWith(
+                          fontSize: 23,
+                          fontWeight: FontWeight.w900,
                           color: AppColors.primary,
+                          letterSpacing: 0,
+                          height: 1.1,
                         ),
                       ),
 

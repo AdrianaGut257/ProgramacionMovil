@@ -177,11 +177,11 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
                         fit: BoxFit.scaleDown,
                         child: Text(
                           widget.title,
-                          style: GoogleFonts.blackOpsOne().copyWith(
+                          style: GoogleFonts.titanOne().copyWith(
                             fontSize: responsiveFontSize,
                             fontWeight: FontWeight.w900,
                             color: AppColors.tertiary,
-                            letterSpacing: -1.5,
+                            letterSpacing: -1,
                             height: 1.1,
                           ),
                           textAlign: TextAlign.center,

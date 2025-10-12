@@ -11,6 +11,7 @@ import '../../../../../data/models/player.dart' as models;
 
 import 'package:go_router/go_router.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class GroupModePage extends StatefulWidget {
   const GroupModePage({super.key});
@@ -176,15 +177,22 @@ class _GroupModePageState extends State<GroupModePage> {
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       HomeHeader(onBackPressed: () => context.pop()),
 
                       SizedBox(height: isSmallScreen ? 8 : 12),
 
-                      const Text(
+                      Text(
                         'Elige una opción',
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                        style: GoogleFonts.titanOne().copyWith(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primary,
+                          letterSpacing: 0,
+                          height: 1.1,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
 
                       SizedBox(height: isSmallScreen ? 8 : 10),

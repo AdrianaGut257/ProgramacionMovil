@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../../config/colors.dart';
 import '../../../../widgets/Inputs/player_input_field.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TeamSection extends StatelessWidget {
   final String title;
@@ -25,10 +26,12 @@ class TeamSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.titanOne().copyWith(
+            fontSize: 23,
+            fontWeight: FontWeight.w900,
             color: AppColors.primary,
+            letterSpacing: 0,
+            height: 1.1,
           ),
         ),
         const SizedBox(height: 10),

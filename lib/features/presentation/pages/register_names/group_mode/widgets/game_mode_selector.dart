@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../../config/colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class GameModeSelector extends StatelessWidget {
   final bool isDetermined;
@@ -21,15 +22,18 @@ class GameModeSelector extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
               decoration: BoxDecoration(
-                color: isDetermined ? AppColors.teal : Colors.grey.shade300,
+                color: isDetermined ? AppColors.secondary : AppColors.lightGrey,
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Text(
                 'Determinado',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isDetermined ? Colors.white : Colors.grey.shade600,
-                  fontWeight: FontWeight.bold,
+                style: GoogleFonts.titanOne().copyWith(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: isDetermined ? AppColors.white : AppColors.grey,
+                  letterSpacing: 0,
+                  height: 1.1,
                 ),
               ),
             ),
@@ -42,15 +46,20 @@ class GameModeSelector extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
               decoration: BoxDecoration(
-                color: !isDetermined ? AppColors.teal : Colors.grey.shade300,
+                color: !isDetermined
+                    ? AppColors.secondary
+                    : AppColors.lightGrey,
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Text(
                 'Aleatorio',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: !isDetermined ? Colors.white : Colors.grey.shade600,
-                  fontWeight: FontWeight.bold,
+                style: GoogleFonts.titanOne().copyWith(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: !isDetermined ? AppColors.white : AppColors.lightGrey,
+                  letterSpacing: 0,
+                  height: 1.1,
                 ),
               ),
             ),
