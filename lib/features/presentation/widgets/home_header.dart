@@ -111,11 +111,18 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: AppColors.tertiaryVariant,
+                            width: scale(6),
+                          ),
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            color: AppColors.tertiary,
+                            blurRadius: 20,
+                            offset: const Offset(0, 5),
+                            spreadRadius: 2,
                           ),
                         ],
                       ),
@@ -148,41 +155,36 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
                         vertical: height * 0.025,
                       ),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Colors.white, Colors.white],
-                        ),
                         borderRadius: BorderRadius.circular(20),
+                        color: AppColors.white,
                         border: Border(
                           bottom: BorderSide(
                             color: AppColors.tertiaryVariant,
                             width: scale(6),
                           ),
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.tertiary,
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                            spreadRadius: 2,
+                          ),
+                        ],
                       ),
+
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: ShaderMask(
-                          shaderCallback: (bounds) => LinearGradient(
-                            colors: [
-                              AppColors.textPrimary,
-                              AppColors.textPrimary,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ).createShader(bounds),
-                          child: Text(
-                            widget.title,
-                            style: GoogleFonts.blackOpsOne().copyWith(
-                              fontSize: responsiveFontSize,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                              letterSpacing: -1.5,
-                              height: 1.1,
-                            ),
-                            textAlign: TextAlign.center,
+                        child: Text(
+                          widget.title,
+                          style: GoogleFonts.blackOpsOne().copyWith(
+                            fontSize: responsiveFontSize,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.tertiary,
+                            letterSpacing: -1.5,
+                            height: 1.1,
                           ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),

@@ -6,7 +6,7 @@ class AppColors {
   static const Color secondary = Color(0xFF28D4B1);
   static const Color secondaryVariant = Color(0xFF1EA58A);
   static const Color tertiary = Color(0xFFFFBE54);
-  static const Color tertiaryVariant = Color(0xFFFFA300);
+  static const Color tertiaryVariant = Color.fromARGB(255, 251, 172, 35);
 
   static const Color success = Color(0xFF1EA58A);
   static const Color errorPrimary = Color(0xFFE02D5D);
@@ -16,4 +16,6 @@ class AppColors {
   static const Color textSecondary = Colors.black54;
   //Textos principales
   static const Color textPrimary = Color(0xFFFFBE54);
+
+  static const Color white = Color(0xFFFFFFFF);
 }
