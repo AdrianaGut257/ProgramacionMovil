@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'config/router.dart';
 import 'config/theme.dart';
 import 'features/presentation/state/game_team.dart';
+import 'features/presentation/state/game_individual.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => GameTeam(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => GameTeam()),
+        ChangeNotifierProvider(create: (_) => GameIndividual()),
+      ],
       child: const StopWordsApp(),
     ),
   );

@@ -1,13 +1,13 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:programacion_movil/config/colors.dart';
-import 'package:programacion_movil/data/datasources/app_database.dart';
 import 'package:programacion_movil/data/models/player.dart';
 import '../../../widgets/Inputs/player_input_field.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/home_header.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../../features/presentation/state/game_individual.dart';
 
 class PlayersRegisterScreen extends StatefulWidget {
   const PlayersRegisterScreen({super.key});
@@ -30,44 +30,41 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
     setState(() => players[index] = value);
   }
 
-  Future<void> _startGame() async {
-    if (kDebugMode) {
-      print("inicio de _startGame");
-    }
-    if (kDebugMode) {
-      print(
-        "estas son las categorias: ${await AppDatabase.instance.getCategories()}",
-      );
-    }
-
+  void _startGame() {
     final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
+
     if (validPlayers.isEmpty) {
-      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Agrega al menos un jugador")),
       );
       return;
     }
 
-    final playersToInsert = validPlayers
-        .map((name) => Player(name: name.trim(), score: 0, team: 1))
-        .toList();
+    final gameIndividual = context.read<GameIndividual>();
+    gameIndividual.clearPlayers();
 
-    try {
-      await AppDatabase.instance.insertPlayers(playersToInsert);
-
-      final db = await AppDatabase.instance.database;
-      final all = await db.query('players');
-      if (kDebugMode) print("Contenido de la tabla players: $all");
-
-      if (!mounted) return;
-      context.push('/select-categories', extra: playersToInsert);
-    } catch (e, stack) {
-      if (kDebugMode) {
-        print("Error en _startGame: $e");
-        print(stack);
-      }
+    List<Player> playerObjects = [];
+    for (int i = 0; i < validPlayers.length; i++) {
+      final player = Player(
+        id: i + 1,
+        name: validPlayers[i].trim(),
+        score: 0,
+        team: 1,
+      );
+      gameIndividual.addPlayer(player);
+      playerObjects.add(player);
     }
+
+    if (!mounted) return;
+
+    context.push(
+      '/select-categories',
+      extra: {
+        'mode': 'individual',
+        'players': playerObjects,
+        'difficulty': 'easy',
+      },
+    );
   }
 
   @override
@@ -119,7 +116,7 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
                               isLast: index == players.length - 1,
                               initialValue: players[index],
                               onChanged: (value) => _updatePlayer(index, value),
-                              onAdd: () => _addPlayer(),
+                              onAdd: _addPlayer,
                               onRemove: () => _removePlayer(index),
                             );
                           },

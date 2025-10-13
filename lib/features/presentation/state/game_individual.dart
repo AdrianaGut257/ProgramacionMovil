@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../../../data/models/player.dart';
 import '../../../data/models/category.dart' as models;
 
-class GameTeam extends ChangeNotifier {
+class GameIndividual extends ChangeNotifier {
   final List<Player> _players = [];
   final List<models.Category> _categories = [];
 
@@ -21,13 +21,12 @@ class GameTeam extends ChangeNotifier {
         id: _players[index].id,
         name: _players[index].name,
         score: newScore,
-        team: _players[index].team,
+        team: 1,
       );
       notifyListeners();
     }
   }
 
-  // ⭐ MÉTODO AÑADIDO
   void setCategories(List<models.Category> selectedCategories) {
     _categories
       ..clear()
@@ -35,13 +34,13 @@ class GameTeam extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addCategory(models.Category category) {
-    _categories.add(category);
+  void clearPlayers() {
+    _players.clear();
     notifyListeners();
   }
 
-  void clearPlayers() {
-    _players.clear();
+  void addCategory(models.Category category) {
+    _categories.add(category);
     notifyListeners();
   }
 

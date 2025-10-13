@@ -7,6 +7,7 @@ import 'package:programacion_movil/features/presentation/widgets/category/widget
 import 'package:programacion_movil/features/presentation/widgets/category/widgets/selected_category.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
 import 'package:programacion_movil/features/presentation/state/game_team.dart';
+import 'package:programacion_movil/features/presentation/state/game_individual.dart';
 import 'package:programacion_movil/data/models/category.dart' as models;
 import 'package:programacion_movil/data/repositories/category_repository.dart';
 import '../home_header.dart';
@@ -14,7 +15,11 @@ import 'package:programacion_movil/config/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Category extends StatefulWidget {
-  const Category({super.key});
+  final String? mode;
+  final String? difficulty;
+  final List<dynamic>? players;
+
+  const Category({super.key, this.mode, this.difficulty, this.players});
 
   @override
   State<Category> createState() => _CategoryState();
@@ -64,14 +69,29 @@ class _CategoryState extends State<Category> {
 
       if (!mounted) return;
 
-      final gameTeam = context.read<GameTeam>();
-
-      for (final category in selectedCategoryObjects) {
-        gameTeam.addCategory(category);
+      // ✅ MODO GRUPAL
+      if (widget.mode == 'group') {
+        final gameTeam = context.read<GameTeam>();
+        gameTeam.clearCategories(); // Limpia categorías anteriores
+        gameTeam.setCategories(selectedCategoryObjects); // Usa setCategories
+        context.push('/board-game');
+        return;
       }
 
-      if (!mounted) return;
-      context.push('/board-gamee');
+      // ✅ MODO INDIVIDUAL
+      if (widget.mode == 'individual') {
+        final gameIndividual = context.read<GameIndividual>();
+        gameIndividual.clearCategories(); // Limpia categorías anteriores
+        gameIndividual.setCategories(
+          selectedCategoryObjects,
+        ); // ⭐ GUARDA EN EL ESTADO
+
+        final route = widget.difficulty == 'hard'
+            ? '/board-game-hard'
+            : '/board-game-easy';
+
+        context.push(route); // Ya no necesitas pasar extra
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
