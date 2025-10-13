@@ -61,7 +61,14 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
       if (kDebugMode) print("Contenido de la tabla players: $all");
 
       if (!mounted) return;
-      context.push('/select-categories', extra: playersToInsert);
+      context.push(
+        '/select-categories',
+        extra: {
+          'mode': 'individual',
+          'players': playersToInsert,
+          'difficulty': 'easy',
+        },
+      );
     } catch (e, stack) {
       if (kDebugMode) {
         print("Error en _startGame: $e");

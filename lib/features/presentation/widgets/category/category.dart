@@ -14,7 +14,11 @@ import 'package:programacion_movil/config/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Category extends StatefulWidget {
-  const Category({super.key});
+  final String? mode;
+  final String? difficulty;
+  final List<dynamic>? players;
+
+  const Category({super.key, this.mode, this.difficulty, this.players});
 
   @override
   State<Category> createState() => _CategoryState();
@@ -64,14 +68,28 @@ class _CategoryState extends State<Category> {
 
       if (!mounted) return;
 
-      final gameTeam = context.read<GameTeam>();
-
-      for (final category in selectedCategoryObjects) {
-        gameTeam.addCategory(category);
+      if (widget.mode == 'group') {
+        final gameTeam = context.read<GameTeam>();
+        for (final category in selectedCategoryObjects) {
+          gameTeam.addCategory(category);
+        }
+        context.push('/board-game');
+        return;
       }
 
-      if (!mounted) return;
-      context.push('/board-game-team');
+      if (widget.mode == 'individual') {
+        final route = widget.difficulty == 'hard'
+            ? '/board-game-hard'
+            : '/board-game-easy';
+
+        context.push(
+          route,
+          extra: {
+            'players': widget.players,
+            'categories': selectedCategoryObjects,
+          },
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(

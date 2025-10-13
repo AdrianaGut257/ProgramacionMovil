@@ -12,7 +12,7 @@ import '../features/presentation/pages/modality_information/team_mode.dart';
 import '../features/presentation/pages/game_board/board_team_mode/board_team_mode.dart';
 import '../features/presentation/pages/game_board/board_individual_mode/board_easy_mode.dart';
 import '../features/presentation/pages/game_board/board_individual_mode/board_hard_mode.dart';
-import '../features/presentation/pages/record/record.dart';
+import '../features/presentation/pages/record_categories/record.dart';
 
 import '../features/presentation/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -56,8 +56,16 @@ class AppRouter {
           ),
           GoRoute(
             path: '/select-categories',
-            builder: (context, state) => const Category(),
+            builder: (context, state) {
+              final extras = state.extra as Map<String, dynamic>?;
+              return Category(
+                mode: extras?['mode'],
+                players: extras?['players'],
+                difficulty: extras?['difficulty'],
+              );
+            },
           ),
+
           GoRoute(
             path: '/modality-information-hard',
             builder: (context, state) => const HardModePage(),
@@ -71,7 +79,7 @@ class AppRouter {
             builder: (context, state) => const TeamModePage(),
           ),
           GoRoute(
-            path: '/board-game-team',
+            path: '/board-game',
             builder: (context, state) => const BoardTeamModePage(),
           ),
           GoRoute(
