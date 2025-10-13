@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/widgets/letter_tile.dart.dart';
 import 'package:programacion_movil/config/colors.dart';
 
@@ -88,18 +87,6 @@ class _BoardGameState extends State<BoardGame> {
 
     return Column(
       children: [
-        Text(
-          'Selecciona una letra',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey[700],
-          ),
-        ).animate().fadeIn(duration: 500.ms).slideY(begin: -0.3, end: 0),
-
-        const SizedBox(height: 30),
-
-        // Círculo de fondo + letras
         SizedBox(
           width: 360,
           height: 360,

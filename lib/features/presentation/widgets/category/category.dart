@@ -69,28 +69,24 @@ class _CategoryState extends State<Category> {
 
       if (!mounted) return;
 
-      // ✅ MODO GRUPAL
       if (widget.mode == 'group') {
         final gameTeam = context.read<GameTeam>();
-        gameTeam.clearCategories(); // Limpia categorías anteriores
-        gameTeam.setCategories(selectedCategoryObjects); // Usa setCategories
+        gameTeam.clearCategories();
+        gameTeam.setCategories(selectedCategoryObjects);
         context.push('/board-game');
         return;
       }
 
-      // ✅ MODO INDIVIDUAL
       if (widget.mode == 'individual') {
         final gameIndividual = context.read<GameIndividual>();
-        gameIndividual.clearCategories(); // Limpia categorías anteriores
-        gameIndividual.setCategories(
-          selectedCategoryObjects,
-        ); // ⭐ GUARDA EN EL ESTADO
+        gameIndividual.clearCategories();
+        gameIndividual.setCategories(selectedCategoryObjects);
 
         final route = widget.difficulty == 'hard'
             ? '/board-game-hard'
             : '/board-game-easy';
 
-        context.push(route); // Ya no necesitas pasar extra
+        context.push(route);
       }
     } catch (e) {
       if (!mounted) return;
@@ -102,6 +98,10 @@ class _CategoryState extends State<Category> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final isSmallScreen = height < 700;
+
     return ValueListenableBuilder<List<String>>(
       valueListenable: selectedCategories,
       builder: (_, selected, __) {
@@ -115,23 +115,27 @@ class _CategoryState extends State<Category> {
                 children: [
                   HomeHeader(onBackPressed: () => context.pop()),
 
+                  SizedBox(height: isSmallScreen ? 8 : 12),
+
                   Text(
                     "Seleccione categorías",
                     style: GoogleFonts.titanOne().copyWith(
-                      fontSize: 30,
+                      fontSize: isSmallScreen ? 24 : 30,
                       fontWeight: FontWeight.w900,
                       color: AppColors.primary,
                       letterSpacing: 0,
                       height: 1.1,
                     ),
                   ),
-                  const SizedBox(height: 15),
+
+                  SizedBox(height: isSmallScreen ? 10 : 15),
 
                   CategorySelector(
                     currentIndex: _currentIndex,
                     onTabChanged: _onTabChanged,
                   ),
-                  const SizedBox(height: 20),
+
+                  SizedBox(height: isSmallScreen ? 15 : 20),
 
                   Expanded(
                     child: IndexedStack(
@@ -153,12 +157,14 @@ class _CategoryState extends State<Category> {
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: isSmallScreen ? 15 : 20),
 
                   CustomButton(
                     text: "Jugar",
                     onPressed: _saveCategoriesToGameState,
                   ),
+
+                  SizedBox(height: isSmallScreen ? 10 : 15),
                 ],
               ),
             ),
