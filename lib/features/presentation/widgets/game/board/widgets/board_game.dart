@@ -88,18 +88,6 @@ class _BoardGameState extends State<BoardGame> {
 
     return Column(
       children: [
-        Text(
-          'Selecciona una letra',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey[700],
-          ),
-        ).animate().fadeIn(duration: 500.ms).slideY(begin: -0.3, end: 0),
-
-        const SizedBox(height: 30),
-
-        // Círculo de fondo + letras
         SizedBox(
           width: 360,
           height: 360,

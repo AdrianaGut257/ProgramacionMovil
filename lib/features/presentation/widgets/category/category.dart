@@ -98,6 +98,10 @@ class _CategoryState extends State<Category> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final isSmallScreen = height < 700;
+
     return ValueListenableBuilder<List<String>>(
       valueListenable: selectedCategories,
       builder: (_, selected, __) {
@@ -111,23 +115,27 @@ class _CategoryState extends State<Category> {
                 children: [
                   HomeHeader(onBackPressed: () => context.pop()),
 
+                  SizedBox(height: isSmallScreen ? 8 : 12),
+
                   Text(
                     "Seleccione categorías",
                     style: GoogleFonts.titanOne().copyWith(
-                      fontSize: 30,
+                      fontSize: isSmallScreen ? 24 : 30,
                       fontWeight: FontWeight.w900,
                       color: AppColors.primary,
                       letterSpacing: 0,
                       height: 1.1,
                     ),
                   ),
-                  const SizedBox(height: 15),
+
+                  SizedBox(height: isSmallScreen ? 10 : 15),
 
                   CategorySelector(
                     currentIndex: _currentIndex,
                     onTabChanged: _onTabChanged,
                   ),
-                  const SizedBox(height: 20),
+
+                  SizedBox(height: isSmallScreen ? 15 : 20),
 
                   Expanded(
                     child: IndexedStack(
@@ -149,12 +157,14 @@ class _CategoryState extends State<Category> {
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: isSmallScreen ? 15 : 20),
 
                   CustomButton(
                     text: "Jugar",
                     onPressed: _saveCategoriesToGameState,
                   ),
+
+                  SizedBox(height: isSmallScreen ? 10 : 15),
                 ],
               ),
             ),
