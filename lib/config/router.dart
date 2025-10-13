@@ -10,6 +10,8 @@ import '../features/presentation/pages/modality_information/hard_mode.dart';
 import '../features/presentation/pages/modality_information/easy_mode.dart';
 import '../features/presentation/pages/modality_information/team_mode.dart';
 import '../features/presentation/pages/game_board/board_team_mode/board_team_mode.dart';
+import '../features/presentation/pages/game_board/board_individual_mode/board_easy_mode.dart';
+import '../features/presentation/pages/game_board/board_individual_mode/board_hard_mode.dart';
 import '../features/presentation/pages/record/record.dart';
 
 import '../features/presentation/widgets/navigation_bar.dart';
@@ -69,8 +71,16 @@ class AppRouter {
             builder: (context, state) => const TeamModePage(),
           ),
           GoRoute(
-            path: '/board-gamee',
+            path: '/board-game-team',
             builder: (context, state) => const BoardTeamModePage(),
+          ),
+          GoRoute(
+            path: '/board-game-easy',
+            builder: (context, state) => const BoardEasyModePage(),
+          ),
+          GoRoute(
+            path: '/board-game-hard',
+            builder: (context, state) => const BoardHardModePage(),
           ),
           GoRoute(
             path: '/comodines-info',

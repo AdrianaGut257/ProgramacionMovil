@@ -71,7 +71,7 @@ class _CategoryState extends State<Category> {
       }
 
       if (!mounted) return;
-      context.push('/board-gamee');
+      context.push('/board-game-team');
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
