@@ -27,7 +27,6 @@ class GameTeam extends ChangeNotifier {
     }
   }
 
-  // ⭐ MÉTODO AÑADIDO
   void setCategories(List<models.Category> selectedCategories) {
     _categories
       ..clear()
