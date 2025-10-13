@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/widgets/letter_tile.dart.dart';
 import 'package:programacion_movil/config/colors.dart';
 
