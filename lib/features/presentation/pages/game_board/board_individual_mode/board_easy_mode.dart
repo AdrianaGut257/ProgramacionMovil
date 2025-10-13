@@ -19,7 +19,7 @@ class BoardEasyModePage extends StatefulWidget {
 
 class _BoardEasyModePageState extends State<BoardEasyModePage> {
   int currentPlayerIndex = 0;
-  Duration gameTime = const Duration(seconds: 5);
+  Duration gameTime = const Duration(seconds: 10);
   bool gameEnded = false;
   Map<String, int> playerScores = {};
   bool hasSelectedLetter = false;
