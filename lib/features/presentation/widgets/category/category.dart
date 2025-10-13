@@ -69,28 +69,24 @@ class _CategoryState extends State<Category> {
 
       if (!mounted) return;
 
-      // ✅ MODO GRUPAL
       if (widget.mode == 'group') {
         final gameTeam = context.read<GameTeam>();
-        gameTeam.clearCategories(); // Limpia categorías anteriores
-        gameTeam.setCategories(selectedCategoryObjects); // Usa setCategories
+        gameTeam.clearCategories();
+        gameTeam.setCategories(selectedCategoryObjects);
         context.push('/board-game');
         return;
       }
 
-      // ✅ MODO INDIVIDUAL
       if (widget.mode == 'individual') {
         final gameIndividual = context.read<GameIndividual>();
-        gameIndividual.clearCategories(); // Limpia categorías anteriores
-        gameIndividual.setCategories(
-          selectedCategoryObjects,
-        ); // ⭐ GUARDA EN EL ESTADO
+        gameIndividual.clearCategories();
+        gameIndividual.setCategories(selectedCategoryObjects);
 
         final route = widget.difficulty == 'hard'
             ? '/board-game-hard'
             : '/board-game-easy';
 
-        context.push(route); // Ya no necesitas pasar extra
+        context.push(route);
       }
     } catch (e) {
       if (!mounted) return;
