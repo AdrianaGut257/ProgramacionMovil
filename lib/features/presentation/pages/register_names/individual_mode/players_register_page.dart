@@ -43,15 +43,28 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
     final gameIndividual = context.read<GameIndividual>();
     gameIndividual.clearPlayers();
 
+    List<Player> playerObjects = [];
     for (int i = 0; i < validPlayers.length; i++) {
-      gameIndividual.addPlayer(
-        Player(id: i + 1, name: validPlayers[i].trim(), score: 0, team: 1),
+      final player = Player(
+        id: i + 1,
+        name: validPlayers[i].trim(),
+        score: 0,
+        team: 1,
       );
+      gameIndividual.addPlayer(player);
+      playerObjects.add(player);
     }
 
     if (!mounted) return;
 
-    context.push('/select-categories', extra: {'mode': 'individual'});
+    context.push(
+      '/select-categories',
+      extra: {
+        'mode': 'individual',
+        'players': playerObjects,
+        'difficulty': 'easy',
+      },
+    );
   }
 
   @override

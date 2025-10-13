@@ -27,12 +27,18 @@ class GameIndividual extends ChangeNotifier {
     }
   }
 
+  void setCategories(List<models.Category> selectedCategories) {
+    _categories
+      ..clear()
+      ..addAll(selectedCategories);
+    notifyListeners();
+  }
+
   void clearPlayers() {
     _players.clear();
     notifyListeners();
   }
 
-  // --- Categorías ---
   void addCategory(models.Category category) {
     _categories.add(category);
     notifyListeners();

@@ -27,6 +27,14 @@ class GameTeam extends ChangeNotifier {
     }
   }
 
+  // ⭐ MÉTODO AÑADIDO
+  void setCategories(List<models.Category> selectedCategories) {
+    _categories
+      ..clear()
+      ..addAll(selectedCategories);
+    notifyListeners();
+  }
+
   void addCategory(models.Category category) {
     _categories.add(category);
     notifyListeners();
@@ -37,13 +45,13 @@ class GameTeam extends ChangeNotifier {
     notifyListeners();
   }
 
-  void clearAll() {
-    _players.clear();
+  void clearCategories() {
     _categories.clear();
     notifyListeners();
   }
 
-  void clearCategories() {
+  void clearAll() {
+    _players.clear();
     _categories.clear();
     notifyListeners();
   }
