@@ -80,8 +80,6 @@ class _ComodinesPageState extends State<ComodinesPage>
                         ],
                       ),
 
-
-
                       Text(
                         'Comodines',
                         style: GoogleFonts.titanOne().copyWith(

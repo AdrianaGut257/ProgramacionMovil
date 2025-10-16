@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:programacion_movil/features/presentation/widgets/buttons/back_button_custom.dart';
 import '../../widgets/buttons/custom_button.dart';
 import '../../widgets/modality_information.dart';
-import '../../widgets/home_header.dart';
+
 import 'package:go_router/go_router.dart';
 
 class EasyMode extends StatelessWidget {
@@ -15,6 +16,7 @@ class EasyMode extends StatelessWidget {
     final isSmallScreen = height < 700;
 
     return Scaffold(
+      
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: LayoutBuilder(
@@ -25,10 +27,26 @@ class EasyMode extends StatelessWidget {
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
+                  
                   child: Column(
                     children: [
-                      HomeHeader(onBackPressed: () => context.pop()),
-                      SizedBox(height: isSmallScreen ? 10 : 20),
+                      Row(
+                        children: [
+                          BackButtonCustom(onPressed: () => context.pop()),
+                          const Spacer(),
+                        ],
+                      ),
+                      SizedBox(height: 2),
+                     Center(
+                    child: Image.asset(
+                      'assets/icons/logo.png',
+                      width: 370,
+                      height: 170,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+
+                      SizedBox(height: isSmallScreen ? 5 : 10),
                       const GameModeCard(
                         title: 'Modo fácil',
                         description:
