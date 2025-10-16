@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:programacion_movil/features/presentation/widgets/buttons/back_button_custom.dart';
 import 'package:programacion_movil/features/presentation/widgets/modality_information.dart';
 import '../../widgets/buttons/custom_button.dart';
 import 'package:go_router/go_router.dart';
@@ -72,20 +73,13 @@ class _ComodinesPageState extends State<ComodinesPage>
                     children: [
                       // Encabezado
                   
-                     Row(
-  children: [
-    // Botón de retroceso
-    IconButton(
-      icon: Icon(
-        Icons.arrow_back_ios_new_rounded,
-        color: AppColors.white,
-        size: width * 0.06,
-      ),
-      onPressed: () => context.pop(),
-    ),
-    const Spacer(),
-  ],
-),
+                      Row(
+                        children: [
+                          BackButtonCustom(onPressed: () => context.pop()),
+                          const Spacer(),
+                        ],
+                      ),
+
 
 
                       Text(
@@ -279,17 +273,20 @@ SizedBox(height: isSmallScreen ? 12 : 24),
             textColor: Colors.white,
             borderColor: AppColors.secondaryVariant,
             onPressed: () {
-              // Pasar los comodines seleccionados a la siguiente pantalla
-              final selectedPowerUps = _selectedPowerUps.entries
-                  .where((entry) => entry.value)
-                  .map((entry) => entry.key)
-                  .toList();
+                  final selectedPowerUps = _selectedPowerUps.entries
+                      .where((entry) => entry.value)
+                      .map((entry) => entry.key)
+                      .toList();
 
-              context.push(
-                '/player-register',
-                extra: {'powerUps': selectedPowerUps},
-              );
-            },
+                  // Ir ahora a la selección de categorías
+                  context.push(
+                    '/select-categories',
+                    extra: {
+                      'mode': 'group',
+                      'powerUps': selectedPowerUps,
+                    },
+                  );
+                },
           ),
         );
       },

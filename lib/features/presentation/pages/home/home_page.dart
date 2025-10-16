@@ -64,15 +64,6 @@ class HomePage extends StatelessWidget {
                           context.push('/modality-information-team');
                         },
                       ),
-                      SizedBox(height: isSmallScreen ? 10 : 20),
-
-                      CustomButton(
-                        text: "Comodines",
-                        icon: Icons.star,
-                        onPressed: () {
-                          context.push('/comodines-info');
-                        },
-                      ),
                     ],
                   ),
                 ),

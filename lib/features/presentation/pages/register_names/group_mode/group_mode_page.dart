@@ -156,7 +156,8 @@ class _GroupModePageState extends State<GroupModePage> {
       }
     }
 
-    context.push('/select-categories', extra: {'mode': 'group'});
+    context.push('/comodines-info', extra: {'mode': 'group'});
+
   }
 
   @override
