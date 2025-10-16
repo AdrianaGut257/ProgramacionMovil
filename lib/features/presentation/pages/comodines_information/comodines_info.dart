@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/widgets/modality_information.dart';
 import '../../widgets/buttons/custom_button.dart';
-import '../../widgets/home_header.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ComodinesPage extends StatefulWidget {
   const ComodinesPage({super.key});
@@ -12,25 +12,43 @@ class ComodinesPage extends StatefulWidget {
   State<ComodinesPage> createState() => _ComodinesPageState();
 }
 
-class _ComodinesPageState extends State<ComodinesPage> {
-  bool _powerUpsEnabled = false;
+class _ComodinesPageState extends State<ComodinesPage>
+    with TickerProviderStateMixin {
+  // Estado de selección para cada comodín
+  final Map<String, bool> _selectedPowerUps = {
+    'tiempo_extra': false,
+    'saltar_turno': false,
+    'punto_doble': false,
+    'castigo_leve': false,
+  };
 
-  void _togglePowerUps() {
-    setState(() {
-      _powerUpsEnabled = !_powerUpsEnabled;
-    });
+  late AnimationController _pulseController;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _powerUpsEnabled
-              ? "Comodines activados para este juego"
-              : "Comodines desactivados",
-        ),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
   }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  void _togglePowerUp(String key) {
+    setState(() {
+      _selectedPowerUps[key] = !_selectedPowerUps[key]!;
+    });
+  }
+
+  int get _selectedCount =>
+      _selectedPowerUps.values.where((selected) => selected).length;
+
+  bool get _hasSelection => _selectedCount > 0;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +58,7 @@ class _ComodinesPageState extends State<ComodinesPage> {
     final isSmallScreen = height < 700;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -53,91 +71,100 @@ class _ComodinesPageState extends State<ComodinesPage> {
                   child: Column(
                     children: [
                       // Encabezado
-                      HomeHeader(onBackPressed: () => context.pop()),
+                  
+                     Row(
+  children: [
+    // Botón de retroceso
+    IconButton(
+      icon: Icon(
+        Icons.arrow_back_ios_new_rounded,
+        color: AppColors.white,
+        size: width * 0.06,
+      ),
+      onPressed: () => context.pop(),
+    ),
+    const Spacer(),
+  ],
+),
 
-                      SizedBox(height: isSmallScreen ? 8 : 16),
+// Título responsive
+Text(
+  'COMODINES',
+  textAlign: TextAlign.center,
+  style: TextStyle(
+    fontSize: width * 0.075,
+    fontWeight: FontWeight.w900,
+    color: AppColors.primaryVariant,
+    letterSpacing: 1.5,
+    shadows: [
+      Shadow(
+        offset: const Offset(0, 2),
+        blurRadius: 4,
+        // ignore: deprecated_member_use
+        color: Colors.black.withOpacity(0.3),
+      ),
+    ],
+  ),
+),
 
-                      // Título
-                      Text(
-                        "Tipos de Comodines",
-                        style: TextStyle(
-                          fontSize: width * 0.045, // tamaño relativo
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+SizedBox(height: isSmallScreen ? 12 : 24),
+                      
 
-                      SizedBox(height: isSmallScreen ? 4 : 8),
+                      // Guía de usuario animada
+                      _buildHelpGuide(width, isSmallScreen),
 
-                      // Descripción
-                      Text(
-                        "Los comodines aparecen aleatoriamente en el tablero del juego, solo tienes que apretar el botón que aparece.",
-                        style: TextStyle(
-                          fontSize: width * 0.035,
-                          color: const Color.fromARGB(96, 0, 0, 0),
-                          height: 1.3,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                      SizedBox(height: isSmallScreen ? 12 : 20),
 
-                      SizedBox(height: isSmallScreen ? 10 : 16),
+                      // Contador de selección
+                      _buildSelectionCounter(width),
 
-                      // Contenido de las tarjetas
-                      ComodinCards(
+                      SizedBox(height: isSmallScreen ? 12 : 16),
+
+                      // Tarjetas de comodines con selección
+                      SelectableComodinCards(
                         leftAssetPath: 'assets/icons/gestion-del-tiempo.png',
                         leftTitle: 'Tiempo extra',
                         leftValue:
                             'Podrá tener 5 segundos extras para decir la palabra.',
+                        leftKey: 'tiempo_extra',
+                        leftSelected: _selectedPowerUps['tiempo_extra']!,
+                        onLeftTap: () => _togglePowerUp('tiempo_extra'),
                         rightAssetPath: 'assets/icons/espada.png',
                         rightTitle: 'Saltar turno',
                         rightValue:
                             'Permite saltar el turno e ir directamente hacia la siguiente persona.',
-                        cardColor: const Color.fromRGBO(97, 90, 199, 1),
+                        rightKey: 'saltar_turno',
+                        rightSelected: _selectedPowerUps['saltar_turno']!,
+                        onRightTap: () => _togglePowerUp('saltar_turno'),
+                        cardColor: AppColors.tertiary,
                       ),
 
                       SizedBox(height: isSmallScreen ? 10 : 15),
 
-                      ComodinCards(
+                      SelectableComodinCards(
                         leftAssetPath: 'assets/icons/apuesta.png',
                         leftTitle: 'Punto doble',
                         leftValue:
                             'Podrá activar el doble de la puntuación al decir la palabra.',
+                        leftKey: 'punto_doble',
+                        leftSelected: _selectedPowerUps['punto_doble']!,
+                        onLeftTap: () => _togglePowerUp('punto_doble'),
                         rightAssetPath: 'assets/icons/prision.png',
                         rightTitle: 'Castigo leve',
                         rightValue:
                             'Se elige 1 letra y las demás se bloquean para la próxima persona.',
-                        cardColor: const Color.fromRGBO(97, 90, 199, 1),
+                        rightKey: 'castigo_leve',
+                        rightSelected: _selectedPowerUps['castigo_leve']!,
+                        onRightTap: () => _togglePowerUp('castigo_leve'),
+                        cardColor: AppColors.tertiary,
                       ),
 
-                      SizedBox(height: isSmallScreen ? 12 : 20),
+                      SizedBox(height: isSmallScreen ? 16 : 24),
 
-                      // Botones
-                      CustomButton(
-                        text: _powerUpsEnabled
-                            ? "Comodines activados"
-                            : "Comodines desactivados",
-                        icon: Icons.extension,
-                        backgroundColor: _powerUpsEnabled
-                            ? Colors.yellow[700]
-                            : Colors.grey[600],
-                        textColor: Colors.white,
-                        onPressed: _togglePowerUps,
-                      ),
+                      // Botón de jugar con animación
+                      _buildPlayButton(isSmallScreen),
 
-                      SizedBox(height: isSmallScreen ? 8 : 12),
-
-                      CustomButton(
-                        text: "Jugar",
-                        icon: Icons.group,
-                        backgroundColor: AppColors.secondary,
-                        textColor: Colors.white,
-                        onPressed: () {
-                          context.push('/player-register');
-                        },
-                      ),
-
-                      SizedBox(height: height * 0.05), // margen inferior adaptable
+                      SizedBox(height: height * 0.05),
                     ],
                   ),
                 ),
@@ -146,6 +173,133 @@ class _ComodinesPageState extends State<ComodinesPage> {
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildHelpGuide(double width, bool isSmallScreen) {
+    return Container(
+      padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.3),
+          width: 2,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.lightbulb_outline,
+              color: Colors.white,
+              size: width * 0.06,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '¿Cómo funciona?',
+                  style: GoogleFonts.blackOpsOne(
+                    fontSize: width * 0.04,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Toca las tarjetas para seleccionar los comodines que quieres usar en el juego',
+                  style: TextStyle(
+                    fontSize: width * 0.032,
+                    color: AppColors.textSecondary,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSelectionCounter(double width) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      decoration: BoxDecoration(
+        color: _hasSelection
+            ? AppColors.secondary.withValues(alpha: 0.15)
+            : Colors.grey.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: _hasSelection
+              ? AppColors.secondary
+              : Colors.grey.withValues(alpha: 0.3),
+          width: 2,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.check_circle,
+            color: _hasSelection ? AppColors.secondary : Colors.grey,
+            size: width * 0.05,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            _hasSelection
+                ? '$_selectedCount comodín${_selectedCount > 1 ? 'es' : ''} seleccionado${_selectedCount > 1 ? 's' : ''}'
+                : 'Ningún comodín seleccionado',
+            style: GoogleFonts.blackOpsOne(
+              fontSize: width * 0.035,
+              color: _hasSelection ? AppColors.secondary : Colors.grey,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlayButton(bool isSmallScreen) {
+    return AnimatedBuilder(
+      animation: _pulseController,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _hasSelection ? 1.0 + (_pulseController.value * 0.03) : 1.0,
+          child: CustomButton(
+            text: _hasSelection
+                ? "Jugar con comodines"
+                : "Jugar sin comodines",
+            icon: Icons.play_arrow,
+            backgroundColor: AppColors.secondary,
+            textColor: Colors.white,
+            borderColor: AppColors.secondaryVariant,
+            onPressed: () {
+              // Pasar los comodines seleccionados a la siguiente pantalla
+              final selectedPowerUps = _selectedPowerUps.entries
+                  .where((entry) => entry.value)
+                  .map((entry) => entry.key)
+                  .toList();
+
+              context.push(
+                '/player-register',
+                extra: {'powerUps': selectedPowerUps},
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
