@@ -87,25 +87,18 @@ class _ComodinesPageState extends State<ComodinesPage>
   ],
 ),
 
-// Título responsive
-Text(
-  'COMODINES',
-  textAlign: TextAlign.center,
-  style: TextStyle(
-    fontSize: width * 0.075,
-    fontWeight: FontWeight.w900,
-    color: AppColors.primaryVariant,
-    letterSpacing: 1.5,
-    shadows: [
-      Shadow(
-        offset: const Offset(0, 2),
-        blurRadius: 4,
-        // ignore: deprecated_member_use
-        color: Colors.black.withOpacity(0.3),
-      ),
-    ],
-  ),
-),
+
+                      Text(
+                        'Comodines',
+                        style: GoogleFonts.titanOne().copyWith(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primary,
+                          letterSpacing: 0,
+                          height: 1.1,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
 
 SizedBox(height: isSmallScreen ? 12 : 24),
                       
