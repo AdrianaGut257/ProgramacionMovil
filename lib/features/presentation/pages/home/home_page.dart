@@ -72,7 +72,18 @@ class HomePage extends StatelessWidget {
                         onPressed: () {
                           context.push('/comodines-info');
                         },
+
                       ),
+                      SizedBox(height: isSmallScreen ? 10 : 20),
+                      
+                      CustomButton(
+                        text: "Categorias",
+                        icon: Icons.category,
+                        onPressed: () {
+                          context.push('/categorias-info');
+                        },
+                      ),
+                      SizedBox(height: isSmallScreen ? 10 : 20),
                     ],
                   ),
                 ),
