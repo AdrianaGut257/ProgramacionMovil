@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:programacion_movil/features/presentation/widgets/buttons/back_button_custom.dart';
 import 'widgets/team_section.dart';
 import 'widgets/game_mode_selector.dart';
 import 'widgets/validation_dialog.dart';
 import '../../../widgets/buttons/custom_button.dart';
-import '../../../widgets/home_header.dart';
-
 import 'package:provider/provider.dart';
 import '../../../../../features/presentation/state/game_team.dart';
 import '../../../../../data/models/player.dart' as models;
@@ -180,9 +179,23 @@ class _GroupModePageState extends State<GroupModePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      HomeHeader(onBackPressed: () => context.pop()),
+                      Row(
+                        children: [
+                          BackButtonCustom(onPressed: () => context.pop()),
+                          const Spacer(),
+                        ],
+                      ),
+                      SizedBox(height: 2),
+                     Center(
+                    child: Image.asset(
+                      'assets/icons/logo.png',
+                      width: 370,
+                      height: 170,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
 
-                      SizedBox(height: isSmallScreen ? 8 : 12),
+                      SizedBox(height: isSmallScreen ? 5 : 10),
 
                       Text(
                         'Elige una opción',

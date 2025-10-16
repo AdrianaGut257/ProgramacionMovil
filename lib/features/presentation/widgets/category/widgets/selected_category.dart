@@ -70,14 +70,16 @@ class SelectedCategory extends StatelessWidget {
         children: [
           Text(
             "Todas tus categorías seleccionadas para jugar",
-            style: GoogleFonts.titanOne().copyWith(
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-              color: AppColors.primary,
-              letterSpacing: 0,
-              height: 1.1,
+            style: GoogleFonts.openSans(
+              fontSize: 16,           
+              fontWeight: FontWeight.w600, 
+              color: AppColors.primary, 
+              height: 1.5,           
+              letterSpacing: 0.5,    
             ),
+            textAlign: TextAlign.center, 
           ),
+
           const SizedBox(height: 15),
           Expanded(
             child: selectedCategories.isEmpty

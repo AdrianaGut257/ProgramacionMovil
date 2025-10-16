@@ -3,7 +3,6 @@ import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/back_button_custom.dart';
 import '../../widgets/buttons/custom_button.dart';
 import '../../widgets/modality_information.dart';
-import '../../widgets/home_header.dart';
 import 'package:go_router/go_router.dart';
 
 class HardModePage extends StatelessWidget {
