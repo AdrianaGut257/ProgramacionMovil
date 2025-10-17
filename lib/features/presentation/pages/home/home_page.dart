@@ -75,15 +75,6 @@ class HomePage extends StatelessWidget {
 
                       ),
                       SizedBox(height: isSmallScreen ? 10 : 20),
-                      
-                      CustomButton(
-                        text: "Categorias",
-                        icon: Icons.category,
-                        onPressed: () {
-                          context.push('/categorias-info');
-                        },
-                      ),
-                      SizedBox(height: isSmallScreen ? 10 : 20),
                     ],
                   ),
                 ),

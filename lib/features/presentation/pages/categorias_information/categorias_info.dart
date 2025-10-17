@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
@@ -25,17 +24,22 @@ class CategoriasPage extends StatefulWidget {
   }
 
   Future<void> _loadCategories() async {
-    final db = AppDatabase.instance;
-    final categories = await db.getCategories();
-    setState(() {
-      selectedCategories = categories;
-      isLoading = false;
-    });
+  final db = AppDatabase.instance;
+  final categories = await db.getCategories();
+
+  // Filtrar solo las categorías personalizadas
+  final filtered = categories.where((c) => c['is_default'] == 0).toList();
+
+  setState(() {
+    selectedCategories = filtered;
+    isLoading = false;
+  });
+
+    //print("estas son las categorias: $categories");
   }
 
   Widget _categoryCard(Map<String, dynamic> category) {
   final String name = category['name'] as String;
-  final int id = category['id'] as int;
 
   return Container(
     decoration: BoxDecoration(
@@ -83,14 +87,6 @@ class CategoriasPage extends StatefulWidget {
   );
 }
 
-void _onRemoveCategory(String category) async {
-    // Aquí borras en la db y también en la lista local para refrescar la UI
-    await AppDatabase.instance.deleteCategory(category); // agrega este método en tu DB helper si no existe
-    setState(() {
-      selectedCategories.remove(category);
-    });
-  }
-
 Future _deleteCategory(int id) async {
   final db = AppDatabase.instance;
   await db.database.then((database) async {
@@ -101,10 +97,16 @@ Future _deleteCategory(int id) async {
     );
   });
 
+  // Vuelve a obtener las categorías actualizadas
   final categories = await db.getCategories();
 
+  if (!mounted) return;
+
+  // Filtra solo las que son personalizadas
+  final filtered = categories.where((c) => c['is_default'] == 0).toList();
+
   setState(() {
-    selectedCategories = categories;
+    selectedCategories = filtered;
   });
 
   ScaffoldMessenger.of(context).showSnackBar(
@@ -123,31 +125,13 @@ void _showDeleteConfirmationDialog(Map<String, dynamic> category) {
         title: '¿Eliminar la categoría "${category['name']}"?',
         onCorrect: () async {
           await _deleteCategory(category['id'] as int);
-
-          // Espera hasta que termine el frame actual antes de cerrar el diálogo
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (Navigator.canPop(dialogContext)) {
-              Navigator.pop(dialogContext);
-            }
-          });
         },
         onReset: () {
-          if (Navigator.canPop(dialogContext)) {
-            Navigator.pop(dialogContext);
-          }
+          // No hacer nada, ButtonPopup lo cierra
         },
       );
     },
   );
-}
-
-
-
-
-Future<List<Map<String, dynamic>>> _fetchCategories() async {
-  final db = AppDatabase.instance;
-  final categories = await db.getCategories();
-  return categories;
 }
 
   @override
@@ -164,7 +148,7 @@ Future<List<Map<String, dynamic>>> _fetchCategories() async {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             children: [
-              HomeHeader(onBackPressed: () => context.pop()),
+              HomeHeader(),
               SizedBox(height: isSmallScreen ? 8 : 16),
               Text(
                 "Categorías",
@@ -177,7 +161,7 @@ Future<List<Map<String, dynamic>>> _fetchCategories() async {
               ),
               SizedBox(height: isSmallScreen ? 4 : 8),
               Text(
-                "Selecciona una categoría para comenzar a jugar.",
+                "Selecciona una categoría para eliminarla",
                 style: TextStyle(
                   fontSize: width * 0.035,
                   color: const Color.fromARGB(96, 0, 0, 0),
