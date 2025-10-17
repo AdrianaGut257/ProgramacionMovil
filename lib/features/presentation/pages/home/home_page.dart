@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../widgets/buttons/custom_button.dart';
-import '../../utils/sound_manager.dart';
 import 'package:go_router/go_router.dart';
 
 class HomePage extends StatelessWidget {
@@ -47,7 +46,6 @@ class HomePage extends StatelessWidget {
                         text: "Modo fácil",
                         icon: Icons.person,
                         onPressed: () {
-                          SoundManager.playClick();
                           context.push('/modality-information-normal');
                         },
                       ),
@@ -57,7 +55,6 @@ class HomePage extends StatelessWidget {
                         text: "Modo difícil",
                         icon: Icons.person,
                         onPressed: () {
-                          SoundManager.playClick();
                           context.push('/modality-information-hard');
                         },
                       ),
@@ -67,7 +64,6 @@ class HomePage extends StatelessWidget {
                         text: "Modo grupal",
                         icon: Icons.group,
                         onPressed: () {
-                          SoundManager.playClick();
                           context.push('/modality-information-team');
                         },
                       ),

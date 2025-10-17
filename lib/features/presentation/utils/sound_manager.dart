@@ -8,7 +8,7 @@ class SoundManager {
 
   /// Inicializar el sistema de sonido (llamar al inicio de la app)
   static Future<void> init() async {
-    print('🔧 Inicializando sonidos...');
+    //print('🔧 Inicializando sonidos...');
     
     // Crear 3 reproductores
     for (int i = 0; i < _poolSize; i++) {
@@ -17,7 +17,7 @@ class SoundManager {
       _sfxPool.add(player);
     }
     
-    print('✅ Sonidos listos');
+    //print('✅ Sonidos listos');
   }
 
   /// Obtener el siguiente reproductor disponible (rotación circular)
@@ -35,7 +35,7 @@ class SoundManager {
       await player.seek(Duration.zero); // Reiniciar desde el inicio
       player.play();
     } catch (e) {
-      print('❌ Error al reproducir click: $e');
+      //print('❌ Error al reproducir click: $e');
     }
   }
 
@@ -47,7 +47,7 @@ class SoundManager {
       await player.seek(Duration.zero);
       player.play();
     } catch (e) {
-      print('❌ Error al reproducir success: $e');
+      //print('❌ Error al reproducir success: $e');
     }
   }
 
@@ -59,7 +59,7 @@ class SoundManager {
       await player.seek(Duration.zero);
       player.play();
     } catch (e) {
-      print('❌ Error al reproducir error: $e');
+      //print('❌ Error al reproducir error: $e');
     }
   }
 
@@ -67,6 +67,17 @@ class SoundManager {
   static Future<void> dispose() async {
     for (var player in _sfxPool) {
       await player.dispose();
+    }
+  }
+
+  static Future<void> playStartRound() async {
+    try {
+      final player = _getNextPlayer();
+      await player.setAsset('assets/sounds/timer10Sec.mp3');
+      await player.seek(Duration.zero);
+      player.play();
+    } catch (e) {
+      //print('❌ Error al reproducir start round: $e');
     }
   }
 }
