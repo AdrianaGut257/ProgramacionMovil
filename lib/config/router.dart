@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:programacion_movil/features/presentation/pages/comodines_information/comodines_info.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/category.dart';
 import 'package:programacion_movil/features/presentation/pages/register_names/individual_mode/players_register_page.dart';
 
@@ -84,10 +83,6 @@ class AppRouter {
           GoRoute(
             path: '/board-game-hard',
             builder: (context, state) => const BoardHardModePage(),
-          ),
-          GoRoute(
-            path: '/comodines-info',
-            builder: (context, state) => const ComodinesPage(),
           ),
         ],
       ),
