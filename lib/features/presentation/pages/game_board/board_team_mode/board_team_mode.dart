@@ -200,83 +200,98 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(height: isSmallScreen ? 40 : 80),
+                      SizedBox(height: isSmallScreen ? 20 : 30),
 
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 64),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF615AC7),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: const Color(0xFF615AC7),
-                            width: 2,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.category_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Flexible(
-                              child: Text(
-                                categories[currentCategoryIndex].name
-                                    .toUpperCase(),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: 1.2,
-                                ),
-                                textAlign: TextAlign.center,
+                      // Header con categoría y cronómetro en fila
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Categoría
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    // ignore: deprecated_member_use
+                                    color: AppColors.primary.withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.category_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      categories[currentCategoryIndex].name
+                                          .toUpperCase(),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+
+                          const SizedBox(width: 12),
+
+                          // Cronómetro compacto
+                          ChronometerWidget(
+                            key: ValueKey(
+                              '${currentPlayer.id}-$totalLettersSelected',
+                            ),
+                            duration: gameTime,
+                            onTimeEnd: () {
+                              debugPrint(
+                                "Tiempo terminado para ${currentPlayer.name}",
+                              );
+                              if (!hasSelectedLetter) {
+                                _nextPlayer();
+                              }
+                            },
+                            isActive: chronometerActive &&
+                                !gameEnded &&
+                                !hasSelectedLetter,
+                          ),
+                        ],
                       ),
 
-                      SizedBox(height: isSmallScreen ? 15 : 10),
+                      SizedBox(height: isSmallScreen ? 20 : 25),
 
+                      // Nombre del jugador centrado
                       PlayerNameWidget(
                         name: currentPlayer.name,
                         score: score,
                         team: currentPlayer.team,
                       ),
 
-                      SizedBox(height: isSmallScreen ? 15 : 10),
+                      SizedBox(height: isSmallScreen ? 25 : 35),
 
-                      ChronometerWidget(
-                        key: ValueKey(
-                          '${currentPlayer.id}-$totalLettersSelected',
-                        ),
-                        duration: gameTime,
-                        onTimeEnd: () {
-                          debugPrint(
-                            "Tiempo terminado para ${currentPlayer.name}",
-                          );
-                          if (!hasSelectedLetter) {
-                            _nextPlayer();
-                          }
-                        },
-                        isActive:
-                            chronometerActive &&
-                            !gameEnded &&
-                            !hasSelectedLetter,
-                      ),
-
-                      SizedBox(height: isSmallScreen ? 15 : 20),
-
+                      // Tablero de juego centrado
                       Center(
                         child: BoardPage(
                           key: ValueKey(
@@ -286,51 +301,68 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                         ),
                       ),
 
-                      SizedBox(height: isSmallScreen ? 15 : 20),
+                       SizedBox(height: isSmallScreen ? 120 : 100),
 
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          final categories = context
-                              .read<GameTeam>()
-                              .categories;
-                          setState(() {
-                            if (currentCategoryIndex < categories.length - 1) {
-                              currentCategoryIndex++;
-                              totalLettersSelected = 0;
-                              categoryShown = false;
-                              chronometerActive = false;
-                              _showCategoryDialog();
-                            } else {
-                              gameEnded = true;
-                            }
-                          });
-                        },
-                        icon: const Icon(Icons.skip_next, color: Colors.white),
-                        label: const Text(
-                          "Siguiente categoría",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                      // Botones de acción en fila horizontal
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Botón siguiente categoría
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                final categories = context
+                                    .read<GameTeam>()
+                                    .categories;
+                                setState(() {
+                                  if (currentCategoryIndex < categories.length - 1) {
+                                    currentCategoryIndex++;
+                                    totalLettersSelected = 0;
+                                    categoryShown = false;
+                                    chronometerActive = false;
+                                    _showCategoryDialog();
+                                  } else {
+                                    gameEnded = true;
+                                  }
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.skip_next,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              label: const Text(
+                                "Siguiente",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                elevation: 3,
+                              ),
+                            ),
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
+
+                          const SizedBox(width: 12),
+
+                          // Botón terminar juego
+                          Expanded(
+                            child: EndGameButton(onPressed: _endGame),
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+                        ],
                       ),
 
-                      SizedBox(height: isSmallScreen ? 8 : 10),
-
-                      EndGameButton(onPressed: _endGame),
-
-                      SizedBox(height: height * 0.05),
+                      SizedBox(height: isSmallScreen ? 80 : 90),
                     ],
                   ),
                 ),
