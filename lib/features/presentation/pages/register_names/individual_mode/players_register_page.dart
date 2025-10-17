@@ -10,7 +10,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../../features/presentation/state/game_individual.dart';
 
 class PlayersRegisterScreen extends StatefulWidget {
-  const PlayersRegisterScreen({super.key});
+  final String? difficulty;
+
+  const PlayersRegisterScreen({super.key, this.difficulty});
 
   @override
   State<PlayersRegisterScreen> createState() => _PlayersRegisterScreenState();
@@ -62,7 +64,7 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
       extra: {
         'mode': 'individual',
         'players': playerObjects,
-        'difficulty': 'easy',
+        'difficulty': widget.difficulty ?? 'easy',
       },
     );
   }
@@ -86,8 +88,7 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-               
-                  children: [
+                    children: [
                       Row(
                         children: [
                           BackButtonCustom(onPressed: () => context.pop()),
@@ -95,18 +96,18 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
                         ],
                       ),
                       SizedBox(height: 2),
-                    Center(
-                    child: FractionallySizedBox(
-                      widthFactor: 0.9, 
-                      child: AspectRatio(
-                        aspectRatio: 370 / 170, 
-                        child: Image.asset(
-                          'assets/icons/logo.png',
-                          fit: BoxFit.contain, 
+                      Center(
+                        child: FractionallySizedBox(
+                          widthFactor: 0.9,
+                          child: AspectRatio(
+                            aspectRatio: 370 / 170,
+                            child: Image.asset(
+                              'assets/icons/logo.png',
+                              fit: BoxFit.contain,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
 
                       SizedBox(height: isSmallScreen ? 5 : 10),
 

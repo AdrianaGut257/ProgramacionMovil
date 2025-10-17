@@ -26,7 +26,7 @@ class HardModePage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
-                        children: [
+                    children: [
                       Row(
                         children: [
                           BackButtonCustom(onPressed: () => context.pop()),
@@ -34,19 +34,19 @@ class HardModePage extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 2),
-                     Center(
-                  child: FractionallySizedBox(
-                    widthFactor: 0.9, 
-                    child: AspectRatio(
-                      aspectRatio: 370 / 170, 
-                      child: Image.asset(
-                        'assets/icons/logo.png',
-                        fit: BoxFit.contain, 
+                      Center(
+                        child: FractionallySizedBox(
+                          widthFactor: 0.9,
+                          child: AspectRatio(
+                            aspectRatio: 370 / 170,
+                            child: Image.asset(
+                              'assets/icons/logo.png',
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-                     SizedBox(height: isSmallScreen ? 5 : 10),
+                      SizedBox(height: isSmallScreen ? 5 : 10),
                       const GameModeCard(
                         title: 'Modo Difícil',
                         description:
@@ -69,7 +69,10 @@ class HardModePage extends StatelessWidget {
                         text: "Jugar",
                         icon: Icons.group,
                         onPressed: () {
-                          context.push('/player-register');
+                          context.push(
+                            '/player-register',
+                            extra: {'difficulty': 'hard'},
+                          );
                         },
                       ),
                       SizedBox(height: height * 0.05),
