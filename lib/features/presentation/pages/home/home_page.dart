@@ -28,14 +28,18 @@ class HomePage extends StatelessWidget {
                     children: [
                       //aca animacion!!!
                         SizedBox(height: 20),
-                     Center(
-                    child: Image.asset(
-                      'assets/icons/logo.png',
-                      width: 470,
-                      height: 170,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+Center(
+  child: FractionallySizedBox(
+    widthFactor: 0.9, 
+    child: AspectRatio(
+      aspectRatio: 370 / 170, 
+      child: Image.asset(
+        'assets/icons/logo.png',
+        fit: BoxFit.contain, 
+      ),
+    ),
+  ),
+),
 
                       // Botones principales
                       CustomButton(

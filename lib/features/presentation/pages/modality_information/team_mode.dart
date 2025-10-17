@@ -36,14 +36,18 @@ class TeamModePage extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 2),
-                     Center(
-                    child: Image.asset(
-                      'assets/icons/logo.png',
-                      width: 370,
-                      height: 170,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                   Center(
+                        child: FractionallySizedBox(
+                          widthFactor: 0.9, 
+                          child: AspectRatio(
+                            aspectRatio: 370 / 170, 
+                            child: Image.asset(
+                              'assets/icons/logo.png',
+                              fit: BoxFit.contain, 
+                            ),
+                          ),
+                        ),
+                      ),
                      SizedBox(height: isSmallScreen ? 5 : 10),
                       const GameModeCard(
                         title: 'Modo Equipo',
