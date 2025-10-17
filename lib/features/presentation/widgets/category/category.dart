@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:programacion_movil/features/presentation/widgets/buttons/back_button_custom.dart';
 import 'package:provider/provider.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/widgets/pred_category.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/widgets/category_selector.dart';
@@ -10,7 +11,7 @@ import 'package:programacion_movil/features/presentation/state/game_team.dart';
 import 'package:programacion_movil/features/presentation/state/game_individual.dart';
 import 'package:programacion_movil/data/models/category.dart' as models;
 import 'package:programacion_movil/data/repositories/category_repository.dart';
-import '../home_header.dart';
+
 import 'package:programacion_movil/config/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -112,10 +113,29 @@ class _CategoryState extends State<Category> {
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
+              
                 children: [
-                  HomeHeader(onBackPressed: () => context.pop()),
+                      Row(
+                        children: [
+                          BackButtonCustom(onPressed: () => context.pop()),
+                          const Spacer(),
+                        ],
+                      ),
+                      SizedBox(height: 2),
+                     Center(
+                          child: FractionallySizedBox(
+                            widthFactor: 0.9, 
+                            child: AspectRatio(
+                              aspectRatio: 370 / 170, 
+                              child: Image.asset(
+                                'assets/icons/logo.png',
+                                fit: BoxFit.contain, 
+                              ),
+                            ),
+                          ),
+                        ),
 
-                  SizedBox(height: isSmallScreen ? 8 : 12),
+                      SizedBox(height: isSmallScreen ? 5 : 10),
 
                   Text(
                     "Seleccione categorías",
@@ -157,14 +177,14 @@ class _CategoryState extends State<Category> {
                     ),
                   ),
 
-                  SizedBox(height: isSmallScreen ? 15 : 20),
+                  SizedBox(height: isSmallScreen ? 5 : 10),
 
                   CustomButton(
                     text: "Jugar",
                     onPressed: _saveCategoriesToGameState,
                   ),
 
-                  SizedBox(height: isSmallScreen ? 10 : 15),
+                  SizedBox(height: isSmallScreen ? 5 : 10),
                 ],
               ),
             ),

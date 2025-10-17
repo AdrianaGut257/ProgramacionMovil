@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:programacion_movil/config/colors.dart';
 import '../../widgets/buttons/custom_button.dart';
-import '../../widgets/home_header.dart';
 import 'package:go_router/go_router.dart';
 
 class HomePage extends StatelessWidget {
@@ -12,7 +10,6 @@ class HomePage extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final height = size.height;
 
-    // Escala de tamaño dinámico (para pantallas pequeñas)
     final isSmallScreen = height < 700;
 
     return Scaffold(
@@ -29,14 +26,20 @@ class HomePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
-                      HomeHeader(),
-
                       //aca animacion!!!
-                      Icon(
-                        Icons.videogame_asset,
-                        size: isSmallScreen ? 80 : 170,
-                        color: AppColors.black,
-                      ),
+                        SizedBox(height: 20),
+                        Center(
+                          child: FractionallySizedBox(
+                            widthFactor: 0.9, 
+                            child: AspectRatio(
+                              aspectRatio: 370 / 170, 
+                              child: Image.asset(
+                                'assets/icons/logo.png',
+                                fit: BoxFit.contain, 
+                              ),
+                            ),
+                          ),
+                        ),
 
                       // Botones principales
                       CustomButton(
@@ -64,17 +67,6 @@ class HomePage extends StatelessWidget {
                           context.push('/modality-information-team');
                         },
                       ),
-                      SizedBox(height: isSmallScreen ? 10 : 20),
-
-                      CustomButton(
-                        text: "Comodines",
-                        icon: Icons.star,
-                        onPressed: () {
-                          context.push('/comodines-info');
-                        },
-
-                      ),
-                      SizedBox(height: isSmallScreen ? 10 : 20),
                     ],
                   ),
                 ),

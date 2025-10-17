@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:programacion_movil/features/presentation/widgets/buttons/back_button_custom.dart';
 import '../../widgets/buttons/custom_button.dart';
 import '../../widgets/modality_information.dart';
-import '../../widgets/home_header.dart';
+
 import 'package:go_router/go_router.dart';
 
 class TeamModePage extends StatelessWidget {
@@ -27,8 +28,27 @@ class TeamModePage extends StatelessWidget {
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     children: [
-                      HomeHeader(onBackPressed: () => context.pop()),
-                      SizedBox(height: isSmallScreen ? 10 : 20),
+                      
+                      Row(
+                        children: [
+                          BackButtonCustom(onPressed: () => context.pop()),
+                          const Spacer(),
+                        ],
+                      ),
+                      SizedBox(height: 2),
+                   Center(
+                        child: FractionallySizedBox(
+                          widthFactor: 0.9, 
+                          child: AspectRatio(
+                            aspectRatio: 370 / 170, 
+                            child: Image.asset(
+                              'assets/icons/logo.png',
+                              fit: BoxFit.contain, 
+                            ),
+                          ),
+                        ),
+                      ),
+                     SizedBox(height: isSmallScreen ? 5 : 10),
                       const GameModeCard(
                         title: 'Modo Equipo',
                         description:

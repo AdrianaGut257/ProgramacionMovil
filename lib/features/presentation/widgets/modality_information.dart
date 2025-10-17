@@ -198,29 +198,37 @@ class StatCard extends StatelessWidget {
   }
 }
 
-class ComodinCards extends StatelessWidget {
-  final IconData? leftIcon;
+class SelectableComodinCards extends StatelessWidget {
+  final String? leftAssetPath;
   final String leftTitle;
   final String leftValue;
-  final String? leftAssetPath;
+  final String leftKey;
+  final bool leftSelected;
+  final VoidCallback onLeftTap;
 
-  final IconData? rightIcon;
+  final String? rightAssetPath;
   final String rightTitle;
   final String rightValue;
-  final String? rightAssetPath;
+  final String rightKey;
+  final bool rightSelected;
+  final VoidCallback onRightTap;
 
   final Color cardColor;
 
-  const ComodinCards({
+  const SelectableComodinCards({
     super.key,
-    this.leftIcon,
     this.leftAssetPath,
     required this.leftTitle,
     required this.leftValue,
-    this.rightIcon,
+    required this.leftKey,
+    required this.leftSelected,
+    required this.onLeftTap,
     this.rightAssetPath,
     required this.rightTitle,
     required this.rightValue,
+    required this.rightKey,
+    required this.rightSelected,
+    required this.onRightTap,
     required this.cardColor,
   });
 
@@ -232,24 +240,26 @@ class ComodinCards extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: _ComodinCard(
-            icon: leftIcon,
+          child: _SelectableComodinCard(
             assetPath: leftAssetPath,
             title: leftTitle,
             value: leftValue,
             color: cardColor,
             scale: scale,
+            isSelected: leftSelected,
+            onTap: onLeftTap,
           ),
         ),
         SizedBox(width: scale(16)),
         Expanded(
-          child: _ComodinCard(
-            icon: rightIcon,
+          child: _SelectableComodinCard(
             assetPath: rightAssetPath,
             title: rightTitle,
             value: rightValue,
             color: cardColor,
             scale: scale,
+            isSelected: rightSelected,
+            onTap: onRightTap,
           ),
         ),
       ],
@@ -257,61 +267,165 @@ class ComodinCards extends StatelessWidget {
   }
 }
 
-class _ComodinCard extends StatelessWidget {
-  final IconData? icon;
+class _SelectableComodinCard extends StatefulWidget {
   final String? assetPath;
   final String title;
   final String value;
   final Color color;
   final double Function(double) scale;
+  final bool isSelected;
+  final VoidCallback onTap;
 
-  const _ComodinCard({
-    this.icon,
+  const _SelectableComodinCard({
     this.assetPath,
     required this.title,
     required this.value,
     required this.color,
     required this.scale,
+    required this.isSelected,
+    required this.onTap,
   });
 
   @override
+  State<_SelectableComodinCard> createState() =>
+      _SelectableComodinCardState();
+}
+
+class _SelectableComodinCardState extends State<_SelectableComodinCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _scaleController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(scale(14)),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(scale(16)),
-        border: Border(
-          bottom: BorderSide(color: AppColors.primaryVariant, width: scale(6)),
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (assetPath != null)
-            Image.asset(assetPath!, height: scale(30))
-          else if (icon != null)
-            Icon(icon, color: Colors.white, size: scale(32)),
-          SizedBox(height: scale(8)),
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: scale(14),
-              fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTapDown: (_) => _scaleController.forward(),
+      onTapUp: (_) {
+        _scaleController.reverse();
+        widget.onTap();
+      },
+      onTapCancel: () => _scaleController.reverse(),
+      child: AnimatedBuilder(
+        animation: _scaleAnimation,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _scaleAnimation.value,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              padding: EdgeInsets.all(widget.scale(14)),
+              decoration: BoxDecoration(
+                color: widget.isSelected
+                    ? widget.color
+                    : widget.color.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(widget.scale(16)),
+                border: Border.all(
+                  color: widget.isSelected
+                      ? AppColors.secondary
+                      : Colors.transparent,
+                  width: widget.scale(4),
+                ),
+                boxShadow: widget.isSelected
+                    ? [
+                        BoxShadow(
+                          color: AppColors.secondary.withValues(alpha: 0.4),
+                          blurRadius: widget.scale(12),
+                          spreadRadius: widget.scale(2),
+                        ),
+                      ]
+                    : [
+                        BoxShadow(
+                          color: AppColors.primaryVariant.withValues(alpha: 0.3),
+                          blurRadius: widget.scale(4),
+                          offset: Offset(0, widget.scale(4)),
+                        ),
+                      ],
+              ),
+              child: Stack(
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (widget.assetPath != null)
+                        AnimatedOpacity(
+                          duration: const Duration(milliseconds: 300),
+                          opacity: widget.isSelected ? 1.0 : 0.6,
+                          child: Image.asset(
+                            widget.assetPath!,
+                            height: widget.scale(30),
+                          ),
+                        ),
+                      SizedBox(height: widget.scale(8)),
+                      Text(
+                        widget.title,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: widget.scale(14),
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: widget.scale(6)),
+                      Text(
+                        widget.value,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontSize: widget.scale(12),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  // Indicador de selección
+                  Positioned(
+                    top: widget.scale(4),
+                    right: widget.scale(4),
+                    child: AnimatedScale(
+                      scale: widget.isSelected ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.elasticOut,
+                      child: Container(
+                        padding: EdgeInsets.all(widget.scale(4)),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondary,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              blurRadius: widget.scale(4),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: widget.scale(16),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: scale(6)),
-          Text(
-            value,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: scale(12),
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+          );
+        },
       ),
     );
   }
