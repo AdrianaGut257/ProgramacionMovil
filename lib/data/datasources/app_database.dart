@@ -161,4 +161,13 @@ class AppDatabase {
 
     await deleteDatabase(path);
   }
+
+  Future<void> deleteCategory(String name) async {
+    final db = await database;
+    await db.delete(
+      'category',
+      where: 'name = ?',
+      whereArgs: [name],
+    );
+  }
 }
