@@ -46,9 +46,15 @@ class AppRouter {
             path: '/group-mode',
             builder: (context, state) => const GroupModePage(),
           ),
+
           GoRoute(
             path: '/player-register',
-            builder: (context, state) => const PlayersRegisterScreen(),
+            builder: (context, state) {
+              final extras = state.extra as Map<String, dynamic>?;
+              return PlayersRegisterScreen(
+                difficulty: extras?['difficulty'] as String?,
+              );
+            },
           ),
           GoRoute(
             path: '/select-categories',

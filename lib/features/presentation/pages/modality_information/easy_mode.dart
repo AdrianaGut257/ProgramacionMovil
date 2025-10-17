@@ -16,7 +16,6 @@ class EasyMode extends StatelessWidget {
     final isSmallScreen = height < 700;
 
     return Scaffold(
-      
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: LayoutBuilder(
@@ -27,7 +26,6 @@ class EasyMode extends StatelessWidget {
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
-                  
                   child: Column(
                     children: [
                       Row(
@@ -37,18 +35,18 @@ class EasyMode extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 2),
-                     Center(
-  child: FractionallySizedBox(
-    widthFactor: 0.9, 
-    child: AspectRatio(
-      aspectRatio: 370 / 170, 
-      child: Image.asset(
-        'assets/icons/logo.png',
-        fit: BoxFit.contain, 
-      ),
-    ),
-  ),
-),
+                      Center(
+                        child: FractionallySizedBox(
+                          widthFactor: 0.9,
+                          child: AspectRatio(
+                            aspectRatio: 370 / 170,
+                            child: Image.asset(
+                              'assets/icons/logo.png',
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ),
 
                       SizedBox(height: isSmallScreen ? 5 : 10),
                       const GameModeCard(
@@ -73,7 +71,10 @@ class EasyMode extends StatelessWidget {
                         text: "Jugar",
                         icon: Icons.group,
                         onPressed: () {
-                          context.push('/player-register');
+                          context.push(
+                            '/player-register',
+                            extra: {'difficulty': 'easy'},
+                          );
                         },
                       ),
                       SizedBox(height: height * 0.05),

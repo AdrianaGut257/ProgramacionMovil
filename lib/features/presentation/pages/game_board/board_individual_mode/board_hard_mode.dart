@@ -261,7 +261,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                         },
                         icon: const Icon(Icons.skip_next, color: Colors.white),
                         label: const Text(
-                          "Siguiente categoría",
+                          "Siguiente categoría DAYANAAAAA",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
