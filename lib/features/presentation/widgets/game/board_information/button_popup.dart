@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
+import '../../../utils/sound_manager.dart';
 import 'buttons.dart';
 
 class ButtonPopup extends StatelessWidget {
@@ -99,10 +100,12 @@ class ButtonPopup extends StatelessWidget {
                 child: GameButtons(
                   onCorrect: () {
                     onCorrect();
+                    SoundManager.playSuccess();
                     Navigator.of(context).pop();
                   },
                   onReset: () {
                     onReset();
+                    SoundManager.playError();
                     Navigator.of(context).pop();
                   },
                 ),

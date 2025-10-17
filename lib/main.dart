@@ -3,9 +3,15 @@ import 'config/router.dart';
 import 'config/theme.dart';
 import 'features/presentation/state/game_team.dart';
 import 'features/presentation/state/game_individual.dart';
+import 'features/presentation/utils/sound_manager.dart'; // 🔹 Importar SoundManager
 import 'package:provider/provider.dart';
 
-void main() {
+Future<void> main() async { // 🔹 Agregar async
+  WidgetsFlutterBinding.ensureInitialized(); // 🔹 Requerido para inicializar antes de runApp
+  
+  // 🔹 Inicializar sistema de sonidos
+  await SoundManager.init();
+  
   runApp(
     MultiProvider(
       providers: [
