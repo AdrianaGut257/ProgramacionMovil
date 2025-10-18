@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/back_button_custom.dart';
-import 'package:programacion_movil/features/presentation/widgets/modality_information.dart';
+import 'package:programacion_movil/features/presentation/widgets/information/modality_information.dart';
 import '../../widgets/buttons/custom_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -72,7 +72,6 @@ class _ComodinesPageState extends State<ComodinesPage>
                   child: Column(
                     children: [
                       // Encabezado
-                  
                       Row(
                         children: [
                           BackButtonCustom(onPressed: () => context.pop()),
@@ -92,8 +91,7 @@ class _ComodinesPageState extends State<ComodinesPage>
                         textAlign: TextAlign.center,
                       ),
 
-SizedBox(height: isSmallScreen ? 12 : 24),
-                      
+                      SizedBox(height: isSmallScreen ? 12 : 24),
 
                       // Guía de usuario animada
                       _buildHelpGuide(width, isSmallScreen),
@@ -263,28 +261,23 @@ SizedBox(height: isSmallScreen ? 12 : 24),
         return Transform.scale(
           scale: _hasSelection ? 1.0 + (_pulseController.value * 0.03) : 1.0,
           child: CustomButton(
-            text: _hasSelection
-                ? "Jugar con comodines"
-                : "Jugar sin comodines",
+            text: _hasSelection ? "Jugar con comodines" : "Jugar sin comodines",
             icon: Icons.play_arrow,
             backgroundColor: AppColors.secondary,
             textColor: Colors.white,
             borderColor: AppColors.secondaryVariant,
             onPressed: () {
-                  final selectedPowerUps = _selectedPowerUps.entries
-                      .where((entry) => entry.value)
-                      .map((entry) => entry.key)
-                      .toList();
+              final selectedPowerUps = _selectedPowerUps.entries
+                  .where((entry) => entry.value)
+                  .map((entry) => entry.key)
+                  .toList();
 
-                  // Ir ahora a la selección de categorías
-                  context.push(
-                    '/select-categories',
-                    extra: {
-                      'mode': 'group',
-                      'powerUps': selectedPowerUps,
-                    },
-                  );
-                },
+              // Ir ahora a la selección de categorías
+              context.push(
+                '/select-categories',
+                extra: {'mode': 'group', 'powerUps': selectedPowerUps},
+              );
+            },
           ),
         );
       },
