@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
-import 'package:programacion_movil/features/presentation/widgets/game/board/widgets/board_hardgame.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board/boards_game/board_hardgame.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/chronometer.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/name.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
@@ -103,9 +103,9 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     });
 
     context.read<GameIndividual>().updatePlayerScore(
-          currentPlayer.id!,
-          playerScores[currentPlayer.name]!,
-        );
+      currentPlayer.id!,
+      playerScores[currentPlayer.name]!,
+    );
   }
 
   void _onLetterSelected() {
@@ -229,7 +229,8 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                             onTimeEnd: () {
                               if (!hasSelectedLetter) _endGame();
                             },
-                            isActive: chronometerActive &&
+                            isActive:
+                                chronometerActive &&
                                 !gameEnded &&
                                 !hasSelectedLetter,
                           ),
@@ -267,7 +268,8 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () {
-                                if (currentCategoryIndex < categories.length - 1) {
+                                if (currentCategoryIndex <
+                                    categories.length - 1) {
                                   setState(() {
                                     currentCategoryIndex++;
                                     totalLettersSelected = 0;
@@ -309,9 +311,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                           const SizedBox(width: 12),
 
                           // Botón terminar juego
-                          Expanded(
-                            child: EndGameButton(onPressed: _endGame),
-                          ),
+                          Expanded(child: EndGameButton(onPressed: _endGame)),
                         ],
                       ),
 

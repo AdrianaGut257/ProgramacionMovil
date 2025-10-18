@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/back_button_custom.dart';
 import '../../widgets/buttons/custom_button.dart';
-import '../../widgets/modality_information.dart';
+import '../../widgets/information/modality_information.dart';
 import 'package:go_router/go_router.dart';
 
 class HardModePage extends StatelessWidget {

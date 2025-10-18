@@ -57,10 +57,8 @@ class _BoardGameState extends State<BoardGame> {
       availableLetters = List.from(spanishAlphabet);
       availableLetters.shuffle();
 
-      // Escoger 6 letras aleatorias
       currentLetters = availableLetters.take(6).toList();
 
-      // Quitarlas de la lista
       for (var letter in currentLetters) {
         availableLetters.remove(letter);
       }

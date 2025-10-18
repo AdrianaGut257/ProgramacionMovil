@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'widgets/board_game.dart';
+import 'boards_game/board_game_general.dart';
 
 class BoardPage extends StatelessWidget {
   final VoidCallback? onLetterSelected;
