@@ -5,6 +5,8 @@ import 'package:programacion_movil/features/presentation/widgets/information/mod
 import '../../widgets/buttons/custom_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:programacion_movil/features/presentation/state/game_team.dart';
 
 class ComodinesPage extends StatefulWidget {
   const ComodinesPage({super.key});
@@ -15,7 +17,6 @@ class ComodinesPage extends StatefulWidget {
 
 class _ComodinesPageState extends State<ComodinesPage>
     with TickerProviderStateMixin {
-  // Estado de selección para cada comodín
   final Map<String, bool> _selectedPowerUps = {
     'tiempo_extra': false,
     'saltar_turno': false,
@@ -32,6 +33,21 @@ class _ComodinesPageState extends State<ComodinesPage>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat(reverse: true);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final gameTeam = context.read<GameTeam>();
+      final savedWildcards = gameTeam.selectedWildcards;
+
+      if (savedWildcards.isNotEmpty) {
+        setState(() {
+          for (var wildcard in savedWildcards) {
+            if (_selectedPowerUps.containsKey(wildcard)) {
+              _selectedPowerUps[wildcard] = true;
+            }
+          }
+        });
+      }
+    });
   }
 
   @override
@@ -71,7 +87,6 @@ class _ComodinesPageState extends State<ComodinesPage>
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     children: [
-                      // Encabezado
                       Row(
                         children: [
                           BackButtonCustom(onPressed: () => context.pop()),
@@ -93,17 +108,14 @@ class _ComodinesPageState extends State<ComodinesPage>
 
                       SizedBox(height: isSmallScreen ? 12 : 24),
 
-                      // Guía de usuario animada
                       _buildHelpGuide(width, isSmallScreen),
 
                       SizedBox(height: isSmallScreen ? 12 : 20),
 
-                      // Contador de selección
                       _buildSelectionCounter(width),
 
                       SizedBox(height: isSmallScreen ? 12 : 16),
 
-                      // Tarjetas de comodines con selección
                       SelectableComodinCards(
                         leftAssetPath: 'assets/icons/gestion-del-tiempo.png',
                         leftTitle: 'Tiempo extra',
@@ -144,7 +156,6 @@ class _ComodinesPageState extends State<ComodinesPage>
 
                       SizedBox(height: isSmallScreen ? 16 : 24),
 
-                      // Botón de jugar con animación
                       _buildPlayButton(isSmallScreen),
 
                       SizedBox(height: height * 0.05),
@@ -272,7 +283,9 @@ class _ComodinesPageState extends State<ComodinesPage>
                   .map((entry) => entry.key)
                   .toList();
 
-              // Ir ahora a la selección de categorías
+              final gameTeam = context.read<GameTeam>();
+              gameTeam.setWildcards(selectedPowerUps);
+
               context.push(
                 '/select-categories',
                 extra: {'mode': 'group', 'powerUps': selectedPowerUps},
