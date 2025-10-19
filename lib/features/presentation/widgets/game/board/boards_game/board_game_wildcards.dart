@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/widgets/letter_tile.dart.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
 
 enum WildcardType { skipTurn, extraTime, doublePoints, blockLetters }
 
@@ -35,6 +36,8 @@ class BoardGameWildcards extends StatefulWidget {
   final Function()? onSkipTurn;
   final Function()? onDoublePointsActivated;
   final List<String> selectedWildcards;
+  final VoidCallback? onPauseChronometer;
+  final VoidCallback? onResumeChronometer;
 
   const BoardGameWildcards({
     super.key,
@@ -43,6 +46,8 @@ class BoardGameWildcards extends StatefulWidget {
     this.onExtraTimeGranted,
     this.onSkipTurn,
     this.onDoublePointsActivated,
+    this.onPauseChronometer,
+    this.onResumeChronometer,
     this.selectedWildcards = const [],
   });
 
@@ -174,6 +179,7 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
     });
   }
 
+  //ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   void _onLetterPressed(int index) {
     // Si hay letras bloqueadas y esta es una de ellas
     if (blockedLetterIndices.contains(index)) {
@@ -317,7 +323,22 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
     widget.onLetterSelected?.call();
   }
 
-  void _handleBlockLetters(WildcardInfo wildcard) {
+  void _handleBlockLetters(WildcardInfo wildcard) async {
+    // Pausar cronómetro
+    widget.onPauseChronometer?.call();
+
+    // Mostrar el ButtonPopup para responder
+    await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ButtonPopup(
+        onCorrect: () {}, // Vacío, solo necesitamos que cierre
+        onReset: () {}, // Vacío, solo necesitamos que cierre
+      ),
+    );
+
+    if (!mounted) return;
+
     setState(() {
       pendingBlockWildcard = wildcard;
     });
@@ -345,11 +366,9 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
     setState(() {
       blockedLetterIndices.clear();
 
-      // Bloquear todas las letras excepto la seleccionada
+      // Bloquear todas menos la elegida
       for (int i = 0; i < currentLetters.length; i++) {
-        if (i != index) {
-          blockedLetterIndices.add(i);
-        }
+        if (i != index) blockedLetterIndices.add(i);
       }
 
       pendingBlockWildcard = null;
@@ -358,24 +377,18 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Letra "${currentLetters[index].letter}" desbloqueada. Las demás están bloqueadas para el siguiente jugador.',
+          'Solo la letra "${currentLetters[index].letter}" está disponible para el siguiente jugador.',
         ),
         backgroundColor: Colors.red,
         duration: const Duration(seconds: 2),
       ),
     );
 
-    // Reemplazar la letra del comodín
-    _replaceLetterAndUnblock(index);
+    // NUEVO: Reanudar el cronómetro DESPUÉS de seleccionar la letra
+    widget.onResumeChronometer?.call();
 
-    // Pero volver a bloquear las otras letras
-    setState(() {
-      for (int i = 0; i < currentLetters.length; i++) {
-        if (i != index) {
-          blockedLetterIndices.add(i);
-        }
-      }
-    });
+    // NUEVO: Pasar al siguiente turno automáticamente
+    widget.onSkipTurn?.call();
   }
 
   // Método público para desbloquear letras cuando cambia de turno

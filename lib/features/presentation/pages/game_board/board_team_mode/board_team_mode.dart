@@ -33,6 +33,8 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   bool chronometerActive = false;
   bool hasWildcards = false;
   int chronometerKey = 0;
+  bool chronometerPaused = false;
+  int boardKey = 0;
 
   @override
   void initState() {
@@ -46,6 +48,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
   void _checkWildcards() {
     final wildcards = context.read<GameTeam>().selectedWildcards;
+
     setState(() {
       hasWildcards = wildcards.isNotEmpty;
     });
@@ -165,16 +168,34 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
           _nextPlayer();
           setState(() {
             chronometerActive = true;
+            // NUEVO: Recrear el board para desbloquear letras
+            boardKey++;
           });
         },
         onReset: () {
           _nextPlayer();
           setState(() {
             chronometerActive = true;
+            // NUEVO: Recrear el board para desbloquear letras
+            boardKey++;
           });
         },
       ),
     );
+  }
+
+  void _pauseChronometer() {
+    setState(() {
+      chronometerActive = false;
+      chronometerPaused = true;
+    });
+  }
+
+  void _resumeChronometer() {
+    setState(() {
+      chronometerActive = true;
+      chronometerPaused = false;
+    });
   }
 
   void _onWildcardActivated(WildcardType type) {
@@ -321,6 +342,9 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                                 onLetterSelected: _onLetterSelected,
                                 onWildcardActivated: _onWildcardActivated,
                                 onExtraTimeGranted: _onExtraTimeGranted,
+                                onSkipTurn: _nextPlayer, // NUEVO
+                                onPauseChronometer: _pauseChronometer, // NUEVO
+                                onResumeChronometer: _resumeChronometer,
                               )
                             : BoardPage(
                                 key: ValueKey(
