@@ -32,12 +32,14 @@ class BoardGameWildcards extends StatefulWidget {
   final VoidCallback? onLetterSelected;
   final Function(WildcardType)? onWildcardActivated;
   final Function(int)? onExtraTimeGranted;
+  final List<String> selectedWildcards;
 
   const BoardGameWildcards({
     super.key,
     this.onLetterSelected,
     this.onWildcardActivated,
     this.onExtraTimeGranted,
+    this.selectedWildcards = const [],
   });
 
   @override
@@ -51,6 +53,8 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
   bool doublePointsActive = false;
   int extraTimeSeconds = 0;
   WildcardInfo? pendingBlockWildcard;
+  List<WildcardInfo> availableWildcardsPool = [];
+  Map<WildcardType, int> wildcardCount = {};
 
   final List<String> spanishAlphabet = [
     'A',
@@ -82,41 +86,58 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
     'Z',
   ];
 
-  final List<WildcardInfo> allWildcards = [
-    WildcardInfo(
-      type: WildcardType.skipTurn,
-      name: 'Saltar Turno',
-      description: 'Salta tu turno y pasa al siguiente jugador',
-      icon: Icons.skip_next,
-      color: Colors.blue,
-    ),
-    WildcardInfo(
+  final Map<String, WildcardInfo> wildcardMapping = {
+    'tiempo_extra': WildcardInfo(
       type: WildcardType.extraTime,
       name: '+5 Segundos',
       description: 'Obtén 5 segundos adicionales',
       icon: Icons.timer,
       color: Colors.green,
     ),
-    WildcardInfo(
+    'saltar_turno': WildcardInfo(
+      type: WildcardType.skipTurn,
+      name: 'Saltar Turno',
+      description: 'Salta tu turno y pasa al siguiente jugador',
+      icon: Icons.skip_next,
+      color: Colors.blue,
+    ),
+    'punto_doble': WildcardInfo(
       type: WildcardType.doublePoints,
       name: 'Doble Puntos',
       description: 'Duplica la puntuación de esta palabra',
       icon: Icons.star,
       color: Colors.amber,
     ),
-    WildcardInfo(
+    'castigo_leve': WildcardInfo(
       type: WildcardType.blockLetters,
       name: 'Bloquear Letras',
       description: 'Elige 1 letra y bloquea las demás',
       icon: Icons.lock,
       color: Colors.red,
     ),
-  ];
+  };
 
   @override
   void initState() {
     super.initState();
+    _initializeWildcardPool();
     _initializeGame();
+  }
+
+  void _initializeWildcardPool() {
+    availableWildcardsPool = [];
+    wildcardCount = {};
+
+    for (var wildcardKey in widget.selectedWildcards) {
+      final wildcardInfo = wildcardMapping[wildcardKey];
+      if (wildcardInfo != null) {
+        availableWildcardsPool.add(wildcardInfo);
+        availableWildcardsPool.add(wildcardInfo);
+        wildcardCount[wildcardInfo.type] = 2;
+      }
+    }
+
+    availableWildcardsPool.shuffle();
   }
 
   void _initializeGame() {
@@ -130,11 +151,13 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
         if (availableLetters.isEmpty) break;
 
         final letter = availableLetters.removeAt(0);
-        final random = Random();
-
         WildcardInfo? wildcard;
-        if (random.nextDouble() < 0.3) {
-          wildcard = allWildcards[random.nextInt(allWildcards.length)];
+
+        if (availableWildcardsPool.isNotEmpty) {
+          final random = Random();
+          if (random.nextDouble() < 0.3) {
+            wildcard = availableWildcardsPool.removeAt(0);
+          }
         }
 
         currentLetters.add(
@@ -142,7 +165,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
         );
       }
 
-      blockedLetterIndices.clear();
       doublePointsActive = false;
       extraTimeSeconds = 0;
       pendingBlockWildcard = null;
@@ -169,10 +191,22 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
     final letterWithWildcard = currentLetters[index];
 
     if (letterWithWildcard.wildcard != null) {
-      _activateWildcard(letterWithWildcard.wildcard!, index);
+      if (letterWithWildcard.wildcard!.type == WildcardType.blockLetters) {
+        _activateWildcard(letterWithWildcard.wildcard!);
+        return;
+      } else {
+        _activateWildcard(letterWithWildcard.wildcard!);
+      }
     }
 
+    _replaceLetterAndUnblock(index);
+    widget.onLetterSelected?.call();
+  }
+
+  void _replaceLetterAndUnblock(int index) {
     setState(() {
+      blockedLetterIndices.clear();
+
       if (availableLetters.isNotEmpty) {
         final random = Random();
         final newLetter = availableLetters.removeAt(
@@ -180,8 +214,8 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
         );
 
         WildcardInfo? newWildcard;
-        if (random.nextDouble() < 0.3) {
-          newWildcard = allWildcards[random.nextInt(allWildcards.length)];
+        if (availableWildcardsPool.isNotEmpty && random.nextDouble() < 0.3) {
+          newWildcard = availableWildcardsPool.removeAt(0);
         }
 
         currentLetters[index] = LetterWithWildcard(
@@ -189,12 +223,10 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
           wildcard: newWildcard,
         );
       }
-
-      widget.onLetterSelected?.call();
     });
   }
 
-  void _activateWildcard(WildcardInfo wildcard, int index) {
+  void _activateWildcard(WildcardInfo wildcard) {
     switch (wildcard.type) {
       case WildcardType.skipTurn:
         _handleSkipTurn();
@@ -230,17 +262,15 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
   }
 
   void _handleExtraTime() {
-    setState(() {
-      extraTimeSeconds += 5;
-    });
     widget.onExtraTimeGranted?.call(5);
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Row(
           children: [
             Icon(Icons.timer, color: Colors.white),
             SizedBox(width: 8),
-            Text('¡+5 segundos agregados!'),
+            Text('¡+5 segundos agregados al cronómetro!'),
           ],
         ),
         backgroundColor: Colors.green,
@@ -281,7 +311,7 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
             SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Selecciona la letra que deseas mantener desbloqueada',
+                'Selecciona la letra que deseas mantener desbloqueada para la siguiente persona',
               ),
             ),
           ],
@@ -306,7 +336,7 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Letra ${currentLetters[index].letter} desbloqueada. Las demás bloqueadas para el próximo jugador.',
+          'Letra ${currentLetters[index].letter} desbloqueada. Las demás bloqueadas para la siguiente persona.',
         ),
         backgroundColor: Colors.red,
       ),
@@ -316,11 +346,15 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
   @override
   Widget build(BuildContext context) {
     final double radius = 120;
+    final selectedWildcardsInfo = widget.selectedWildcards
+        .map((key) => wildcardMapping[key])
+        .where((info) => info != null)
+        .cast<WildcardInfo>()
+        .toList();
 
     return Column(
       children: [
         if (doublePointsActive ||
-            extraTimeSeconds > 0 ||
             blockedLetterIndices.isNotEmpty ||
             pendingBlockWildcard != null)
           Container(
@@ -349,19 +383,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
                       style: TextStyle(color: Colors.white),
                     ),
                     backgroundColor: Colors.amber,
-                  ),
-                if (extraTimeSeconds > 0)
-                  Chip(
-                    avatar: const Icon(
-                      Icons.timer,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-                    label: Text(
-                      '+$extraTimeSeconds seg',
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    backgroundColor: Colors.green,
                   ),
                 if (blockedLetterIndices.isNotEmpty)
                   Chip(
@@ -513,62 +534,69 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
 
         const SizedBox(height: 16),
 
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black,
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Row(
-                children: [
-                  Icon(Icons.info_outline, size: 20),
-                  SizedBox(width: 8),
-                  Text(
-                    'Comodines',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 12,
-                runSpacing: 8,
-                children: allWildcards.map((wildcard) {
-                  return Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: wildcard.color,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          wildcard.icon,
-                          color: Colors.white,
-                          size: 14,
-                        ),
+        if (selectedWildcardsInfo.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.info_outline, size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'Comodines Activos',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(width: 6),
-                      Text(wildcard.name, style: const TextStyle(fontSize: 12)),
-                    ],
-                  );
-                }).toList(),
-              ),
-            ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  children: selectedWildcardsInfo.map((wildcard) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: wildcard.color,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            wildcard.icon,
+                            color: Colors.white,
+                            size: 14,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          wildcard.name,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
           ),
-        ),
       ],
     );
   }

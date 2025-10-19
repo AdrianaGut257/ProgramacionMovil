@@ -3,6 +3,7 @@ import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/chronometer.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/name.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board/boards_game/board_game_wildcards.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
 import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/category_popup.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
@@ -30,14 +31,25 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   int currentCategoryIndex = 0;
   bool categoryShown = false;
   bool chronometerActive = false;
+  bool hasWildcards = false;
+  int chronometerKey = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkWildcards();
       _initializeOrderedPlayers();
       _showCategoryDialog();
     });
+  }
+
+  void _checkWildcards() {
+    final wildcards = context.read<GameTeam>().selectedWildcards;
+    setState(() {
+      hasWildcards = wildcards.isNotEmpty;
+    });
+    debugPrint('Comodines cargados: $wildcards');
   }
 
   void _initializeOrderedPlayers() {
@@ -165,6 +177,16 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     );
   }
 
+  void _onWildcardActivated(WildcardType type) {
+    debugPrint('Comodín activado: $type');
+  }
+
+  void _onExtraTimeGranted(int seconds) {
+    setState(() {
+      gameTime = Duration(seconds: gameTime.inSeconds + seconds);
+    });
+  }
+
   void _endGame() {
     setState(() {
       gameEnded = true;
@@ -205,12 +227,10 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                     children: [
                       SizedBox(height: isSmallScreen ? 20 : 30),
 
-                      // Header con categoría y cronómetro en fila
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Categoría
                           Expanded(
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -222,8 +242,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    // ignore: deprecated_member_use
-                                    color: AppColors.primary.withOpacity(0.3),
+                                    color: AppColors.primary,
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
                                   ),
@@ -259,7 +278,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
                           const SizedBox(width: 12),
 
-                          // Cronómetro compacto
                           ChronometerWidget(
                             key: ValueKey(
                               '${currentPlayer.id}-$totalLettersSelected',
@@ -273,7 +291,8 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                                 _nextPlayer();
                               }
                             },
-                            isActive: chronometerActive &&
+                            isActive:
+                                chronometerActive &&
                                 !gameEnded &&
                                 !hasSelectedLetter,
                           ),
@@ -282,7 +301,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
                       SizedBox(height: isSmallScreen ? 20 : 25),
 
-                      // Nombre del jugador centrado
                       PlayerNameWidget(
                         name: currentPlayer.name,
                         score: score,
@@ -291,23 +309,32 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
                       SizedBox(height: isSmallScreen ? 25 : 35),
 
-                      // Tablero de juego centrado
                       Center(
-                        child: BoardPage(
-                          key: ValueKey(
-                            'board-${categories[currentCategoryIndex].name}',
-                          ),
-                          onLetterSelected: _onLetterSelected,
-                        ),
+                        child: hasWildcards
+                            ? BoardGameWildcards(
+                                key: ValueKey(
+                                  'board-wildcards-${categories[currentCategoryIndex].name}',
+                                ),
+                                selectedWildcards: context
+                                    .read<GameTeam>()
+                                    .selectedWildcards,
+                                onLetterSelected: _onLetterSelected,
+                                onWildcardActivated: _onWildcardActivated,
+                                onExtraTimeGranted: _onExtraTimeGranted,
+                              )
+                            : BoardPage(
+                                key: ValueKey(
+                                  'board-${categories[currentCategoryIndex].name}',
+                                ),
+                                onLetterSelected: _onLetterSelected,
+                              ),
                       ),
 
-                       SizedBox(height: isSmallScreen ? 120 : 100),
+                      SizedBox(height: isSmallScreen ? 120 : 100),
 
-                      // Botones de acción en fila horizontal
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Botón siguiente categoría
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () {
@@ -315,7 +342,8 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                                     .read<GameTeam>()
                                     .categories;
                                 setState(() {
-                                  if (currentCategoryIndex < categories.length - 1) {
+                                  if (currentCategoryIndex <
+                                      categories.length - 1) {
                                     currentCategoryIndex++;
                                     totalLettersSelected = 0;
                                     categoryShown = false;
@@ -355,10 +383,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
                           const SizedBox(width: 12),
 
-                          // Botón terminar juego
-                          Expanded(
-                            child: EndGameButton(onPressed: _endGame),
-                          ),
+                          Expanded(child: EndGameButton(onPressed: _endGame)),
                         ],
                       ),
 
