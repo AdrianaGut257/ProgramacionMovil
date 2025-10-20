@@ -36,6 +36,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   bool chronometerPaused = false;
   int boardKey = 0;
   bool shouldUnblockLetters = false;
+  bool wasBlocked = false;
   final GlobalKey<BoardGameWildcardsState> _boardWildcardsKey =
       GlobalKey<BoardGameWildcardsState>();
 
@@ -109,8 +110,15 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     setState(() {
       totalLettersSelected++;
 
-      // NUEVO: Señalizar que se deben desbloquear las letras
-      shouldUnblockLetters = true;
+      if (wasBlocked) {
+        _boardWildcardsKey.currentState?.unlockAllLetters();
+        wasBlocked = false;
+      }
+
+      final boardState = _boardWildcardsKey.currentState;
+      if (boardState != null && boardState.blockedLetterIndices.isNotEmpty) {
+        wasBlocked = true;
+      }
 
       if (totalLettersSelected >= totalLettersInAlphabet) {
         totalLettersSelected = 0;
@@ -337,8 +345,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                       Center(
                         child: hasWildcards
                             ? BoardGameWildcards(
-                                key:
-                                    _boardWildcardsKey, // CAMBIADO: Usar la GlobalKey en lugar de ValueKey
+                                key: _boardWildcardsKey,
                                 selectedWildcards: context
                                     .read<GameTeam>()
                                     .selectedWildcards,

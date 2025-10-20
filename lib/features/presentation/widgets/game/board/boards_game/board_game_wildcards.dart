@@ -327,10 +327,8 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
   }
 
   void _handleBlockLetters(WildcardInfo wildcard, int index) async {
-    // Pausar cronómetro
     widget.onPauseChronometer?.call();
 
-    // Mostrar el ButtonPopup para responder
     await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -339,7 +337,6 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
 
     if (!mounted) return;
 
-    // NUEVO: Reemplazar la letra que tenía el comodín
     if (availableLetters.isNotEmpty) {
       final random = Random();
       final newLetter = availableLetters.removeAt(
