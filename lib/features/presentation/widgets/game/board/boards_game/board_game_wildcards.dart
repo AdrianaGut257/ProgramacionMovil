@@ -38,6 +38,8 @@ class BoardGameWildcards extends StatefulWidget {
   final List<String> selectedWildcards;
   final VoidCallback? onPauseChronometer;
   final VoidCallback? onResumeChronometer;
+  final bool shouldUnblock;
+  final VoidCallback? onUnblocked;
 
   const BoardGameWildcards({
     super.key,
@@ -49,13 +51,15 @@ class BoardGameWildcards extends StatefulWidget {
     this.onPauseChronometer,
     this.onResumeChronometer,
     this.selectedWildcards = const [],
+    this.shouldUnblock = false,
+    this.onUnblocked,
   });
 
   @override
-  State<BoardGameWildcards> createState() => _BoardGameWildcardsState();
+  State<BoardGameWildcards> createState() => BoardGameWildcardsState();
 }
 
-class _BoardGameWildcardsState extends State<BoardGameWildcards> {
+class BoardGameWildcardsState extends State<BoardGameWildcards> {
   List<String> availableLetters = [];
   List<LetterWithWildcard> currentLetters = [];
   Set<int> blockedLetterIndices = {};
