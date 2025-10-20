@@ -340,8 +340,8 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                                 onLetterSelected: _onLetterSelected,
                                 onWildcardActivated: _onWildcardActivated,
                                 onExtraTimeGranted: _onExtraTimeGranted,
-                                onSkipTurn: _nextPlayer, // NUEVO
-                                onPauseChronometer: _pauseChronometer, // NUEVO
+                                onSkipTurn: _nextPlayer,
+                                onPauseChronometer: _pauseChronometer,
                                 onResumeChronometer: _resumeChronometer,
                               )
                             : BoardPage(

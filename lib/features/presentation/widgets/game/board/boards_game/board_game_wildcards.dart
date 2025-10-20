@@ -135,16 +135,26 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
     availableWildcardsPool = [];
     wildcardCount = {};
 
+    List<WildcardInfo> allSelectedWildcards = [];
+
     for (var wildcardKey in widget.selectedWildcards) {
       final wildcardInfo = wildcardMapping[wildcardKey];
       if (wildcardInfo != null) {
-        availableWildcardsPool.add(wildcardInfo);
-        availableWildcardsPool.add(wildcardInfo);
-        wildcardCount[wildcardInfo.type] = 2;
+        allSelectedWildcards.add(wildcardInfo);
       }
     }
 
-    availableWildcardsPool.shuffle();
+    if (allSelectedWildcards.isNotEmpty) {
+      final random = Random();
+
+      for (int i = 0; i < 2; i++) {
+        final randomWildcard =
+            allSelectedWildcards[random.nextInt(allSelectedWildcards.length)];
+        availableWildcardsPool.add(randomWildcard);
+      }
+
+      availableWildcardsPool.shuffle();
+    }
   }
 
   void _initializeGame() {
@@ -154,17 +164,21 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
 
       currentLetters = [];
 
+      final random = Random();
+      int wildcardPosition = -1;
+
+      if (availableWildcardsPool.isNotEmpty) {
+        wildcardPosition = random.nextInt(6);
+      }
+
       for (int i = 0; i < 6; i++) {
         if (availableLetters.isEmpty) break;
 
         final letter = availableLetters.removeAt(0);
         WildcardInfo? wildcard;
 
-        if (availableWildcardsPool.isNotEmpty) {
-          final random = Random();
-          if (random.nextDouble() < 0.3) {
-            wildcard = availableWildcardsPool.removeAt(0);
-          }
+        if (i == wildcardPosition && availableWildcardsPool.isNotEmpty) {
+          wildcard = availableWildcardsPool.removeAt(0);
         }
 
         currentLetters.add(
