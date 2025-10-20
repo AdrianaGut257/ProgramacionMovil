@@ -138,7 +138,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
     for (var wildcardKey in widget.selectedWildcards) {
       final wildcardInfo = wildcardMapping[wildcardKey];
       if (wildcardInfo != null) {
-        // Agregar 2 copias de cada comodín
         availableWildcardsPool.add(wildcardInfo);
         availableWildcardsPool.add(wildcardInfo);
         wildcardCount[wildcardInfo.type] = 2;
@@ -155,14 +154,12 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
 
       currentLetters = [];
 
-      // Crear 6 letras con posibilidad de comodines
       for (int i = 0; i < 6; i++) {
         if (availableLetters.isEmpty) break;
 
         final letter = availableLetters.removeAt(0);
         WildcardInfo? wildcard;
 
-        // 30% de probabilidad de tener un comodín si hay disponibles
         if (availableWildcardsPool.isNotEmpty) {
           final random = Random();
           if (random.nextDouble() < 0.3) {
@@ -179,9 +176,7 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
     });
   }
 
-  //ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   void _onLetterPressed(int index) {
-    // Si hay letras bloqueadas y esta es una de ellas
     if (blockedLetterIndices.contains(index)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -193,7 +188,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
       return;
     }
 
-    // Si estamos en modo de selección de letra para bloquear
     if (pendingBlockWildcard != null) {
       _selectLetterToKeep(index);
       return;
@@ -201,20 +195,17 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
 
     final letterWithWildcard = currentLetters[index];
 
-    // Si la letra tiene un comodín, activarlo
     if (letterWithWildcard.wildcard != null) {
       _activateWildcard(letterWithWildcard.wildcard!, index);
       return;
     }
 
-    // Si no tiene comodín, proceder normalmente
     _replaceLetterAndUnblock(index);
     widget.onLetterSelected?.call();
   }
 
   void _replaceLetterAndUnblock(int index) {
     setState(() {
-      // Desbloquear todas las letras al reemplazar
       blockedLetterIndices.clear();
 
       if (availableLetters.isNotEmpty) {
@@ -270,15 +261,12 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
       ),
     );
 
-    // Reemplazar la letra y notificar para saltar turno
     _replaceLetterAndUnblock(index);
 
-    // Notificar que se debe saltar el turno
     widget.onSkipTurn?.call();
   }
 
   void _handleExtraTime(int index) {
-    // Agregar 5 segundos al cronómetro
     widget.onExtraTimeGranted?.call(5);
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -295,7 +283,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
       ),
     );
 
-    // Reemplazar la letra y continuar el juego
     _replaceLetterAndUnblock(index);
     widget.onLetterSelected?.call();
   }
@@ -315,26 +302,19 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
       ),
     );
 
-    // Notificar que los puntos deben duplicarse
     widget.onDoublePointsActivated?.call();
 
-    // Reemplazar la letra y continuar el juego
     _replaceLetterAndUnblock(index);
     widget.onLetterSelected?.call();
   }
 
   void _handleBlockLetters(WildcardInfo wildcard) async {
-    // Pausar cronómetro
     widget.onPauseChronometer?.call();
 
-    // Mostrar el ButtonPopup para responder
     await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (context) => ButtonPopup(
-        onCorrect: () {}, // Vacío, solo necesitamos que cierre
-        onReset: () {}, // Vacío, solo necesitamos que cierre
-      ),
+      builder: (context) => ButtonPopup(onCorrect: () {}, onReset: () {}),
     );
 
     if (!mounted) return;
@@ -366,7 +346,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
     setState(() {
       blockedLetterIndices.clear();
 
-      // Bloquear todas menos la elegida
       for (int i = 0; i < currentLetters.length; i++) {
         if (i != index) blockedLetterIndices.add(i);
       }
@@ -384,14 +363,11 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
       ),
     );
 
-    // NUEVO: Reanudar el cronómetro DESPUÉS de seleccionar la letra
     widget.onResumeChronometer?.call();
 
-    // NUEVO: Pasar al siguiente turno automáticamente
     widget.onSkipTurn?.call();
   }
 
-  // Método público para desbloquear letras cuando cambia de turno
   void unlockAllLetters() {
     setState(() {
       blockedLetterIndices.clear();
@@ -409,7 +385,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
 
     return Column(
       children: [
-        // Indicadores de estado activo
         if (blockedLetterIndices.isNotEmpty || pendingBlockWildcard != null)
           Container(
             margin: const EdgeInsets.only(bottom: 16),
@@ -459,14 +434,12 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
             ),
           ),
 
-        // Tablero circular
         SizedBox(
           width: 360,
           height: 360,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Círculo de fondo
               Container(
                 width: 380,
                 height: 380,
@@ -476,7 +449,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
                 ),
               ),
 
-              // Letras en círculo
               for (int i = 0; i < currentLetters.length; i++)
                 Transform.translate(
                   offset: Offset(
@@ -489,7 +461,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
                       alignment: Alignment.center,
                       clipBehavior: Clip.none,
                       children: [
-                        // Letra con opacidad si está bloqueada
                         Opacity(
                           opacity: blockedLetterIndices.contains(i) ? 0.5 : 1.0,
                           child: LetterTile(
@@ -499,7 +470,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
                           ),
                         ),
 
-                        // Icono del comodín
                         if (currentLetters[i].wildcard != null)
                           Positioned(
                             top: -5,
@@ -530,7 +500,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
                             ),
                           ),
 
-                        // Candado si está bloqueada
                         if (blockedLetterIndices.contains(i))
                           Container(
                             padding: const EdgeInsets.all(8),
@@ -545,7 +514,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
                             ),
                           ),
 
-                        // Borde naranja si está en selección
                         if (pendingBlockWildcard != null &&
                             !blockedLetterIndices.contains(i))
                           Positioned.fill(
@@ -564,7 +532,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
                   ),
                 ),
 
-              // Centro decorativo
               Container(
                 width: 80,
                 height: 80,
@@ -585,7 +552,6 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
 
         const SizedBox(height: 16),
 
-        // Leyenda de comodines activos
         if (selectedWildcardsInfo.isNotEmpty)
           Container(
             padding: const EdgeInsets.all(16),

@@ -168,7 +168,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
           _nextPlayer();
           setState(() {
             chronometerActive = true;
-            // NUEVO: Recrear el board para desbloquear letras
             boardKey++;
           });
         },
@@ -176,7 +175,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
           _nextPlayer();
           setState(() {
             chronometerActive = true;
-            // NUEVO: Recrear el board para desbloquear letras
             boardKey++;
           });
         },
