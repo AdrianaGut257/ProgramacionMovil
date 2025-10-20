@@ -37,6 +37,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   int boardKey = 0;
   bool shouldUnblockLetters = false;
   bool wasBlocked = false;
+  bool doublePointsActive = false;
   final GlobalKey<BoardGameWildcardsState> _boardWildcardsKey =
       GlobalKey<BoardGameWildcardsState>();
 
@@ -145,6 +146,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
       score = playerScores[orderedPlayers[currentPlayerIndex].name] ?? 0;
       gameTime = const Duration(seconds: 5);
       hasSelectedLetter = false;
+      doublePointsActive = false;
     });
   }
 
@@ -155,9 +157,27 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     final playerName = currentPlayer.name;
 
     setState(() {
-      score += 5;
+      int pointsToAdd = doublePointsActive ? 10 : 5;
+      score += pointsToAdd;
       playerScores[playerName] = (playerScores[playerName] ?? 0) + 5;
       hasSelectedLetter = false;
+      doublePointsActive = false;
+    });
+
+    final gameTeam = context.read<GameTeam>();
+    final player = gameTeam.players.firstWhere((p) => p.name == playerName);
+    gameTeam.updatePlayerScore(player.id!, playerScores[playerName]!);
+  }
+
+  void _addSkipTurnPoints() {
+    if (orderedPlayers.isEmpty) return;
+
+    final currentPlayer = orderedPlayers[currentPlayerIndex];
+    final playerName = currentPlayer.name;
+
+    setState(() {
+      score += 5;
+      playerScores[playerName] = (playerScores[playerName] ?? 0) + 5;
     });
 
     final gameTeam = context.read<GameTeam>();
@@ -353,6 +373,12 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                                 onWildcardActivated: _onWildcardActivated,
                                 onExtraTimeGranted: _onExtraTimeGranted,
                                 onSkipTurn: _nextPlayer,
+                                onSkipTurnPoints: _addSkipTurnPoints,
+                                onDoublePointsActivated: () {
+                                  setState(() {
+                                    doublePointsActive = true;
+                                  });
+                                },
                                 onPauseChronometer: _pauseChronometer,
                                 onResumeChronometer: _resumeChronometer,
                               )

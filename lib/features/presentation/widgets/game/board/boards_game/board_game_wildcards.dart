@@ -34,6 +34,7 @@ class BoardGameWildcards extends StatefulWidget {
   final Function(WildcardType)? onWildcardActivated;
   final Function(int)? onExtraTimeGranted;
   final Function()? onSkipTurn;
+  final Function()? onSkipTurnPoints;
   final Function()? onDoublePointsActivated;
   final List<String> selectedWildcards;
   final VoidCallback? onPauseChronometer;
@@ -47,6 +48,7 @@ class BoardGameWildcards extends StatefulWidget {
     this.onWildcardActivated,
     this.onExtraTimeGranted,
     this.onSkipTurn,
+    this.onSkipTurnPoints,
     this.onDoublePointsActivated,
     this.onPauseChronometer,
     this.onResumeChronometer,
@@ -265,6 +267,8 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
   }
 
   void _handleSkipTurn(int index) {
+    widget.onSkipTurnPoints?.call();
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Row(
@@ -281,7 +285,9 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
 
     _replaceLetterAndUnblock(index);
 
-    widget.onSkipTurn?.call();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      widget.onSkipTurn?.call();
+    });
   }
 
   void _handleExtraTime(int index) {
