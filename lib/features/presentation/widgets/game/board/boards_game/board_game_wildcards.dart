@@ -147,6 +147,7 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
       final wildcardInfo = wildcardMapping[wildcardKey];
       if (wildcardInfo != null) {
         allSelectedWildcards.add(wildcardInfo);
+        availableWildcardsPool.add(wildcardInfo);
       }
     }
 
