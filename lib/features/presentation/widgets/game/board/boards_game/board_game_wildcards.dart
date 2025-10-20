@@ -239,7 +239,7 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
         _handleDoublePoints(index);
         break;
       case WildcardType.blockLetters:
-        _handleBlockLetters(wildcard);
+        _handleBlockLetters(wildcard, index);
         break;
     }
 
@@ -308,9 +308,11 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
     widget.onLetterSelected?.call();
   }
 
-  void _handleBlockLetters(WildcardInfo wildcard) async {
+  void _handleBlockLetters(WildcardInfo wildcard, int index) async {
+    // Pausar cronómetro
     widget.onPauseChronometer?.call();
 
+    // Mostrar el ButtonPopup para responder
     await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -319,9 +321,30 @@ class _BoardGameWildcardsState extends State<BoardGameWildcards> {
 
     if (!mounted) return;
 
-    setState(() {
-      pendingBlockWildcard = wildcard;
-    });
+    // NUEVO: Reemplazar la letra que tenía el comodín
+    if (availableLetters.isNotEmpty) {
+      final random = Random();
+      final newLetter = availableLetters.removeAt(
+        random.nextInt(availableLetters.length),
+      );
+
+      WildcardInfo? newWildcard;
+      if (availableWildcardsPool.isNotEmpty && random.nextDouble() < 0.3) {
+        newWildcard = availableWildcardsPool.removeAt(0);
+      }
+
+      setState(() {
+        currentLetters[index] = LetterWithWildcard(
+          letter: newLetter,
+          wildcard: newWildcard,
+        );
+        pendingBlockWildcard = wildcard;
+      });
+    } else {
+      setState(() {
+        pendingBlockWildcard = wildcard;
+      });
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
