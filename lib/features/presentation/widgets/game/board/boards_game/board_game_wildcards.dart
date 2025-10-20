@@ -588,7 +588,7 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
           ),
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
 
         if (selectedWildcardsInfo.isNotEmpty)
           Container(
@@ -598,7 +598,7 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black,
+                  color: AppColors.primary,
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),

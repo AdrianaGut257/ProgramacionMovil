@@ -286,7 +286,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                                 children: [
                                   const Icon(
                                     Icons.category_rounded,
-                                    color: Colors.white,
+                                    color: AppColors.white,
                                     size: 20,
                                   ),
                                   const SizedBox(width: 8),
@@ -364,7 +364,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                               ),
                       ),
 
-                      SizedBox(height: isSmallScreen ? 120 : 100),
+                      SizedBox(height: isSmallScreen ? 120 : 30),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
