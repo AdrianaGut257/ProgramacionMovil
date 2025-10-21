@@ -126,6 +126,7 @@ class _BoardGameHardState extends State<BoardGameHard> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: AppColors.primary.withOpacity(0.3),
                       blurRadius: 20,
                       spreadRadius: 5,
@@ -161,6 +162,7 @@ class _BoardGameHardState extends State<BoardGameHard> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: Colors.orange.withOpacity(0.5),
                       blurRadius: 15,
                       spreadRadius: 2,
