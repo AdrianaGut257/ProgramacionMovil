@@ -33,6 +33,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   bool chronometerActive = false;
   bool hasWildcards = false;
   int chronometerKey = 0;
+  int chronometerUpdateKey = 0;
   bool chronometerPaused = false;
   int boardKey = 0;
   bool shouldUnblockLetters = false;
@@ -145,6 +146,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
       score = playerScores[orderedPlayers[currentPlayerIndex].name] ?? 0;
       gameTime = const Duration(seconds: 5);
+      chronometerUpdateKey++;
       hasSelectedLetter = false;
       doublePointsActive = false;
     });
@@ -237,6 +239,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   void _onExtraTimeGranted(int seconds) {
     setState(() {
       gameTime = Duration(seconds: gameTime.inSeconds + seconds);
+      chronometerUpdateKey++;
     });
   }
 
@@ -332,9 +335,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                           const SizedBox(width: 12),
 
                           ChronometerWidget(
-                            key: ValueKey(
-                              '${currentPlayer.id}-$totalLettersSelected',
-                            ),
+                            key: ValueKey(chronometerUpdateKey),
                             duration: gameTime,
                             onTimeEnd: () {
                               debugPrint(
