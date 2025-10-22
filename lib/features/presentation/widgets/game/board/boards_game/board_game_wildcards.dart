@@ -308,12 +308,7 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
       ),
     );
 
-    setState(() {
-      currentLetters[index] = LetterWithWildcard(
-        letter: currentLetters[index].letter,
-        wildcard: null,
-      );
-    });
+    _replaceLetterAndUnblock(index);
   }
 
   void _handleDoublePoints(int index) {
@@ -340,13 +335,28 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
   void _handleBlockLetters(WildcardInfo wildcard, int index) async {
     widget.onPauseChronometer?.call();
 
-    await showDialog<bool>(
+    bool wasCorrect = false;
+
+    await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => ButtonPopup(onCorrect: () {}, onReset: () {}),
+      builder: (context) => ButtonPopup(
+        onCorrect: () {
+          wasCorrect = true;
+        },
+        onReset: () {
+          wasCorrect = false;
+        },
+      ),
     );
 
     if (!mounted) return;
+
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    if (wasCorrect) {
+      widget.onSkipTurnPoints?.call();
+    }
 
     if (availableLetters.isNotEmpty) {
       final random = Random();
@@ -372,23 +382,25 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
       });
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.lock, color: Colors.white),
-            SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'Selecciona la letra que el siguiente jugador podrá usar',
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.lock, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Selecciona la letra que el siguiente jugador podrá usar',
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
         ),
-        backgroundColor: Colors.red,
-        duration: Duration(seconds: 3),
-      ),
-    );
+      );
+    }
   }
 
   void _selectLetterToKeep(int index) {
