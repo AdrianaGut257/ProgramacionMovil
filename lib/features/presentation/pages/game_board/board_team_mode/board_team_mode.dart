@@ -127,7 +127,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
       }
 
       if (totalLettersSelected >= totalLettersInAlphabet) {
-        totalLettersSelected = 0;
+        //totalLettersSelected = 0;
         currentCategoryIndex++;
         categoryShown = false;
         chronometerActive = false;
@@ -150,7 +150,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
       score = playerScores[orderedPlayers[currentPlayerIndex].name] ?? 0;
       gameTime = const Duration(seconds: 5);
-      extraTimeSeconds = 0;
+
       _chronometerKey = GlobalKey<ChronometerWidgetState>();
       hasSelectedLetter = false;
       doublePointsActive = false;
@@ -242,9 +242,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   }
 
   void _onExtraTimeGranted(int seconds) {
-    setState(() {
-      extraTimeSeconds += seconds;
-    });
     _chronometerKey.currentState?.addExtraTime(seconds);
   }
 
