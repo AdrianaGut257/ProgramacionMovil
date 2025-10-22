@@ -18,10 +18,10 @@ class ChronometerWidget extends StatefulWidget {
   });
 
   @override
-  State<ChronometerWidget> createState() => _ChronometerWidgetState();
+  State<ChronometerWidget> createState() => ChronometerWidgetState();
 }
 
-class _ChronometerWidgetState extends State<ChronometerWidget> {
+class ChronometerWidgetState extends State<ChronometerWidget> {
   late int seconds;
   Timer? timer;
 
@@ -37,6 +37,12 @@ class _ChronometerWidgetState extends State<ChronometerWidget> {
   @override
   void didUpdateWidget(ChronometerWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.duration != widget.duration) {
+      setState(() {
+        seconds = widget.duration.inSeconds;
+      });
+    }
 
     if (!oldWidget.isActive && widget.isActive) {
       _startTimer();
@@ -70,6 +76,12 @@ class _ChronometerWidgetState extends State<ChronometerWidget> {
     if (widget.onAddTime != null) {
       widget.onAddTime!();
     }
+  }
+
+  void addExtraTime(int extraSeconds) {
+    setState(() {
+      seconds += extraSeconds;
+    });
   }
 
   @override

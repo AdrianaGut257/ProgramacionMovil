@@ -39,6 +39,9 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   bool shouldUnblockLetters = false;
   bool wasBlocked = false;
   bool doublePointsActive = false;
+  final GlobalKey<ChronometerWidgetState> _chronometerKey =
+      GlobalKey<ChronometerWidgetState>();
+
   final GlobalKey<BoardGameWildcardsState> _boardWildcardsKey =
       GlobalKey<BoardGameWildcardsState>();
 
@@ -237,10 +240,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   }
 
   void _onExtraTimeGranted(int seconds) {
-    setState(() {
-      gameTime = Duration(seconds: gameTime.inSeconds + seconds);
-      chronometerUpdateKey++;
-    });
+    _chronometerKey.currentState?.addExtraTime(seconds);
   }
 
   void _endGame() {
@@ -335,7 +335,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                           const SizedBox(width: 12),
 
                           ChronometerWidget(
-                            key: ValueKey(chronometerUpdateKey),
+                            key: _chronometerKey,
                             duration: gameTime,
                             onTimeEnd: () {
                               debugPrint(
