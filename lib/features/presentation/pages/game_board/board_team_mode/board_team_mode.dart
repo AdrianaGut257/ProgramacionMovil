@@ -166,7 +166,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     setState(() {
       int pointsToAdd = doublePointsActive ? 10 : 5;
       score += pointsToAdd;
-      playerScores[playerName] = (playerScores[playerName] ?? 0) + 5;
+      playerScores[playerName] = (playerScores[playerName] ?? 0) + pointsToAdd;
       hasSelectedLetter = false;
       doublePointsActive = false;
     });
