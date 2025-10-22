@@ -26,7 +26,7 @@ class PlayerNameWidget extends StatelessWidget {
       child: Text(
         "$name  $score",
         style: const TextStyle(
-          fontSize: 20,
+          fontSize: 30,
           color: Colors.white,
           fontWeight: FontWeight.bold,
         ),
