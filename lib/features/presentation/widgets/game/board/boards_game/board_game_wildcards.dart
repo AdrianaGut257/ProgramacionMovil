@@ -174,11 +174,15 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
       final random = Random();
       int wildcardPosition = -1;
 
-      if (availableWildcardsPool.isNotEmpty) {
-        wildcardPosition = random.nextInt(6);
+      int lettersToShow = availableLetters.length < 6
+          ? availableLetters.length
+          : 6;
+
+      if (availableWildcardsPool.isNotEmpty && lettersToShow > 0) {
+        wildcardPosition = random.nextInt(lettersToShow);
       }
 
-      for (int i = 0; i < 6; i++) {
+      for (int i = 0; i < lettersToShow; i++) {
         if (availableLetters.isEmpty) break;
 
         final letter = availableLetters.removeAt(0);
@@ -244,10 +248,13 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
           letter: newLetter,
           wildcard: newWildcard,
         );
+      } else {
+        currentLetters.removeAt(index);
       }
     });
   }
 
+  bool get isBoardEmpty => currentLetters.isEmpty && availableLetters.isEmpty;
   void _activateWildcard(WildcardInfo wildcard, int index) {
     switch (wildcard.type) {
       case WildcardType.skipTurn:

@@ -115,6 +115,10 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
     setState(() {
       totalLettersSelected++;
+      if (hasWildcards &&
+          _boardWildcardsKey.currentState?.isBoardEmpty == true) {
+        totalLettersSelected = totalLettersInAlphabet;
+      }
 
       if (wasBlocked) {
         _boardWildcardsKey.currentState?.unlockAllLetters();
@@ -127,6 +131,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
       }
 
       if (totalLettersSelected >= totalLettersInAlphabet) {
+        totalLettersSelected = 0;
         currentCategoryIndex++;
         categoryShown = false;
         chronometerActive = false;
@@ -419,6 +424,14 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                                     totalLettersSelected = 0;
                                     categoryShown = false;
                                     chronometerActive = false;
+                                    hasSelectedLetter = false;
+                                    if (hasWildcards) {
+                                      _boardWildcardsKey.currentState
+                                          ?.initializeWildcardPool();
+                                      _boardWildcardsKey.currentState
+                                          ?.initializeGame();
+                                    }
+
                                     _showCategoryDialog();
                                   } else {
                                     gameEnded = true;
