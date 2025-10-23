@@ -98,12 +98,10 @@ class ButtonPopup extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: GameButtons(
                   onCorrect: () {
-                    // CAMBIO: Cerrar primero, ejecutar callback después
                     Navigator.of(context).pop();
                     Future.microtask(() => onCorrect());
                   },
                   onReset: () {
-                    // CAMBIO: Cerrar primero, ejecutar callback después
                     Navigator.of(context).pop();
                     Future.microtask(() => onReset());
                   },
