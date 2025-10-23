@@ -127,14 +127,19 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
       }
 
       if (totalLettersSelected >= totalLettersInAlphabet) {
-        //totalLettersSelected = 0;
         currentCategoryIndex++;
         categoryShown = false;
         chronometerActive = false;
+        hasSelectedLetter = false;
 
         if (currentCategoryIndex >= categories.length) {
           gameEnded = true;
           return;
+        }
+
+        if (hasWildcards) {
+          _boardWildcardsKey.currentState?.initializeWildcardPool();
+          _boardWildcardsKey.currentState?.initializeGame();
         }
 
         Future.delayed(const Duration(milliseconds: 300), () {

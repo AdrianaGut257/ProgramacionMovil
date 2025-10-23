@@ -133,11 +133,11 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
   @override
   void initState() {
     super.initState();
-    _initializeWildcardPool();
-    _initializeGame();
+    initializeWildcardPool();
+    initializeGame();
   }
 
-  void _initializeWildcardPool() {
+  void initializeWildcardPool() {
     availableWildcardsPool = [];
     wildcardCount = {};
 
@@ -164,7 +164,7 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
     }
   }
 
-  void _initializeGame() {
+  void initializeGame() {
     setState(() {
       availableLetters = List.from(spanishAlphabet);
       availableLetters.shuffle();
