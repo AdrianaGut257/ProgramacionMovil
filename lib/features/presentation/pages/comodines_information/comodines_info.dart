@@ -74,6 +74,14 @@ class _ComodinesPageState extends State<ComodinesPage>
     final width = size.width;
     final isSmallScreen = height < 700;
 
+    // 🔹 Obtener parámetros desde GoRouter
+    final state = GoRouterState.of(context);
+    final extras = state.extra as Map<String, dynamic>? ?? {};
+
+    final mode = extras['mode'] ?? 'group';
+    final players = extras['players'];
+    final difficulty = extras['difficulty'] ?? 'easy';
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -156,7 +164,7 @@ class _ComodinesPageState extends State<ComodinesPage>
 
                       SizedBox(height: isSmallScreen ? 16 : 24),
 
-                      _buildPlayButton(isSmallScreen),
+                      _buildPlayButton(isSmallScreen, mode, players, difficulty),
 
                       SizedBox(height: height * 0.05),
                     ],
@@ -265,7 +273,8 @@ class _ComodinesPageState extends State<ComodinesPage>
     );
   }
 
-  Widget _buildPlayButton(bool isSmallScreen) {
+  Widget _buildPlayButton(
+      bool isSmallScreen, String mode, dynamic players, String difficulty) {
     return AnimatedBuilder(
       animation: _pulseController,
       builder: (context, child) {
@@ -286,10 +295,27 @@ class _ComodinesPageState extends State<ComodinesPage>
               final gameTeam = context.read<GameTeam>();
               gameTeam.setWildcards(selectedPowerUps);
 
-              context.push(
-                '/select-categories',
-                extra: {'mode': 'group', 'powerUps': selectedPowerUps},
-              );
+              if (mode == 'individual') {
+                //Modo individual (viene desde PlayersRegisterScreen)
+                context.push(
+                  '/select-categories',
+                  extra: {
+                    'mode': 'individual',
+                    'players': players,
+                    'difficulty': difficulty,
+                    'powerUps': selectedPowerUps,
+                  },
+                );
+              } else {
+                //Modo grupal (comportamiento anterior)
+                context.push(
+                  '/select-categories',
+                  extra: {
+                    'mode': 'group',
+                    'powerUps': selectedPowerUps,
+                  },
+                );
+              }
             },
           ),
         );
