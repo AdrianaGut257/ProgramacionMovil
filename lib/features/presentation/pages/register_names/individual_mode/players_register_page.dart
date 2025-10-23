@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:programacion_movil/features/presentation/pages/register_names/group_mode/widgets/validation_dialog.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/back_button_custom.dart';
 import 'package:provider/provider.dart';
 import 'package:programacion_movil/config/colors.dart';
@@ -89,45 +90,48 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
   }
 
   void _startGame() {
-    final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
+  final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
 
-    if (validPlayers.isEmpty) {
-      _showCustomModal("Agrega al menos un jugador");
-      return;
-    }
-
-    if (validPlayers.length < 2) {
-      _showCustomModal("Debes ingresar al menos 2 jugadores para continuar");
-      return;
-    }
-
-    final gameIndividual = context.read<GameIndividual>();
-    gameIndividual.clearPlayers();
-
-    List<Player> playerObjects = [];
-    for (int i = 0; i < validPlayers.length; i++) {
-      final player = Player(
-        id: i + 1,
-        name: validPlayers[i].trim(),
-        score: 0,
-        team: 1,
-      );
-      gameIndividual.addPlayer(player);
-      playerObjects.add(player);
-    }
-
-    if (!mounted) return;
-
-    //Ahora redirige a /comodines-info
-    context.push(
-      '/comodines-info',
-      extra: {
-        'mode': 'individual',
-        'players': playerObjects,
-        'difficulty': widget.difficulty ?? 'easy',
-      },
-    );
+  if (validPlayers.isEmpty) {
+    _showCustomModal("Agrega al menos un jugador");
+    return;
   }
+
+  if (validPlayers.length < 2) {
+    ValidationDialog.show(
+      context,
+      "Se necesitan al menos 2 jugadores para comenzar",
+      ValidationType.minPlayers,
+    );
+    return;
+  }
+
+  final gameIndividual = context.read<GameIndividual>();
+  gameIndividual.clearPlayers();
+
+  List<Player> playerObjects = [];
+  for (int i = 0; i < validPlayers.length; i++) {
+    final player = Player(
+      id: i + 1,
+      name: validPlayers[i].trim(),
+      score: 0,
+      team: 1,
+    );
+    gameIndividual.addPlayer(player);
+    playerObjects.add(player);
+  }
+
+  if (!mounted) return;
+
+  context.push(
+    '/comodines-info',
+    extra: {
+      'mode': 'individual',
+      'players': playerObjects,
+      'difficulty': widget.difficulty ?? 'easy',
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
