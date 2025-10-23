@@ -133,11 +133,11 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
   @override
   void initState() {
     super.initState();
-    _initializeWildcardPool();
-    _initializeGame();
+    initializeWildcardPool();
+    initializeGame();
   }
 
-  void _initializeWildcardPool() {
+  void initializeWildcardPool() {
     availableWildcardsPool = [];
     wildcardCount = {};
 
@@ -164,7 +164,7 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
     }
   }
 
-  void _initializeGame() {
+  void initializeGame() {
     setState(() {
       availableLetters = List.from(spanishAlphabet);
       availableLetters.shuffle();
@@ -174,11 +174,15 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
       final random = Random();
       int wildcardPosition = -1;
 
-      if (availableWildcardsPool.isNotEmpty) {
-        wildcardPosition = random.nextInt(6);
+      int lettersToShow = availableLetters.length < 6
+          ? availableLetters.length
+          : 6;
+
+      if (availableWildcardsPool.isNotEmpty && lettersToShow > 0) {
+        wildcardPosition = random.nextInt(lettersToShow);
       }
 
-      for (int i = 0; i < 6; i++) {
+      for (int i = 0; i < lettersToShow; i++) {
         if (availableLetters.isEmpty) break;
 
         final letter = availableLetters.removeAt(0);
@@ -244,10 +248,13 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
           letter: newLetter,
           wildcard: newWildcard,
         );
+      } else {
+        currentLetters.removeAt(index);
       }
     });
   }
 
+  bool get isBoardEmpty => currentLetters.isEmpty && availableLetters.isEmpty;
   void _activateWildcard(WildcardInfo wildcard, int index) {
     switch (wildcard.type) {
       case WildcardType.skipTurn:
@@ -308,8 +315,12 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
       ),
     );
 
-    _replaceLetterAndUnblock(index);
-    widget.onLetterSelected?.call();
+    setState(() {
+      currentLetters[index] = LetterWithWildcard(
+        letter: currentLetters[index].letter,
+        wildcard: null,
+      );
+    });
   }
 
   void _handleDoublePoints(int index) {
@@ -336,13 +347,28 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
   void _handleBlockLetters(WildcardInfo wildcard, int index) async {
     widget.onPauseChronometer?.call();
 
-    await showDialog<bool>(
+    bool wasCorrect = false;
+
+    await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => ButtonPopup(onCorrect: () {}, onReset: () {}),
+      builder: (context) => ButtonPopup(
+        onCorrect: () {
+          wasCorrect = true;
+        },
+        onReset: () {
+          wasCorrect = false;
+        },
+      ),
     );
 
     if (!mounted) return;
+
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    if (wasCorrect) {
+      widget.onSkipTurnPoints?.call();
+    }
 
     if (availableLetters.isNotEmpty) {
       final random = Random();
@@ -368,23 +394,25 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
       });
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.lock, color: Colors.white),
-            SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'Selecciona la letra que el siguiente jugador podrá usar',
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.lock, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Selecciona la letra que el siguiente jugador podrá usar',
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
         ),
-        backgroundColor: Colors.red,
-        duration: Duration(seconds: 3),
-      ),
-    );
+      );
+    }
   }
 
   void _selectLetterToKeep(int index) {

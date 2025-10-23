@@ -33,11 +33,16 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   bool chronometerActive = false;
   bool hasWildcards = false;
   int chronometerKey = 0;
+  int chronometerUpdateKey = 0;
   bool chronometerPaused = false;
   int boardKey = 0;
   bool shouldUnblockLetters = false;
   bool wasBlocked = false;
   bool doublePointsActive = false;
+  int extraTimeSeconds = 0;
+  GlobalKey<ChronometerWidgetState> _chronometerKey =
+      GlobalKey<ChronometerWidgetState>();
+
   final GlobalKey<BoardGameWildcardsState> _boardWildcardsKey =
       GlobalKey<BoardGameWildcardsState>();
 
@@ -110,6 +115,10 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
     setState(() {
       totalLettersSelected++;
+      if (hasWildcards &&
+          _boardWildcardsKey.currentState?.isBoardEmpty == true) {
+        totalLettersSelected = totalLettersInAlphabet;
+      }
 
       if (wasBlocked) {
         _boardWildcardsKey.currentState?.unlockAllLetters();
@@ -126,10 +135,16 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
         currentCategoryIndex++;
         categoryShown = false;
         chronometerActive = false;
+        hasSelectedLetter = false;
 
         if (currentCategoryIndex >= categories.length) {
           gameEnded = true;
           return;
+        }
+
+        if (hasWildcards) {
+          _boardWildcardsKey.currentState?.initializeWildcardPool();
+          _boardWildcardsKey.currentState?.initializeGame();
         }
 
         Future.delayed(const Duration(milliseconds: 300), () {
@@ -145,6 +160,8 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
       score = playerScores[orderedPlayers[currentPlayerIndex].name] ?? 0;
       gameTime = const Duration(seconds: 5);
+
+      _chronometerKey = GlobalKey<ChronometerWidgetState>();
       hasSelectedLetter = false;
       doublePointsActive = false;
     });
@@ -159,7 +176,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     setState(() {
       int pointsToAdd = doublePointsActive ? 10 : 5;
       score += pointsToAdd;
-      playerScores[playerName] = (playerScores[playerName] ?? 0) + 5;
+      playerScores[playerName] = (playerScores[playerName] ?? 0) + pointsToAdd;
       hasSelectedLetter = false;
       doublePointsActive = false;
     });
@@ -235,9 +252,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   }
 
   void _onExtraTimeGranted(int seconds) {
-    setState(() {
-      gameTime = Duration(seconds: gameTime.inSeconds + seconds);
-    });
+    _chronometerKey.currentState?.addExtraTime(seconds);
   }
 
   void _endGame() {
@@ -332,10 +347,11 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                           const SizedBox(width: 12),
 
                           ChronometerWidget(
-                            key: ValueKey(
-                              '${currentPlayer.id}-$totalLettersSelected',
+                            key: _chronometerKey,
+                            duration: Duration(
+                              seconds: gameTime.inSeconds + extraTimeSeconds,
                             ),
-                            duration: gameTime,
+
                             onTimeEnd: () {
                               debugPrint(
                                 "Tiempo terminado para ${currentPlayer.name}",
@@ -408,6 +424,14 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                                     totalLettersSelected = 0;
                                     categoryShown = false;
                                     chronometerActive = false;
+                                    hasSelectedLetter = false;
+                                    if (hasWildcards) {
+                                      _boardWildcardsKey.currentState
+                                          ?.initializeWildcardPool();
+                                      _boardWildcardsKey.currentState
+                                          ?.initializeGame();
+                                    }
+
                                     _showCategoryDialog();
                                   } else {
                                     gameEnded = true;
