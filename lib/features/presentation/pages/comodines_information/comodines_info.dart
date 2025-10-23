@@ -300,7 +300,7 @@ class _ComodinesPageState extends State<ComodinesPage>
             textColor: Colors.white,
             borderColor: AppColors.secondaryVariant,
             onPressed: () {
-              // 🔹 CLAVE: Obtener comodines seleccionados
+              // Obtener comodines seleccionados
               final selectedPowerUps = _selectedPowerUps.entries
                   .where((entry) => entry.value)
                   .map((entry) => entry.key) 
@@ -310,7 +310,7 @@ class _ComodinesPageState extends State<ComodinesPage>
               debugPrint('Modo: $mode');
               debugPrint('Comodines: $selectedPowerUps');
 
-              // 🔹 GUARDAR EN EL PROVIDER CORRECTO SEGÚN EL MODO
+              // GUARDAR EN EL PROVIDER CORRECTO SEGÚN EL MODO
               if (mode == 'individual') {
                 final gameIndividual = context.read<GameIndividual>();
                 gameIndividual.setWildcards(selectedPowerUps);
