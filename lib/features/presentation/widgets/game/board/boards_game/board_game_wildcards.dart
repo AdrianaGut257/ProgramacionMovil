@@ -315,7 +315,12 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
       ),
     );
 
-    _replaceLetterAndUnblock(index);
+    setState(() {
+      currentLetters[index] = LetterWithWildcard(
+        letter: currentLetters[index].letter,
+        wildcard: null,
+      );
+    });
   }
 
   void _handleDoublePoints(int index) {
