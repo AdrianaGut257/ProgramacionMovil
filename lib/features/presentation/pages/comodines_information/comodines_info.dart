@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:programacion_movil/features/presentation/state/game_team.dart';
+import 'package:programacion_movil/features/presentation/state/game_individual.dart';
 
 class ComodinesPage extends StatefulWidget {
   const ComodinesPage({super.key});
@@ -35,8 +36,20 @@ class _ComodinesPageState extends State<ComodinesPage>
     )..repeat(reverse: true);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final gameTeam = context.read<GameTeam>();
-      final savedWildcards = gameTeam.selectedWildcards;
+      // Cargar comodines guardados según el modo
+      final state = GoRouterState.of(context);
+      final extras = state.extra as Map<String, dynamic>? ?? {};
+      final mode = extras['mode'] ?? 'group';
+
+      List<String> savedWildcards = [];
+      
+      if (mode == 'individual') {
+        final gameIndividual = context.read<GameIndividual>();
+        savedWildcards = gameIndividual.selectedWildcards;
+      } else {
+        final gameTeam = context.read<GameTeam>();
+        savedWildcards = gameTeam.selectedWildcards;
+      }
 
       if (savedWildcards.isNotEmpty) {
         setState(() {
@@ -287,16 +300,23 @@ class _ComodinesPageState extends State<ComodinesPage>
             textColor: Colors.white,
             borderColor: AppColors.secondaryVariant,
             onPressed: () {
+              // 🔹 CLAVE: Obtener comodines seleccionados
               final selectedPowerUps = _selectedPowerUps.entries
                   .where((entry) => entry.value)
-                  .map((entry) => entry.key)
+                  .map((entry) => entry.key) 
                   .toList();
 
-              final gameTeam = context.read<GameTeam>();
-              gameTeam.setWildcards(selectedPowerUps);
+              debugPrint('=== COMODINES SELECCIONADOS ===');
+              debugPrint('Modo: $mode');
+              debugPrint('Comodines: $selectedPowerUps');
 
+              // 🔹 GUARDAR EN EL PROVIDER CORRECTO SEGÚN EL MODO
               if (mode == 'individual') {
-                //Modo individual (viene desde PlayersRegisterScreen)
+                final gameIndividual = context.read<GameIndividual>();
+                gameIndividual.setWildcards(selectedPowerUps);
+                debugPrint('Guardado en GameIndividual');
+
+                // Navegar al selector de categorías (modo individual)
                 context.push(
                   '/select-categories',
                   extra: {
@@ -307,7 +327,11 @@ class _ComodinesPageState extends State<ComodinesPage>
                   },
                 );
               } else {
-                //Modo grupal (comportamiento anterior)
+                final gameTeam = context.read<GameTeam>();
+                gameTeam.setWildcards(selectedPowerUps);
+                debugPrint('Guardado en GameTeam');
+
+                // Navegar al selector de categorías (modo grupal)
                 context.push(
                   '/select-categories',
                   extra: {
