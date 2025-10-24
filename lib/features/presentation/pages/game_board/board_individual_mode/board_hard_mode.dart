@@ -39,7 +39,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
   bool doublePointsActive = false;
   int extraTimeSeconds = 0;
   int boardKey = 0;
-  
+
   // Keys para controlar widgets
   GlobalKey<ChronometerWidgetState> _chronometerKey =
       GlobalKey<ChronometerWidgetState>();
@@ -56,22 +56,18 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     });
   }
 
-  // 🧹 Limpiar sonido cuando se destruya el widget
   @override
   void dispose() {
     SoundManager.stopTimer();
     super.dispose();
   }
-  
+
   void _checkWildcards() {
     final wildcards = context.read<GameIndividual>().selectedWildcards;
 
     setState(() {
       hasWildcards = wildcards.isNotEmpty;
     });
-    debugPrint('=== DEBUG WILDCARDS (HARD MODE) ===');
-    debugPrint('Comodines cargados: $wildcards');
-    debugPrint('hasWildcards: $hasWildcards');
   }
 
   void _initializePlayers() {
@@ -91,7 +87,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
       SoundManager.stopTimer(); // 🔊 Detener sonido al terminar
       return;
     }
-    
+
     // 🔊 Detener sonido mientras se muestra el popup de categoría
     SoundManager.stopTimer();
     setState(() => chronometerActive = false);
@@ -110,7 +106,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     if (activePlayers.isEmpty || gameEnded) return;
 
     final eliminatedPlayer = activePlayers[currentPlayerIndex];
-    
+
     setState(() {
       activePlayers.removeAt(currentPlayerIndex);
 
@@ -138,7 +134,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
       hasSelectedLetter = false;
       chronometerActive = true;
       doublePointsActive = false;
-      
+
       // Reiniciar key del cronómetro
       _chronometerKey = GlobalKey<ChronometerWidgetState>();
     });
@@ -177,8 +173,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
         currentCategoryIndex++;
         categoryShown = false;
         chronometerActive = false;
-        
-        
+
         hasSelectedLetter = false;
 
         if (currentCategoryIndex >= categories.length) {
@@ -209,11 +204,11 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
       hasSelectedLetter = false;
       chronometerActive = true;
       doublePointsActive = false;
-      
+
       // Reiniciar key del cronómetro
       _chronometerKey = GlobalKey<ChronometerWidgetState>();
     });
-    
+
     // 🔊 Reiniciar sonido DESPUÉS de que setState se complete
     // Usar un pequeño delay para asegurar que el estado esté actualizado
     Future.delayed(const Duration(milliseconds: 100), () {
@@ -226,7 +221,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
   void _increaseScore() {
     if (activePlayers.isEmpty) return;
     final currentPlayer = activePlayers[currentPlayerIndex];
-    
+
     setState(() {
       // Aplicar doble puntos si está activo
       int pointsToAdd = doublePointsActive ? 10 : 5;
@@ -283,7 +278,6 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
             });
           },
           onReset: () {
-            // ❌ Botón elimina al jugador en modo difícil
             _eliminateCurrentPlayer();
           },
         ),
@@ -340,12 +334,11 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
       );
     }
     if (players.isEmpty) return const SizedBox();
-    
+
     // Mostrar ranking cuando el juego termina o no quedan jugadores activos
     if (gameEnded || activePlayers.isEmpty) {
-       SoundManager.stopTimer();
+      SoundManager.stopTimer();
       return StopWordsWinnersScreen(playerScores: playerScores);
-       
     }
 
     final currentPlayer = activePlayers[currentPlayerIndex];
@@ -373,7 +366,9 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                           Expanded(
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                               decoration: BoxDecoration(
                                 color: AppColors.primary,
                                 borderRadius: BorderRadius.circular(16),
@@ -389,13 +384,15 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.category_rounded,
-                                      color: Colors.white, size: 20),
+                                  const Icon(
+                                    Icons.category_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
                                   const SizedBox(width: 8),
                                   Flexible(
                                     child: Text(
-                                      categories[currentCategoryIndex]
-                                          .name
+                                      categories[currentCategoryIndex].name
                                           .toUpperCase(),
                                       style: const TextStyle(
                                         fontSize: 14,
@@ -418,7 +415,8 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                               seconds: gameTime.inSeconds + extraTimeSeconds,
                             ),
                             onTimeEnd: _onTimeEnd,
-                            isActive: chronometerActive &&
+                            isActive:
+                                chronometerActive &&
                                 !gameEnded &&
                                 !hasSelectedLetter,
                           ),
@@ -439,7 +437,9 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                           // Indicador de jugadores restantes
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: activePlayers.length == 1
                                   ? Colors.orange.shade100
@@ -477,7 +477,6 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
 
                       SizedBox(height: isSmallScreen ? 25 : 35),
 
-                      /// Tablero de juego (con o sin comodines)
                       Center(
                         child: hasWildcards
                             ? BoardGameHardWildcards(
@@ -500,7 +499,8 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                               )
                             : BoardGameHardWildcards(
                                 key: ValueKey(
-                                    'hard-${categories[currentCategoryIndex].name}'),
+                                  'hard-${categories[currentCategoryIndex].name}',
+                                ),
                                 onLetterSelected: _onLetterSelected,
                               ),
                       ),
@@ -523,7 +523,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                                     categoryShown = false;
                                     chronometerActive = false;
                                     hasSelectedLetter = false;
-                                    
+
                                     // Reinicializar tablero con comodines
                                     if (hasWildcards) {
                                       _boardHardWildcardsKey.currentState
@@ -537,8 +537,11 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                                   _endGame();
                                 }
                               },
-                              icon: const Icon(Icons.skip_next,
-                                  color: Colors.white, size: 20),
+                              icon: const Icon(
+                                Icons.skip_next,
+                                color: Colors.white,
+                                size: 20,
+                              ),
                               label: const Text(
                                 "Siguiente",
                                 style: TextStyle(
@@ -550,7 +553,9 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 14),
+                                  horizontal: 20,
+                                  vertical: 14,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                 ),
