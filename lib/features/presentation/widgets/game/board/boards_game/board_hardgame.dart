@@ -68,9 +68,33 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
   Timer? _timer;
 
   final List<String> spanishAlphabet = [
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
-    'L', 'M', 'N', 'Ñ', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
-    'V', 'W', 'X', 'Y', 'Z',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'Ñ',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
   ];
 
   final Map<String, WildcardInfo> wildcardMapping = {
@@ -153,7 +177,9 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
       final random = Random();
       int wildcardPosition = -1;
 
-      int lettersToShow = availableLetters.length < 6 ? availableLetters.length : 6;
+      int lettersToShow = availableLetters.length < 6
+          ? availableLetters.length
+          : 6;
 
       if (availableWildcardsPool.isNotEmpty && lettersToShow > 0) {
         wildcardPosition = random.nextInt(lettersToShow);
@@ -190,7 +216,8 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
   }
 
   void _shuffleLetters() {
-    if (pendingBlockWildcard != null) return; // No rotar si hay bloqueo pendiente
+    if (pendingBlockWildcard != null)
+      return; // No rotar si hay bloqueo pendiente
 
     setState(() {
       // Recolectar letras actuales
@@ -198,7 +225,7 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
           .map((lww) => lww.letter)
           .where((l) => !usedLetters.contains(l))
           .toList();
-      
+
       availableLetters.addAll(lettersToShuffle);
       availableLetters.removeWhere((l) => usedLetters.contains(l));
       availableLetters.shuffle();
@@ -207,7 +234,9 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
 
       final random = Random();
       int wildcardPosition = -1;
-      int lettersToShow = availableLetters.length < 6 ? availableLetters.length : 6;
+      int lettersToShow = availableLetters.length < 6
+          ? availableLetters.length
+          : 6;
 
       if (availableWildcardsPool.isNotEmpty && lettersToShow > 0) {
         wildcardPosition = random.nextInt(lettersToShow);
@@ -491,7 +520,7 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
 
   @override
   Widget build(BuildContext context) {
-    const double radius = 140;
+    final double radius = 120;
     final selectedWildcardsInfo = widget.selectedWildcards
         .map((key) => wildcardMapping[key])
         .where((info) => info != null)
@@ -551,14 +580,14 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
           ),
 
         SizedBox(
-          width: 400,
-          height: 400,
+          width: 360,
+          height: 360,
           child: Stack(
             alignment: Alignment.center,
             children: [
               Container(
-                width: 420,
-                height: 420,
+                width: 380,
+                height: 380,
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   shape: BoxShape.circle,
