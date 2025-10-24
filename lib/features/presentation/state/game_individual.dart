@@ -5,9 +5,11 @@ import '../../../data/models/category.dart' as models;
 class GameIndividual extends ChangeNotifier {
   final List<Player> _players = [];
   final List<models.Category> _categories = [];
+  final List<String> _selectedWildcards = [];
 
   List<Player> get players => List.unmodifiable(_players);
   List<models.Category> get categories => List.unmodifiable(_categories);
+  List<String> get selectedWildcards => List.unmodifiable(_selectedWildcards);
 
   void addPlayer(Player player) {
     _players.add(player);
@@ -49,9 +51,35 @@ class GameIndividual extends ChangeNotifier {
     notifyListeners();
   }
 
+
+  void setWildcards(List<String> wildcards) {
+    _selectedWildcards
+      ..clear()
+      ..addAll(wildcards);
+    notifyListeners();
+  }
+
+  void addWildcard(String wildcard) {
+    if (!_selectedWildcards.contains(wildcard)) {
+      _selectedWildcards.add(wildcard);
+      notifyListeners();
+    }
+  }
+
+  void removeWildcard(String wildcard) {
+    _selectedWildcards.remove(wildcard);
+    notifyListeners();
+  }
+
+  void clearWildcards() {
+    _selectedWildcards.clear();
+    notifyListeners();
+  }
+
   void clearAll() {
     _players.clear();
     _categories.clear();
+    _selectedWildcards.clear();
     notifyListeners();
   }
 }

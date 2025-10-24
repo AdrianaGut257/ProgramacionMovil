@@ -3,6 +3,7 @@ import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/chronometer.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/name.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board/boards_game/board_game_wildcards.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
 import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/category_popup.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
@@ -30,11 +31,26 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
   bool categoryShown = false;
   bool chronometerActive = false;
   static const int totalLettersInAlphabet = 27;
+  
+  // Variables para comodines
+  bool hasWildcards = false;
+  bool chronometerPaused = false;
+  bool wasBlocked = false;
+  bool doublePointsActive = false;
+  int extraTimeSeconds = 0;
+  int boardKey = 0;
+  
+  // Keys para controlar widgets
+  GlobalKey<ChronometerWidgetState> _chronometerKey =
+      GlobalKey<ChronometerWidgetState>();
+  final GlobalKey<BoardGameWildcardsState> _boardWildcardsKey =
+      GlobalKey<BoardGameWildcardsState>();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkWildcards();
       _initializePlayers();
       _showCategoryDialog();
     });
@@ -45,6 +61,17 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
   void dispose() {
     SoundManager.stopTimer();
     super.dispose();
+  }
+
+  void _checkWildcards() {
+    final wildcards = context.read<GameIndividual>().selectedWildcards;
+
+    setState(() {
+      hasWildcards = wildcards.isNotEmpty;
+    });
+    debugPrint('=== DEBUG WILDCARDS ===');
+    debugPrint('Comodines cargados: $wildcards');
+    debugPrint('hasWildcards: $hasWildcards');
   }
 
   void _initializePlayers() {
@@ -81,24 +108,50 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
   void _nextPlayer() {
     if (gameEnded || players.isEmpty) return;
     final categories = context.read<GameIndividual>().categories;
-
+    SoundManager.stopTimer();
     setState(() {
       totalLettersSelected++;
+      
+      // Si el tablero está vacío (comodín usado), pasar a siguiente categoría
+      if (hasWildcards &&
+          _boardWildcardsKey.currentState?.isBoardEmpty == true) {
+        totalLettersSelected = totalLettersInAlphabet;
+      }
+
+      // Desbloquear letras si estaban bloqueadas
+      if (wasBlocked) {
+        _boardWildcardsKey.currentState?.unlockAllLetters();
+        wasBlocked = false;
+      }
+
+      // Verificar si hay letras bloqueadas para el siguiente turno
+      final boardState = _boardWildcardsKey.currentState;
+      if (boardState != null && boardState.blockedLetterIndices.isNotEmpty) {
+        wasBlocked = true;
+      }
+
       if (totalLettersSelected >= totalLettersInAlphabet) {
         totalLettersSelected = 0;
         currentCategoryIndex++;
         categoryShown = false;
         chronometerActive = false;
-        
-        // 🔊 Detener sonido al cambiar de categoría
-        SoundManager.stopTimer();
+        hasSelectedLetter = false;
 
         if (currentCategoryIndex >= categories.length) {
           gameEnded = true;
           return;
         }
 
-        Future.delayed(const Duration(milliseconds: 300), _showCategoryDialog);
+        // Reinicializar tablero con comodines si existen
+        if (hasWildcards) {
+          _boardWildcardsKey.currentState?.initializeWildcardPool();
+          _boardWildcardsKey.currentState?.initializeGame();
+        }
+
+        Future.delayed(
+          const Duration(milliseconds: 300),
+          _showCategoryDialog,
+        );
         return;
       }
 
@@ -107,6 +160,10 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
 
       gameTime = const Duration(seconds: 10);
       hasSelectedLetter = false;
+      doublePointsActive = false;
+      
+      // Reiniciar key del cronómetro
+      _chronometerKey = GlobalKey<ChronometerWidgetState>();
     });
     
     // 🔊 Reiniciar sonido DESPUÉS de que setState se complete
@@ -121,10 +178,29 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
   void _increaseScore() {
     if (players.isEmpty) return;
     final currentPlayer = players[currentPlayerIndex];
+    
+    setState(() {
+      // Aplicar doble puntos si está activo
+      int pointsToAdd = doublePointsActive ? 10 : 5;
+      playerScores[currentPlayer.name] =
+          (playerScores[currentPlayer.name] ?? 0) + pointsToAdd;
+      hasSelectedLetter = false;
+      doublePointsActive = false;
+    });
+
+    context.read<GameIndividual>().updatePlayerScore(
+      currentPlayer.id!,
+      playerScores[currentPlayer.name]!,
+    );
+  }
+
+  void _addSkipTurnPoints() {
+    if (players.isEmpty) return;
+    final currentPlayer = players[currentPlayerIndex];
+
     setState(() {
       playerScores[currentPlayer.name] =
           (playerScores[currentPlayer.name] ?? 0) + 5;
-      hasSelectedLetter = false;
     });
 
     context.read<GameIndividual>().updatePlayerScore(
@@ -150,17 +226,45 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
       builder: (context) => ButtonPopup(
         onCorrect: () {
           _increaseScore();
-          setState(() => chronometerActive = true);
           _nextPlayer();
-          // 🔊 El sonido se reinicia en _nextPlayer() con delay
+          setState(() {
+            chronometerActive = true;
+            boardKey++;
+          });
         },
         onReset: () {
-          setState(() => chronometerActive = true);
           _nextPlayer();
-          // 🔊 El sonido se reinicia en _nextPlayer() con delay
+          setState(() {
+            chronometerActive = true;
+            boardKey++;
+          });
         },
       ),
     );
+  }
+
+  void _pauseChronometer() {
+    setState(() {
+      SoundManager.stopTimer();
+      chronometerActive = false;
+      chronometerPaused = true;
+    });
+  }
+
+  void _resumeChronometer() {
+    setState(() {
+      chronometerActive = true;
+      chronometerPaused = false;
+      SoundManager.playStartRound();
+    });
+  }
+
+  void _onWildcardActivated(WildcardType type) {
+    debugPrint('Comodín activado: $type');
+  }
+
+  void _onExtraTimeGranted(int seconds) {
+    _chronometerKey.currentState?.addExtraTime(seconds);
   }
 
   void _endGame() {
@@ -169,6 +273,7 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
     SoundManager.stopTimer();
     SoundManager.playWinners();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -262,12 +367,17 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
 
                           // Cronómetro compacto
                           ChronometerWidget(
-                            key: ValueKey(
-                              '${currentPlayer.id}-$totalLettersSelected',
+                            key: _chronometerKey,
+                            duration: Duration(
+                              seconds: gameTime.inSeconds + extraTimeSeconds,
                             ),
-                            duration: gameTime,
                             onTimeEnd: () {
-                              if (!hasSelectedLetter) _nextPlayer();
+                              debugPrint(
+                                "Tiempo terminado para ${currentPlayer.name}",
+                              );
+                              if (!hasSelectedLetter) {
+                                _nextPlayer();
+                              }
                             },
                             isActive: chronometerActive &&
                                 !gameEnded &&
@@ -313,14 +423,33 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
 
                       SizedBox(height: isSmallScreen ? 25 : 35),
 
-                      // Tablero de juego centrado
+                      // Tablero de juego centrado (con o sin comodines)
                       Center(
-                        child: BoardPage(
-                          key: ValueKey(
-                            'board-${categories[currentCategoryIndex].name}',
-                          ),
-                          onLetterSelected: _onLetterSelected,
-                        ),
+                        child: hasWildcards
+                            ? BoardGameWildcards(
+                                key: _boardWildcardsKey,
+                                selectedWildcards: context
+                                    .read<GameIndividual>()
+                                    .selectedWildcards,
+                                onLetterSelected: _onLetterSelected,
+                                onWildcardActivated: _onWildcardActivated,
+                                onExtraTimeGranted: _onExtraTimeGranted,
+                                onSkipTurn: _nextPlayer,
+                                onSkipTurnPoints: _addSkipTurnPoints,
+                                onDoublePointsActivated: () {
+                                  setState(() {
+                                    doublePointsActive = true;
+                                  });
+                                },
+                                onPauseChronometer: _pauseChronometer,
+                                onResumeChronometer: _resumeChronometer,
+                              )
+                            : BoardPage(
+                                key: ValueKey(
+                                  'board-${categories[currentCategoryIndex].name}',
+                                ),
+                                onLetterSelected: _onLetterSelected,
+                              ),
                       ),
 
                       SizedBox(height: isSmallScreen ? 120 : 100),
@@ -334,12 +463,24 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
                             child: ElevatedButton.icon(
                               onPressed: () {
                                 SoundManager.stopTimer();
+                                final categories = context
+                                    .read<GameIndividual>()
+                                    .categories;
                                 if (currentCategoryIndex < categories.length - 1) {
                                   setState(() {
                                     currentCategoryIndex++;
                                     totalLettersSelected = 0;
                                     categoryShown = false;
                                     chronometerActive = false;
+                                    hasSelectedLetter = false;
+                                    
+                                    // Reinicializar tablero con comodines
+                                    if (hasWildcards) {
+                                      _boardWildcardsKey.currentState
+                                          ?.initializeWildcardPool();
+                                      _boardWildcardsKey.currentState
+                                          ?.initializeGame();
+                                    }
                                   });
                                   _showCategoryDialog();
                                 } else {
@@ -393,5 +534,4 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
       ),
     );
   }
-  
 }

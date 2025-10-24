@@ -1,23 +1,70 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/widgets/letter_tile.dart.dart';
+import 'package:programacion_movil/config/colors.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
 
-class BoardGameHard extends StatefulWidget {
-  final VoidCallback? onLetterSelected;
+enum WildcardType { skipTurn, extraTime, doublePoints, blockLetters }
 
-  const BoardGameHard({super.key, this.onLetterSelected});
+class WildcardInfo {
+  final WildcardType type;
+  final String name;
+  final String description;
+  final IconData icon;
+  final Color color;
 
-  @override
-  State<BoardGameHard> createState() => _BoardGameHardState();
+  WildcardInfo({
+    required this.type,
+    required this.name,
+    required this.description,
+    required this.icon,
+    required this.color,
+  });
 }
 
-class _BoardGameHardState extends State<BoardGameHard> {
+class LetterWithWildcard {
+  final String letter;
+  final WildcardInfo? wildcard;
+
+  LetterWithWildcard({required this.letter, this.wildcard});
+}
+
+class BoardGameHardWildcards extends StatefulWidget {
+  final VoidCallback? onLetterSelected;
+  final Function(WildcardType)? onWildcardActivated;
+  final Function(int)? onExtraTimeGranted;
+  final Function()? onSkipTurn;
+  final Function()? onSkipTurnPoints;
+  final Function()? onDoublePointsActivated;
+  final List<String> selectedWildcards;
+  final VoidCallback? onPauseChronometer;
+  final VoidCallback? onResumeChronometer;
+
+  const BoardGameHardWildcards({
+    super.key,
+    this.onLetterSelected,
+    this.onWildcardActivated,
+    this.onExtraTimeGranted,
+    this.onSkipTurn,
+    this.onSkipTurnPoints,
+    this.onDoublePointsActivated,
+    this.onPauseChronometer,
+    this.onResumeChronometer,
+    this.selectedWildcards = const [],
+  });
+
+  @override
+  State<BoardGameHardWildcards> createState() => BoardGameHardWildcardsState();
+}
+
+class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
   List<String> availableLetters = [];
-  List<String> currentLetters = [];
+  List<LetterWithWildcard> currentLetters = [];
   List<String> usedLetters = [];
+  Set<int> blockedLetterIndices = {};
+  WildcardInfo? pendingBlockWildcard;
+  List<WildcardInfo> availableWildcardsPool = [];
   Timer? _timer;
 
   final List<String> spanishAlphabet = [
@@ -26,10 +73,42 @@ class _BoardGameHardState extends State<BoardGameHard> {
     'V', 'W', 'X', 'Y', 'Z',
   ];
 
+  final Map<String, WildcardInfo> wildcardMapping = {
+    'tiempo_extra': WildcardInfo(
+      type: WildcardType.extraTime,
+      name: '+5 Segundos',
+      description: 'Obtén 5 segundos adicionales',
+      icon: Icons.timer,
+      color: Colors.green,
+    ),
+    'saltar_turno': WildcardInfo(
+      type: WildcardType.skipTurn,
+      name: 'Saltar Turno',
+      description: 'Obtén 5 puntos y pasa al siguiente jugador',
+      icon: Icons.skip_next,
+      color: Colors.blue,
+    ),
+    'punto_doble': WildcardInfo(
+      type: WildcardType.doublePoints,
+      name: 'Doble Puntos',
+      description: 'Duplica la puntuación de esta palabra',
+      icon: Icons.star,
+      color: Colors.amber,
+    ),
+    'castigo_leve': WildcardInfo(
+      type: WildcardType.blockLetters,
+      name: 'Bloquear Letras',
+      description: 'Elige 1 letra y bloquea las demás para el siguiente',
+      icon: Icons.lock,
+      color: Colors.red,
+    ),
+  };
+
   @override
   void initState() {
     super.initState();
-    _initializeGame();
+    initializeWildcardPool();
+    initializeGame();
     _startTimer();
   }
 
@@ -39,19 +118,70 @@ class _BoardGameHardState extends State<BoardGameHard> {
     super.dispose();
   }
 
-  void _initializeGame() {
+  void initializeWildcardPool() {
+    availableWildcardsPool = [];
+
+    List<WildcardInfo> allSelectedWildcards = [];
+
+    for (var wildcardKey in widget.selectedWildcards) {
+      final wildcardInfo = wildcardMapping[wildcardKey];
+      if (wildcardInfo != null) {
+        allSelectedWildcards.add(wildcardInfo);
+        availableWildcardsPool.add(wildcardInfo);
+      }
+    }
+
+    if (allSelectedWildcards.isNotEmpty) {
+      final random = Random();
+
+      for (int i = 0; i < 2; i++) {
+        final randomWildcard =
+            allSelectedWildcards[random.nextInt(allSelectedWildcards.length)];
+        availableWildcardsPool.add(randomWildcard);
+      }
+
+      availableWildcardsPool.shuffle();
+    }
+  }
+
+  void initializeGame() {
     setState(() {
       availableLetters = List.from(spanishAlphabet)..shuffle();
-      currentLetters = availableLetters.take(6).toList();
-      availableLetters.removeWhere((l) => currentLetters.contains(l));
+      currentLetters = [];
       usedLetters.clear();
+
+      final random = Random();
+      int wildcardPosition = -1;
+
+      int lettersToShow = availableLetters.length < 6 ? availableLetters.length : 6;
+
+      if (availableWildcardsPool.isNotEmpty && lettersToShow > 0) {
+        wildcardPosition = random.nextInt(lettersToShow);
+      }
+
+      for (int i = 0; i < lettersToShow; i++) {
+        if (availableLetters.isEmpty) break;
+
+        final letter = availableLetters.removeAt(0);
+        WildcardInfo? wildcard;
+
+        if (i == wildcardPosition && availableWildcardsPool.isNotEmpty) {
+          wildcard = availableWildcardsPool.removeAt(0);
+        }
+
+        currentLetters.add(
+          LetterWithWildcard(letter: letter, wildcard: wildcard),
+        );
+      }
+
+      pendingBlockWildcard = null;
     });
   }
 
   void _startTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 7), (timer) {
-      if (availableLetters.isEmpty) {
+      if (availableLetters.isEmpty && currentLetters.isEmpty) {
         timer.cancel();
       } else {
         _shuffleLetters();
@@ -60,64 +190,372 @@ class _BoardGameHardState extends State<BoardGameHard> {
   }
 
   void _shuffleLetters() {
+    if (pendingBlockWildcard != null) return; // No rotar si hay bloqueo pendiente
+
     setState(() {
-      availableLetters.addAll(currentLetters);
-      availableLetters.removeWhere((l) => usedLetters.contains(l)); // filtra usadas
+      // Recolectar letras actuales
+      List<String> lettersToShuffle = currentLetters
+          .map((lww) => lww.letter)
+          .where((l) => !usedLetters.contains(l))
+          .toList();
+      
+      availableLetters.addAll(lettersToShuffle);
+      availableLetters.removeWhere((l) => usedLetters.contains(l));
       availableLetters.shuffle();
 
-      if (availableLetters.length >= 6) {
-        currentLetters = availableLetters.take(6).toList();
-      } else {
-        currentLetters = availableLetters;
+      currentLetters.clear();
+
+      final random = Random();
+      int wildcardPosition = -1;
+      int lettersToShow = availableLetters.length < 6 ? availableLetters.length : 6;
+
+      if (availableWildcardsPool.isNotEmpty && lettersToShow > 0) {
+        wildcardPosition = random.nextInt(lettersToShow);
       }
 
-      availableLetters.removeWhere((l) => currentLetters.contains(l));
+      for (int i = 0; i < lettersToShow && availableLetters.isNotEmpty; i++) {
+        final letter = availableLetters.removeAt(0);
+        WildcardInfo? wildcard;
+
+        if (i == wildcardPosition && availableWildcardsPool.isNotEmpty) {
+          wildcard = availableWildcardsPool.removeAt(0);
+        }
+
+        currentLetters.add(
+          LetterWithWildcard(letter: letter, wildcard: wildcard),
+        );
+      }
+
+      // Limpiar bloqueos al rotar
+      blockedLetterIndices.clear();
     });
   }
 
   void _onLetterPressed(int index) {
-    if (availableLetters.isEmpty && currentLetters.isEmpty) return;
+    if (blockedLetterIndices.contains(index)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Esta letra está bloqueada'),
+          duration: Duration(seconds: 1),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
+    if (pendingBlockWildcard != null) {
+      _selectLetterToKeep(index);
+      return;
+    }
+
+    final letterWithWildcard = currentLetters[index];
+
+    if (letterWithWildcard.wildcard != null) {
+      _activateWildcard(letterWithWildcard.wildcard!, index);
+      return;
+    }
+
+    _replaceLetterAndUnblock(index);
+    widget.onLetterSelected?.call();
+  }
+
+  void _replaceLetterAndUnblock(int index) {
     setState(() {
-      String removedLetter = currentLetters.removeAt(index);
+      String removedLetter = currentLetters[index].letter;
       usedLetters.add(removedLetter);
 
-      availableLetters.removeWhere((l) => usedLetters.contains(l)); // quita usadas
+      blockedLetterIndices.clear();
+
+      availableLetters.removeWhere((l) => usedLetters.contains(l));
 
       if (availableLetters.isNotEmpty) {
         final random = Random();
-        final newIndex = random.nextInt(availableLetters.length);
-        currentLetters.insert(index, availableLetters[newIndex]);
-        availableLetters.removeAt(newIndex);
+        final newLetter = availableLetters.removeAt(
+          random.nextInt(availableLetters.length),
+        );
+
+        WildcardInfo? newWildcard;
+        if (availableWildcardsPool.isNotEmpty && random.nextDouble() < 0.3) {
+          newWildcard = availableWildcardsPool.removeAt(0);
+        }
+
+        currentLetters[index] = LetterWithWildcard(
+          letter: newLetter,
+          wildcard: newWildcard,
+        );
+      } else {
+        currentLetters.removeAt(index);
       }
-
-      widget.onLetterSelected?.call();
     });
-
-    // Efecto de vibración visual leve para feedback
-    _animateLetterTap();
   }
 
-  void _animateLetterTap() {
-    // Simple animación de rebote al pulsar una letra
-    setState(() {});
+  bool get isBoardEmpty => currentLetters.isEmpty && availableLetters.isEmpty;
+
+  void _activateWildcard(WildcardInfo wildcard, int index) {
+    switch (wildcard.type) {
+      case WildcardType.skipTurn:
+        _handleSkipTurn(index);
+        break;
+      case WildcardType.extraTime:
+        _handleExtraTime(index);
+        break;
+      case WildcardType.doublePoints:
+        _handleDoublePoints(index);
+        break;
+      case WildcardType.blockLetters:
+        _handleBlockLetters(wildcard, index);
+        break;
+    }
+
+    widget.onWildcardActivated?.call(wildcard.type);
+  }
+
+  void _handleSkipTurn(int index) {
+    widget.onSkipTurnPoints?.call();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.skip_next, color: Colors.white),
+            SizedBox(width: 8),
+            Text('¡+5 puntos! Turno saltado automáticamente'),
+          ],
+        ),
+        backgroundColor: Colors.blue,
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    _replaceLetterAndUnblock(index);
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      widget.onSkipTurn?.call();
+    });
+  }
+
+  void _handleExtraTime(int index) {
+    widget.onExtraTimeGranted?.call(5);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.timer, color: Colors.white),
+            SizedBox(width: 8),
+            Text('¡+5 segundos agregados al cronómetro!'),
+          ],
+        ),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    setState(() {
+      currentLetters[index] = LetterWithWildcard(
+        letter: currentLetters[index].letter,
+        wildcard: null,
+      );
+    });
+  }
+
+  void _handleDoublePoints(int index) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.star, color: Colors.white),
+            SizedBox(width: 8),
+            Text('¡Puntos duplicados activados para esta respuesta!'),
+          ],
+        ),
+        backgroundColor: Colors.amber,
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    widget.onDoublePointsActivated?.call();
+
+    _replaceLetterAndUnblock(index);
+    widget.onLetterSelected?.call();
+  }
+
+  void _handleBlockLetters(WildcardInfo wildcard, int index) async {
+    widget.onPauseChronometer?.call();
+    _timer?.cancel(); // Pausar rotación automática
+
+    bool wasCorrect = false;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ButtonPopup(
+        onCorrect: () {
+          wasCorrect = true;
+        },
+        onReset: () {
+          wasCorrect = false;
+        },
+      ),
+    );
+
+    if (!mounted) return;
+
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    if (wasCorrect) {
+      widget.onSkipTurnPoints?.call();
+    }
+
+    String removedLetter = currentLetters[index].letter;
+    usedLetters.add(removedLetter);
+    availableLetters.removeWhere((l) => usedLetters.contains(l));
+
+    if (availableLetters.isNotEmpty) {
+      final random = Random();
+      final newLetter = availableLetters.removeAt(
+        random.nextInt(availableLetters.length),
+      );
+
+      WildcardInfo? newWildcard;
+      if (availableWildcardsPool.isNotEmpty && random.nextDouble() < 0.3) {
+        newWildcard = availableWildcardsPool.removeAt(0);
+      }
+
+      setState(() {
+        currentLetters[index] = LetterWithWildcard(
+          letter: newLetter,
+          wildcard: newWildcard,
+        );
+        pendingBlockWildcard = wildcard;
+      });
+    } else {
+      setState(() {
+        pendingBlockWildcard = wildcard;
+      });
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.lock, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Selecciona la letra que el siguiente jugador podrá usar',
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  void _selectLetterToKeep(int index) {
+    setState(() {
+      blockedLetterIndices.clear();
+
+      for (int i = 0; i < currentLetters.length; i++) {
+        if (i != index) blockedLetterIndices.add(i);
+      }
+
+      pendingBlockWildcard = null;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Solo la letra "${currentLetters[index].letter}" está disponible para el siguiente jugador.',
+        ),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+
+    widget.onResumeChronometer?.call();
+    _startTimer(); // Reanudar rotación automática
+
+    widget.onSkipTurn?.call();
+  }
+
+  void unlockAllLetters() {
+    setState(() {
+      blockedLetterIndices.clear();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     const double radius = 140;
+    final selectedWildcardsInfo = widget.selectedWildcards
+        .map((key) => wildcardMapping[key])
+        .where((info) => info != null)
+        .cast<WildcardInfo>()
+        .toList();
 
     return Column(
       children: [
- 
-        // Tablero circular
+        if (blockedLetterIndices.isNotEmpty || pendingBlockWildcard != null)
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  // ignore: deprecated_member_use
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (blockedLetterIndices.isNotEmpty)
+                  Chip(
+                    avatar: const Icon(
+                      Icons.lock,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    label: Text(
+                      '${blockedLetterIndices.length} letras bloqueadas',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                if (pendingBlockWildcard != null)
+                  const Chip(
+                    avatar: Icon(
+                      Icons.touch_app,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    label: Text(
+                      'Selecciona una letra',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.orange,
+                  ),
+              ],
+            ),
+          ),
+
         SizedBox(
           width: 400,
           height: 400,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Fondo circular con sombra
               Container(
                 width: 420,
                 height: 420,
@@ -135,25 +573,91 @@ class _BoardGameHardState extends State<BoardGameHard> {
                 ),
               ),
 
-              // Letras distribuidas circularmente
               for (int i = 0; i < currentLetters.length; i++)
                 Transform.translate(
                   offset: Offset(
                     radius * cos(2 * pi * i / currentLetters.length - pi / 2),
                     radius * sin(2 * pi * i / currentLetters.length - pi / 2),
                   ),
-                  child: AnimatedScale(
-                    scale: 1.0,
-                    duration: const Duration(milliseconds: 200),
-                    child: LetterTile(
-                      letter: currentLetters[i],
-                      onTap: () => _onLetterPressed(i),
-                      availableLetters: availableLetters.length,
+                  child: GestureDetector(
+                    onTap: () => _onLetterPressed(i),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      clipBehavior: Clip.none,
+                      children: [
+                        Opacity(
+                          opacity: blockedLetterIndices.contains(i) ? 0.5 : 1.0,
+                          child: LetterTile(
+                            letter: currentLetters[i].letter,
+                            onTap: () => _onLetterPressed(i),
+                            availableLetters: availableLetters.length,
+                          ),
+                        ),
+
+                        if (currentLetters[i].wildcard != null)
+                          Positioned(
+                            top: -5,
+                            right: -5,
+                            child: Container(
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                color: currentLetters[i].wildcard!.color,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    // ignore: deprecated_member_use
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                currentLetters[i].wildcard!.icon,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+
+                        if (blockedLetterIndices.contains(i))
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              // ignore: deprecated_member_use
+                              color: Colors.black.withOpacity(0.7),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.lock,
+                              color: Colors.red,
+                              size: 32,
+                            ),
+                          ),
+
+                        if (pendingBlockWildcard != null &&
+                            !blockedLetterIndices.contains(i))
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.orange,
+                                  width: 3,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ),
 
-              // Círculo central
               Container(
                 width: 80,
                 height: 80,
@@ -180,16 +684,70 @@ class _BoardGameHardState extends State<BoardGameHard> {
           ),
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
 
-        // Mensaje final cuando ya no quedan letras
-        if (availableLetters.isEmpty && currentLetters.isEmpty)
-          Text(
-            "¡No quedan más letras!",
-            style: GoogleFonts.poppins().copyWith(
-              color: Colors.redAccent,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+        if (selectedWildcardsInfo.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  // ignore: deprecated_member_use
+                  color: AppColors.primary.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.info_outline, size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'Comodines Activos',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  children: selectedWildcardsInfo.map((wildcard) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: wildcard.color,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            wildcard.icon,
+                            color: Colors.white,
+                            size: 14,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          wildcard.name,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ],
             ),
           ),
       ],
