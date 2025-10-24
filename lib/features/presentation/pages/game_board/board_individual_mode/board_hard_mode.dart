@@ -31,13 +31,39 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
   bool chronometerActive = false;
   static const int totalLettersInAlphabet = 27;
 
+  // Variables para comodines
+  bool hasWildcards = false;
+  bool chronometerPaused = false;
+  bool wasBlocked = false;
+  bool doublePointsActive = false;
+  int extraTimeSeconds = 0;
+  int boardKey = 0;
+  
+  // Keys para controlar widgets
+  GlobalKey<ChronometerWidgetState> _chronometerKey =
+      GlobalKey<ChronometerWidgetState>();
+  final GlobalKey<BoardGameHardWildcardsState> _boardHardWildcardsKey =
+      GlobalKey<BoardGameHardWildcardsState>();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkWildcards();
       _initializePlayers();
       _showCategoryDialog();
     });
+  }
+
+  void _checkWildcards() {
+    final wildcards = context.read<GameIndividual>().selectedWildcards;
+
+    setState(() {
+      hasWildcards = wildcards.isNotEmpty;
+    });
+    debugPrint('=== DEBUG WILDCARDS (HARD MODE) ===');
+    debugPrint('Comodines cargados: $wildcards');
+    debugPrint('hasWildcards: $hasWildcards');
   }
 
   void _initializePlayers() {
@@ -97,6 +123,10 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
       gameTime = const Duration(seconds: 5);
       hasSelectedLetter = false;
       chronometerActive = true;
+      doublePointsActive = false;
+      
+      // Reiniciar key del cronómetro
+      _chronometerKey = GlobalKey<ChronometerWidgetState>();
     });
   }
 
@@ -107,16 +137,41 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     setState(() {
       totalLettersSelected++;
 
+      // Si el tablero está vacío (comodín usado), pasar a siguiente categoría
+      if (hasWildcards &&
+          _boardHardWildcardsKey.currentState?.isBoardEmpty == true) {
+        totalLettersSelected = totalLettersInAlphabet;
+      }
+
+      // Desbloquear letras si estaban bloqueadas
+      if (wasBlocked) {
+        _boardHardWildcardsKey.currentState?.unlockAllLetters();
+        wasBlocked = false;
+      }
+
+      // Verificar si hay letras bloqueadas para el siguiente turno
+      final boardState = _boardHardWildcardsKey.currentState;
+      if (boardState != null && boardState.blockedLetterIndices.isNotEmpty) {
+        wasBlocked = true;
+      }
+
       // Si se completaron todas las letras del alfabeto, cambiar de categoría
       if (totalLettersSelected >= totalLettersInAlphabet) {
         totalLettersSelected = 0;
         currentCategoryIndex++;
         categoryShown = false;
         chronometerActive = false;
+        hasSelectedLetter = false;
 
         if (currentCategoryIndex >= categories.length) {
           gameEnded = true;
           return;
+        }
+
+        // Reinicializar tablero con comodines si existen
+        if (hasWildcards) {
+          _boardHardWildcardsKey.currentState?.initializeWildcardPool();
+          _boardHardWildcardsKey.currentState?.initializeGame();
         }
 
         Future.delayed(const Duration(milliseconds: 300), _showCategoryDialog);
@@ -135,22 +190,45 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
       gameTime = const Duration(seconds: 5);
       hasSelectedLetter = false;
       chronometerActive = true;
+      doublePointsActive = false;
+      
+      // Reiniciar key del cronómetro
+      _chronometerKey = GlobalKey<ChronometerWidgetState>();
     });
   }
 
   void _increaseScore() {
     if (activePlayers.isEmpty) return;
     final currentPlayer = activePlayers[currentPlayerIndex];
+    
     setState(() {
+      // Aplicar doble puntos si está activo
+      int pointsToAdd = doublePointsActive ? 10 : 5;
       playerScores[currentPlayer.name] =
-          (playerScores[currentPlayer.name] ?? 0) + 5;
+          (playerScores[currentPlayer.name] ?? 0) + pointsToAdd;
       hasSelectedLetter = false;
+      doublePointsActive = false;
     });
 
     context.read<GameIndividual>().updatePlayerScore(
-          currentPlayer.id!,
-          playerScores[currentPlayer.name]!,
-        );
+      currentPlayer.id!,
+      playerScores[currentPlayer.name]!,
+    );
+  }
+
+  void _addSkipTurnPoints() {
+    if (activePlayers.isEmpty) return;
+    final currentPlayer = activePlayers[currentPlayerIndex];
+
+    setState(() {
+      playerScores[currentPlayer.name] =
+          (playerScores[currentPlayer.name] ?? 0) + 5;
+    });
+
+    context.read<GameIndividual>().updatePlayerScore(
+      currentPlayer.id!,
+      playerScores[currentPlayer.name]!,
+    );
   }
 
   void _onLetterSelected() {
@@ -170,10 +248,13 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
           onCorrect: () {
             _increaseScore();
             _nextPlayer();
-            setState(() => chronometerActive = true);
+            setState(() {
+              chronometerActive = true;
+              boardKey++;
+            });
           },
           onReset: () {
-            // ❌ Botón ahora elimina al jugador en vez de terminar el juego
+            // ❌ Botón elimina al jugador en modo difícil
             _eliminateCurrentPlayer();
           },
         ),
@@ -186,6 +267,28 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     if (!hasSelectedLetter && !gameEnded) {
       _eliminateCurrentPlayer();
     }
+  }
+
+  void _pauseChronometer() {
+    setState(() {
+      chronometerActive = false;
+      chronometerPaused = true;
+    });
+  }
+
+  void _resumeChronometer() {
+    setState(() {
+      chronometerActive = true;
+      chronometerPaused = false;
+    });
+  }
+
+  void _onWildcardActivated(WildcardType type) {
+    debugPrint('Comodín activado (Hard Mode): $type');
+  }
+
+  void _onExtraTimeGranted(int seconds) {
+    _chronometerKey.currentState?.addExtraTime(seconds);
   }
 
   void _endGame() => setState(() => gameEnded = true);
@@ -274,9 +377,10 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                           ),
                           const SizedBox(width: 12),
                           ChronometerWidget(
-                            key: ValueKey(
-                                '${currentPlayer.id}-$totalLettersSelected'),
-                            duration: gameTime,
+                            key: _chronometerKey,
+                            duration: Duration(
+                              seconds: gameTime.inSeconds + extraTimeSeconds,
+                            ),
                             onTimeEnd: _onTimeEnd,
                             isActive: chronometerActive &&
                                 !gameEnded &&
@@ -337,13 +441,32 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
 
                       SizedBox(height: isSmallScreen ? 25 : 35),
 
-                      /// Tablero de juego
+                      /// Tablero de juego (con o sin comodines)
                       Center(
-                        child: BoardGameHard(
-                          key: ValueKey(
-                              'hard-${categories[currentCategoryIndex].name}'),
-                          onLetterSelected: _onLetterSelected,
-                        ),
+                        child: hasWildcards
+                            ? BoardGameHardWildcards(
+                                key: _boardHardWildcardsKey,
+                                selectedWildcards: context
+                                    .read<GameIndividual>()
+                                    .selectedWildcards,
+                                onLetterSelected: _onLetterSelected,
+                                onWildcardActivated: _onWildcardActivated,
+                                onExtraTimeGranted: _onExtraTimeGranted,
+                                onSkipTurn: _nextPlayer,
+                                onSkipTurnPoints: _addSkipTurnPoints,
+                                onDoublePointsActivated: () {
+                                  setState(() {
+                                    doublePointsActive = true;
+                                  });
+                                },
+                                onPauseChronometer: _pauseChronometer,
+                                onResumeChronometer: _resumeChronometer,
+                              )
+                            : BoardGameHardWildcards(
+                                key: ValueKey(
+                                    'hard-${categories[currentCategoryIndex].name}'),
+                                onLetterSelected: _onLetterSelected,
+                              ),
                       ),
 
                       SizedBox(height: isSmallScreen ? 25 : 55),
@@ -362,6 +485,15 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                                     totalLettersSelected = 0;
                                     categoryShown = false;
                                     chronometerActive = false;
+                                    hasSelectedLetter = false;
+                                    
+                                    // Reinicializar tablero con comodines
+                                    if (hasWildcards) {
+                                      _boardHardWildcardsKey.currentState
+                                          ?.initializeWildcardPool();
+                                      _boardHardWildcardsKey.currentState
+                                          ?.initializeGame();
+                                    }
                                   });
                                   _showCategoryDialog();
                                 } else {
