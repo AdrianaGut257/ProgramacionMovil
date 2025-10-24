@@ -10,6 +10,7 @@ import 'package:programacion_movil/features/presentation/widgets/game/board_info
 import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/end_game_button.dart';
 import 'package:programacion_movil/features/presentation/state/game_individual.dart';
 import 'package:provider/provider.dart';
+import 'package:programacion_movil/data/datasources/app_database.dart';
 
 class BoardEasyModePage extends StatefulWidget {
   const BoardEasyModePage({super.key});
@@ -45,6 +46,9 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
   final GlobalKey<BoardGameWildcardsState> _boardWildcardsKey =
       GlobalKey<BoardGameWildcardsState>();
 
+  // Variable para controlar si ya se guardó la partida
+  bool _gameSaved = false;
+
   @override
   void initState() {
     super.initState();
@@ -79,6 +83,7 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
     final categories = context.read<GameIndividual>().categories;
     if (currentCategoryIndex >= categories.length) {
       setState(() => gameEnded = true);
+      _saveGameToHistory(); // Guardar al terminar todas las categorías
       return;
     }
     setState(() => chronometerActive = false);
@@ -125,6 +130,7 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
 
         if (currentCategoryIndex >= categories.length) {
           gameEnded = true;
+          _saveGameToHistory(); // Guardar cuando se terminan las categorías
           return;
         }
 
@@ -240,7 +246,76 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
     _chronometerKey.currentState?.addExtraTime(seconds);
   }
 
-  void _endGame() => setState(() => gameEnded = true);
+  void _endGame() {
+    setState(() => gameEnded = true);
+    _saveGameToHistory(); // Guardar cuando el usuario termina manualmente
+  }
+
+  // ============================================
+  // MÉTODO PARA GUARDAR LA PARTIDA EN EL HISTORIAL
+  // ============================================
+  Future<void> _saveGameToHistory() async {
+    // Evitar guardar múltiples veces
+    if (_gameSaved) {
+      debugPrint('⚠️ La partida ya fue guardada anteriormente');
+      return;
+    }
+
+    try {
+      final categories = context.read<GameIndividual>().categories;
+      
+      // Obtener nombres de las categorías jugadas
+      List<String> playedCategories = [];
+      for (int i = 0; i <= currentCategoryIndex && i < categories.length; i++) {
+        playedCategories.add(categories[i].name);
+      }
+
+      debugPrint('==========================================');
+      debugPrint('💾 GUARDANDO PARTIDA EN HISTORIAL');
+      debugPrint('==========================================');
+      debugPrint('Modo de juego: Easy Mode');
+      debugPrint('Jugadores: ${playerScores.length}');
+      debugPrint('Puntuaciones: $playerScores');
+      debugPrint('Categorías jugadas: $playedCategories');
+      debugPrint('==========================================');
+
+      // Guardar en la base de datos
+      final gameId = await AppDatabase.instance.saveGameHistory(
+        gameMode: 'Easy Mode',
+        playerScores: playerScores,
+        categories: playedCategories,
+      );
+
+      _gameSaved = true; // Marcar como guardado
+
+      debugPrint('✅ PARTIDA GUARDADA EXITOSAMENTE');
+      debugPrint('🆔 ID de la partida: $gameId');
+      debugPrint('==========================================');
+
+      // Verificar que se guardó correctamente
+      final savedGame = await AppDatabase.instance.getGameById(gameId);
+      if (savedGame != null) {
+        debugPrint('✅ VERIFICACIÓN DE GUARDADO:');
+        debugPrint('📅 Fecha: ${savedGame['date']}');
+        debugPrint('🎮 Modo: ${savedGame['game_mode']}');
+        debugPrint('👥 Jugadores guardados: ${savedGame['players'].length}');
+        
+        for (var player in savedGame['players']) {
+          debugPrint('   ${player['position']}º - ${player['player_name']}: ${player['score']} pts');
+        }
+        
+        debugPrint('📚 Categorías guardadas: ${savedGame['categories'].length}');
+        for (var cat in savedGame['categories']) {
+          debugPrint('   - ${cat['category_name']}');
+        }
+        debugPrint('==========================================');
+      }
+
+    } catch (e) {
+      debugPrint('❌ ERROR AL GUARDAR LA PARTIDA: $e');
+      debugPrint('==========================================');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
