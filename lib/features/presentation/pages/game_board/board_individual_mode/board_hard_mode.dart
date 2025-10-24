@@ -9,6 +9,7 @@ import 'package:programacion_movil/features/presentation/widgets/game/board_info
 import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/end_game_button.dart';
 import 'package:programacion_movil/features/presentation/state/game_individual.dart';
 import 'package:provider/provider.dart';
+import 'package:programacion_movil/features/presentation/utils/sound_manager.dart';
 
 class BoardHardModePage extends StatefulWidget {
   const BoardHardModePage({super.key});
@@ -39,6 +40,13 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     });
   }
 
+  // 🧹 Limpiar sonido cuando se destruya el widget
+  @override
+  void dispose() {
+    SoundManager.stopTimer();
+    super.dispose();
+  }
+
   void _initializePlayers() {
     final game = context.read<GameIndividual>();
     players = game.players;
@@ -52,8 +60,12 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     final categories = context.read<GameIndividual>().categories;
     if (currentCategoryIndex >= categories.length) {
       setState(() => gameEnded = true);
+      SoundManager.stopTimer(); // 🔊 Detener sonido al terminar
       return;
     }
+    
+    // 🔊 Detener sonido mientras se muestra el popup de categoría
+    SoundManager.stopTimer();
     setState(() => chronometerActive = false);
 
     CategoryPopup.show(context, categories[currentCategoryIndex].name, () {
@@ -61,6 +73,8 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
         categoryShown = true;
         chronometerActive = true;
       });
+      // 🔊 Iniciar sonido cuando comienza el turno
+      SoundManager.playStartRound();
     });
   }
 
@@ -75,6 +89,9 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
         currentCategoryIndex++;
         categoryShown = false;
         chronometerActive = false;
+        
+        // 🔊 Detener sonido al cambiar de categoría
+        SoundManager.stopTimer();
 
         if (currentCategoryIndex >= categories.length) {
           gameEnded = true;
@@ -90,6 +107,14 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
 
       gameTime = const Duration(seconds: 5);
       hasSelectedLetter = false;
+    });
+    
+    // 🔊 Reiniciar sonido DESPUÉS de que setState se complete
+    // Usar un pequeño delay para asegurar que el estado esté actualizado
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!gameEnded && chronometerActive && mounted) {
+        SoundManager.playStartRound();
+      }
     });
   }
 
@@ -111,6 +136,9 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
   void _onLetterSelected() {
     if (hasSelectedLetter) return;
 
+    // 🔊 DETENER el sonido PRIMERO (antes del setState)
+    SoundManager.stopTimer();
+
     setState(() {
       hasSelectedLetter = true;
       chronometerActive = false;
@@ -122,18 +150,24 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
       builder: (context) => ButtonPopup(
         onCorrect: () {
           _increaseScore();
-          _nextPlayer();
           setState(() => chronometerActive = true);
+          _nextPlayer();
+          // 🔊 El sonido se reinicia en _nextPlayer() con delay
         },
         onReset: () {
-          _nextPlayer();
           setState(() => chronometerActive = true);
+          _nextPlayer();
+          // 🔊 El sonido se reinicia en _nextPlayer() con delay
         },
       ),
     );
   }
 
-  void _endGame() => setState(() => gameEnded = true);
+  void _endGame() {
+    setState(() => gameEnded = true);
+    // 🔊 Detener sonido al terminar el juego
+    SoundManager.stopTimer();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +182,11 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
       );
     }
     if (players.isEmpty) return const SizedBox();
-    if (gameEnded) return RankingGame(playerScores: playerScores);
+    if (gameEnded) {
+      // 🔊 Asegurarse de detener el sonido
+      SoundManager.stopTimer();
+      return RankingGame(playerScores: playerScores);
+    }
 
     final currentPlayer = players[currentPlayerIndex];
 
@@ -224,7 +262,17 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                         ),
                         duration: gameTime,
                         onTimeEnd: () {
-                          if (!hasSelectedLetter) _nextPlayer();
+                          if (!hasSelectedLetter) {
+                            // 🔊 Detener sonido cuando se acaba el tiempo
+                            SoundManager.stopTimer();
+                            
+                            // Pequeño delay antes de pasar al siguiente
+                            Future.delayed(const Duration(milliseconds: 50), () {
+                              if (mounted) {
+                                _nextPlayer();
+                              }
+                            });
+                          }
                         },
                         isActive:
                             chronometerActive &&
@@ -247,6 +295,9 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
 
                       ElevatedButton.icon(
                         onPressed: () {
+                          // 🔊 Detener sonido al saltar categoría
+                          SoundManager.stopTimer();
+                          
                           if (currentCategoryIndex < categories.length - 1) {
                             setState(() {
                               currentCategoryIndex++;
@@ -261,7 +312,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                         },
                         icon: const Icon(Icons.skip_next, color: Colors.white),
                         label: const Text(
-                          "Siguiente categoría DAYANAAAAA",
+                          "Siguiente categoría",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

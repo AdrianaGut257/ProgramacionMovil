@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../config/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../features/presentation/utils/sound_manager.dart';
 
 class CustomButton extends StatefulWidget {
   final String text;
@@ -77,7 +76,6 @@ class _CustomButtonState extends State<CustomButton>
         _isPressed = false;
       });
       _animationController.reverse();
-      SoundManager.playClick();
       widget.onPressed();
     }
   }
