@@ -507,7 +507,7 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
     );
 
     widget.onResumeChronometer?.call();
-    _startTimer(); // Reanudar rotación automática
+    _startTimer();
 
     widget.onSkipTurn?.call();
   }
