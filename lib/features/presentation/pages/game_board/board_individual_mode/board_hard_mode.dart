@@ -3,11 +3,11 @@ import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/boards_game/board_hardgame.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/chronometer.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/name.dart';
-import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
 import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/category_popup.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
 import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/end_game_button.dart';
 import 'package:programacion_movil/features/presentation/state/game_individual.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/ranking/screens/stopwords_winners_screen.dart';
 import 'package:provider/provider.dart';
 
 class BoardHardModePage extends StatefulWidget {
@@ -309,7 +309,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     
     // Mostrar ranking cuando el juego termina o no quedan jugadores activos
     if (gameEnded || activePlayers.isEmpty) {
-      return RankingGame(playerScores: playerScores);
+      return StopWordsWinnersScreen(playerScores: playerScores);
     }
 
     final currentPlayer = activePlayers[currentPlayerIndex];

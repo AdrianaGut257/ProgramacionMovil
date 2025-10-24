@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
 import '../widgets/podium_position.dart';
-import '../widgets/ranking_item.dart';
 import '../widgets/animated_title.dart';
 import '../utils/screen_config.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
@@ -66,7 +66,8 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
     final config = ScreenConfig(MediaQuery.of(context).size);
     final size = MediaQuery.of(context).size;
     final height = size.height;
-  final isSmallScreen = height < 700;
+    final isSmallScreen = height < 700;
+    
     return Scaffold(
       backgroundColor: AppColors.primaryVariant,
       body: SafeArea(
@@ -82,20 +83,9 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
                 const SizedBox(height: 25),
                 SlideTransition(
                   position: _slideAnimation,
-                  child: Column(
-                    children: [
-                      ...List.generate(
-                        sortedScores.length,
-                        (index) => Padding(
-                          padding: EdgeInsets.only(bottom: config.itemSpacing),
-                          child: RankingItem(
-                            position: index + 1,
-                            player: sortedScores[index],
-                            config: config,
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: RankingGame(
+                    sortedScores: sortedScores,
+                    config: config,
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -109,14 +99,10 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
                 ),
                 SizedBox(height: isSmallScreen ? 10 : 20),
               ],
-              
             ),
           ),
-          
         ),
       ),
     );
-    
   }
-  
 }

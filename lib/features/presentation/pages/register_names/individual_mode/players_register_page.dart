@@ -33,70 +33,19 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
     setState(() => players[index] = value);
   }
 
-  void _showCustomModal(String message) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.warning_amber_rounded,
-                    color: AppColors.primary, size: 60),
-                const SizedBox(height: 20),
-                Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(height: 25),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 12),
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    "Aceptar",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   void _startGame() {
   final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
-
-  if (validPlayers.isEmpty) {
-    _showCustomModal("Agrega al menos un jugador");
-    return;
-  }
-
+ 
+ if (validPlayers.isEmpty) {
+      ValidationDialog.show(
+        context,
+        "No puedes comenzar sin jugadores, agrega mínimo 2",
+        ValidationType.noPlayers,
+      );
+      return;
+    }
+    
   if (validPlayers.length < 2) {
     ValidationDialog.show(
       context,

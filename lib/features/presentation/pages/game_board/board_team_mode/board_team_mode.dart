@@ -4,11 +4,11 @@ import 'package:programacion_movil/features/presentation/widgets/game/board_info
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/name.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/boards_game/board_game_wildcards.dart';
-import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
 import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/category_popup.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
 import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/end_game_button.dart';
 import 'package:programacion_movil/features/presentation/state/game_team.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/ranking/screens/stopwords_winners_screen.dart';
 import 'package:provider/provider.dart';
 
 class BoardTeamModePage extends StatefulWidget {
@@ -276,7 +276,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
     if (orderedPlayers.isEmpty) return const SizedBox();
 
-    if (gameEnded) return RankingGame(playerScores: playerScores);
+    if (gameEnded) return StopWordsWinnersScreen(playerScores: playerScores);
 
     final currentPlayer = orderedPlayers[currentPlayerIndex];
 
