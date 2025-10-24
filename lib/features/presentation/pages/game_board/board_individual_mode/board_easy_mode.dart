@@ -289,13 +289,10 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
     }
     if (players.isEmpty) return const SizedBox();
   if (gameEnded) {
+      SoundManager.stopTimer();
   return StopWordsWinnersScreen(playerScores: playerScores);
 }
-    if (gameEnded) {
-      // 🔊 Asegurarse de detener el sonido
-      SoundManager.stopTimer();
-      return RankingGame(playerScores: playerScores);
-    }
+    
 
     final currentPlayer = players[currentPlayerIndex];
 

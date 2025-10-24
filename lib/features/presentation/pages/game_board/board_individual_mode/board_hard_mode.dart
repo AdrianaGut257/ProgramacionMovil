@@ -343,9 +343,9 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     
     // Mostrar ranking cuando el juego termina o no quedan jugadores activos
     if (gameEnded || activePlayers.isEmpty) {
+       SoundManager.stopTimer();
       return StopWordsWinnersScreen(playerScores: playerScores);
-      SoundManager.stopTimer();
-      return RankingGame(playerScores: playerScores);
+       
     }
 
     final currentPlayer = activePlayers[currentPlayerIndex];
