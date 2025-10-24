@@ -291,6 +291,7 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
+                                    // ignore: deprecated_member_use
                                     color: AppColors.primary.withOpacity(0.3),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
