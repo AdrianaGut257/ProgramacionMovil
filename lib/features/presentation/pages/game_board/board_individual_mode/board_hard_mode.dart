@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board/boards_game/board_hardgame.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/chronometer.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/name.dart';
-import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
 import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/category_popup.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
@@ -25,6 +25,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
   Map<String, int> playerScores = {};
   bool hasSelectedLetter = false;
   List<dynamic> players = [];
+  List<dynamic> activePlayers = [];
   int totalLettersSelected = 0;
   int currentCategoryIndex = 0;
   bool categoryShown = false;
@@ -50,6 +51,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
   void _initializePlayers() {
     final game = context.read<GameIndividual>();
     players = game.players;
+    activePlayers = List.from(players);
     for (var p in players) {
       playerScores[p.name] = 0;
     }
@@ -78,12 +80,48 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     });
   }
 
+  void _eliminateCurrentPlayer() {
+    if (activePlayers.isEmpty || gameEnded) return;
+
+    final eliminatedPlayer = activePlayers[currentPlayerIndex];
+    
+    setState(() {
+      activePlayers.removeAt(currentPlayerIndex);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${eliminatedPlayer.name} ha sido eliminado ❌'),
+          backgroundColor: Colors.redAccent,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+
+      // Si no quedan jugadores activos, terminar el juego
+      if (activePlayers.isEmpty) {
+        gameEnded = true;
+        return;
+      }
+
+      // Ajustar el índice si está fuera de rango
+      if (currentPlayerIndex >= activePlayers.length) {
+        currentPlayerIndex = 0;
+      }
+
+      // Reiniciar turno para el siguiente jugador
+      gameTime = const Duration(seconds: 5);
+      hasSelectedLetter = false;
+      chronometerActive = true;
+    });
+  }
+
   void _nextPlayer() {
-    if (gameEnded || players.isEmpty) return;
+    if (gameEnded || activePlayers.isEmpty) return;
     final categories = context.read<GameIndividual>().categories;
 
     setState(() {
       totalLettersSelected++;
+
+      // Si se completaron todas las letras del alfabeto, cambiar de categoría
       if (totalLettersSelected >= totalLettersInAlphabet) {
         totalLettersSelected = 0;
         currentCategoryIndex++;
@@ -102,11 +140,18 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
         return;
       }
 
-      currentPlayerIndex++;
-      if (currentPlayerIndex >= players.length) currentPlayerIndex = 0;
+      // Si hay más de un jugador, pasar al siguiente turno
+      if (activePlayers.length > 1) {
+        currentPlayerIndex++;
+        if (currentPlayerIndex >= activePlayers.length) {
+          currentPlayerIndex = 0;
+        }
+      }
+      // Si solo queda 1 jugador, sigue jugando él solo
 
       gameTime = const Duration(seconds: 5);
       hasSelectedLetter = false;
+      chronometerActive = true;
     });
     
     // 🔊 Reiniciar sonido DESPUÉS de que setState se complete
@@ -119,8 +164,8 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
   }
 
   void _increaseScore() {
-    if (players.isEmpty) return;
-    final currentPlayer = players[currentPlayerIndex];
+    if (activePlayers.isEmpty) return;
+    final currentPlayer = activePlayers[currentPlayerIndex];
     setState(() {
       playerScores[currentPlayer.name] =
           (playerScores[currentPlayer.name] ?? 0) + 5;
@@ -128,9 +173,9 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     });
 
     context.read<GameIndividual>().updatePlayerScore(
-      currentPlayer.id!,
-      playerScores[currentPlayer.name]!,
-    );
+          currentPlayer.id!,
+          playerScores[currentPlayer.name]!,
+        );
   }
 
   void _onLetterSelected() {
@@ -144,23 +189,31 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
       chronometerActive = false;
     });
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => ButtonPopup(
-        onCorrect: () {
-          _increaseScore();
-          setState(() => chronometerActive = true);
-          _nextPlayer();
-          // 🔊 El sonido se reinicia en _nextPlayer() con delay
-        },
-        onReset: () {
-          setState(() => chronometerActive = true);
-          _nextPlayer();
-          // 🔊 El sonido se reinicia en _nextPlayer() con delay
-        },
-      ),
-    );
+    // Esperar hasta el próximo frame antes de abrir el modal
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => ButtonPopup(
+          onCorrect: () {
+            _increaseScore();
+            _nextPlayer();
+            setState(() => chronometerActive = true);
+          },
+          onReset: () {
+            // ❌ Botón ahora elimina al jugador en vez de terminar el juego
+            _eliminateCurrentPlayer();
+          },
+        ),
+      );
+    });
+  }
+
+  void _onTimeEnd() {
+    // Si el jugador no seleccionó letra y el juego no ha terminado, eliminarlo
+    if (!hasSelectedLetter && !gameEnded) {
+      _eliminateCurrentPlayer();
+    }
   }
 
   void _endGame() {
@@ -174,21 +227,22 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final isSmallScreen = height < 700;
-
     final categories = context.watch<GameIndividual>().categories;
+
     if (categories.isEmpty) {
       return const Scaffold(
         body: Center(child: Text('No hay categorías disponibles')),
       );
     }
     if (players.isEmpty) return const SizedBox();
-    if (gameEnded) {
-      // 🔊 Asegurarse de detener el sonido
+    
+    // Mostrar ranking cuando el juego termina o no quedan jugadores activos
+    if (gameEnded || activePlayers.isEmpty) {
       SoundManager.stopTimer();
       return RankingGame(playerScores: playerScores);
     }
 
-    final currentPlayer = players[currentPlayerIndex];
+    final currentPlayer = activePlayers[currentPlayerIndex];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -200,142 +254,180 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(height: isSmallScreen ? 40 : 80),
+                      SizedBox(height: isSmallScreen ? 20 : 30),
 
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 64),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF615AC7),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: const Color(0xFF615AC7),
-                            width: 2,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.category_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Flexible(
-                              child: Text(
-                                categories[currentCategoryIndex].name
-                                    .toUpperCase(),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: 1.2,
-                                ),
-                                textAlign: TextAlign.center,
+                      /// Header: Categoría + Cronómetro
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    // ignore: deprecated_member_use
+                                    color: AppColors.primary.withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.category_rounded,
+                                      color: Colors.white, size: 20),
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      categories[currentCategoryIndex]
+                                          .name
+                                          .toUpperCase(),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-
-                      SizedBox(height: isSmallScreen ? 15 : 10),
-
-                      PlayerNameWidget(
-                        name: currentPlayer.name,
-                        score: playerScores[currentPlayer.name] ?? 0,
-                        team: 1,
-                      ),
-
-                      SizedBox(height: isSmallScreen ? 15 : 10),
-
-                      ChronometerWidget(
-                        key: ValueKey(
-                          '${currentPlayer.id}-$totalLettersSelected',
-                        ),
-                        duration: gameTime,
-                        onTimeEnd: () {
-                          if (!hasSelectedLetter) {
-                            // 🔊 Detener sonido cuando se acaba el tiempo
-                            SoundManager.stopTimer();
-                            
-                            // Pequeño delay antes de pasar al siguiente
-                            Future.delayed(const Duration(milliseconds: 50), () {
-                              if (mounted) {
-                                _nextPlayer();
-                              }
-                            });
-                          }
-                        },
-                        isActive:
-                            chronometerActive &&
-                            !gameEnded &&
-                            !hasSelectedLetter,
-                      ),
-
-                      SizedBox(height: isSmallScreen ? 15 : 20),
-
-                      Center(
-                        child: BoardPage(
-                          key: ValueKey(
-                            'board-${categories[currentCategoryIndex].name}',
                           ),
+                          const SizedBox(width: 12),
+                          ChronometerWidget(
+                            key: ValueKey(
+                                '${currentPlayer.id}-$totalLettersSelected'),
+                            duration: gameTime,
+                            onTimeEnd: _onTimeEnd,
+                            isActive: chronometerActive &&
+                                !gameEnded &&
+                                !hasSelectedLetter,
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: isSmallScreen ? 20 : 25),
+
+                      /// Nombre del jugador + Indicador de jugadores activos
+                      Column(
+                        children: [
+                          PlayerNameWidget(
+                            name: currentPlayer.name,
+                            score: playerScores[currentPlayer.name] ?? 0,
+                            team: 1,
+                          ),
+                          const SizedBox(height: 8),
+                          // Indicador de jugadores restantes
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: activePlayers.length == 1
+                                  ? Colors.orange.shade100
+                                  : Colors.blue.shade50,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.people,
+                                  size: 16,
+                                  color: activePlayers.length == 1
+                                      ? Colors.orange.shade700
+                                      : Colors.blue.shade700,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  activePlayers.length == 1
+                                      ? '¡Último jugador!'
+                                      : '${activePlayers.length} jugadores activos',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: activePlayers.length == 1
+                                        ? Colors.orange.shade700
+                                        : Colors.blue.shade700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: isSmallScreen ? 25 : 35),
+
+                      /// Tablero de juego
+                      Center(
+                        child: BoardGameHard(
+                          key: ValueKey(
+                              'hard-${categories[currentCategoryIndex].name}'),
                           onLetterSelected: _onLetterSelected,
                         ),
                       ),
 
-                      SizedBox(height: isSmallScreen ? 15 : 20),
+                      SizedBox(height: isSmallScreen ? 25 : 55),
 
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          // 🔊 Detener sonido al saltar categoría
-                          SoundManager.stopTimer();
-                          
-                          if (currentCategoryIndex < categories.length - 1) {
-                            setState(() {
-                              currentCategoryIndex++;
-                              totalLettersSelected = 0;
-                              categoryShown = false;
-                              chronometerActive = false;
-                            });
-                            _showCategoryDialog();
-                          } else {
-                            _endGame();
-                          }
-                        },
-                        icon: const Icon(Icons.skip_next, color: Colors.white),
-                        label: const Text(
-                          "Siguiente categoría",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                      /// Botones inferiores
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                SoundManager.stopTimer();
+                                if (currentCategoryIndex <
+                                    categories.length - 1) {
+                                  setState(() {
+                                    currentCategoryIndex++;
+                                    totalLettersSelected = 0;
+                                    categoryShown = false;
+                                    chronometerActive = false;
+                                  });
+                                  _showCategoryDialog();
+                                } else {
+                                  _endGame();
+                                }
+                              },
+                              icon: const Icon(Icons.skip_next,
+                                  color: Colors.white, size: 20),
+                              label: const Text(
+                                "Siguiente",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                elevation: 3,
+                              ),
+                            ),
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+                          const SizedBox(width: 12),
+                          Expanded(child: EndGameButton(onPressed: _endGame)),
+                        ],
                       ),
-
-                      SizedBox(height: isSmallScreen ? 8 : 10),
-
-                      EndGameButton(onPressed: _endGame),
-
-                      SizedBox(height: height * 0.05),
+                      SizedBox(height: isSmallScreen ? 20 : 30),
                     ],
                   ),
                 ),

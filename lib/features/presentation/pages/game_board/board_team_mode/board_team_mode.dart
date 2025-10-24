@@ -3,6 +3,7 @@ import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/chronometer.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/name.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board/board_page.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/board/boards_game/board_game_wildcards.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/ranking/ranking_game.dart';
 import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/category_popup.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
@@ -30,14 +31,38 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
   int currentCategoryIndex = 0;
   bool categoryShown = false;
   bool chronometerActive = false;
+  bool hasWildcards = false;
+  int chronometerKey = 0;
+  int chronometerUpdateKey = 0;
+  bool chronometerPaused = false;
+  int boardKey = 0;
+  bool shouldUnblockLetters = false;
+  bool wasBlocked = false;
+  bool doublePointsActive = false;
+  int extraTimeSeconds = 0;
+  GlobalKey<ChronometerWidgetState> _chronometerKey =
+      GlobalKey<ChronometerWidgetState>();
+
+  final GlobalKey<BoardGameWildcardsState> _boardWildcardsKey =
+      GlobalKey<BoardGameWildcardsState>();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkWildcards();
       _initializeOrderedPlayers();
       _showCategoryDialog();
     });
+  }
+
+  void _checkWildcards() {
+    final wildcards = context.read<GameTeam>().selectedWildcards;
+
+    setState(() {
+      hasWildcards = wildcards.isNotEmpty;
+    });
+    debugPrint('Comodines cargados: $wildcards');
   }
 
   void _initializeOrderedPlayers() {
@@ -90,16 +115,36 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
     setState(() {
       totalLettersSelected++;
+      if (hasWildcards &&
+          _boardWildcardsKey.currentState?.isBoardEmpty == true) {
+        totalLettersSelected = totalLettersInAlphabet;
+      }
+
+      if (wasBlocked) {
+        _boardWildcardsKey.currentState?.unlockAllLetters();
+        wasBlocked = false;
+      }
+
+      final boardState = _boardWildcardsKey.currentState;
+      if (boardState != null && boardState.blockedLetterIndices.isNotEmpty) {
+        wasBlocked = true;
+      }
 
       if (totalLettersSelected >= totalLettersInAlphabet) {
         totalLettersSelected = 0;
         currentCategoryIndex++;
         categoryShown = false;
         chronometerActive = false;
+        hasSelectedLetter = false;
 
         if (currentCategoryIndex >= categories.length) {
           gameEnded = true;
           return;
+        }
+
+        if (hasWildcards) {
+          _boardWildcardsKey.currentState?.initializeWildcardPool();
+          _boardWildcardsKey.currentState?.initializeGame();
         }
 
         Future.delayed(const Duration(milliseconds: 300), () {
@@ -115,7 +160,10 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
       score = playerScores[orderedPlayers[currentPlayerIndex].name] ?? 0;
       gameTime = const Duration(seconds: 5);
+
+      _chronometerKey = GlobalKey<ChronometerWidgetState>();
       hasSelectedLetter = false;
+      doublePointsActive = false;
     });
   }
 
@@ -126,9 +174,27 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     final playerName = currentPlayer.name;
 
     setState(() {
+      int pointsToAdd = doublePointsActive ? 10 : 5;
+      score += pointsToAdd;
+      playerScores[playerName] = (playerScores[playerName] ?? 0) + pointsToAdd;
+      hasSelectedLetter = false;
+      doublePointsActive = false;
+    });
+
+    final gameTeam = context.read<GameTeam>();
+    final player = gameTeam.players.firstWhere((p) => p.name == playerName);
+    gameTeam.updatePlayerScore(player.id!, playerScores[playerName]!);
+  }
+
+  void _addSkipTurnPoints() {
+    if (orderedPlayers.isEmpty) return;
+
+    final currentPlayer = orderedPlayers[currentPlayerIndex];
+    final playerName = currentPlayer.name;
+
+    setState(() {
       score += 5;
       playerScores[playerName] = (playerScores[playerName] ?? 0) + 5;
-      hasSelectedLetter = false;
     });
 
     final gameTeam = context.read<GameTeam>();
@@ -153,16 +219,40 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
           _nextPlayer();
           setState(() {
             chronometerActive = true;
+            boardKey++;
           });
         },
         onReset: () {
           _nextPlayer();
           setState(() {
             chronometerActive = true;
+            boardKey++;
           });
         },
       ),
     );
+  }
+
+  void _pauseChronometer() {
+    setState(() {
+      chronometerActive = false;
+      chronometerPaused = true;
+    });
+  }
+
+  void _resumeChronometer() {
+    setState(() {
+      chronometerActive = true;
+      chronometerPaused = false;
+    });
+  }
+
+  void _onWildcardActivated(WildcardType type) {
+    debugPrint('Comodín activado: $type');
+  }
+
+  void _onExtraTimeGranted(int seconds) {
+    _chronometerKey.currentState?.addExtraTime(seconds);
   }
 
   void _endGame() {
@@ -200,53 +290,85 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(height: isSmallScreen ? 40 : 80),
+                      SizedBox(height: isSmallScreen ? 20 : 30),
 
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 64),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF615AC7),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: const Color(0xFF615AC7),
-                            width: 2,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.category_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Flexible(
-                              child: Text(
-                                categories[currentCategoryIndex].name
-                                    .toUpperCase(),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: 1.2,
-                                ),
-                                textAlign: TextAlign.center,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary,
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.category_rounded,
+                                    color: AppColors.white,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      categories[currentCategoryIndex].name
+                                          .toUpperCase(),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+
+                          const SizedBox(width: 12),
+
+                          ChronometerWidget(
+                            key: _chronometerKey,
+                            duration: Duration(
+                              seconds: gameTime.inSeconds + extraTimeSeconds,
+                            ),
+
+                            onTimeEnd: () {
+                              debugPrint(
+                                "Tiempo terminado para ${currentPlayer.name}",
+                              );
+                              if (!hasSelectedLetter) {
+                                _nextPlayer();
+                              }
+                            },
+                            isActive:
+                                chronometerActive &&
+                                !gameEnded &&
+                                !hasSelectedLetter,
+                          ),
+                        ],
                       ),
 
-                      SizedBox(height: isSmallScreen ? 15 : 10),
+                      SizedBox(height: isSmallScreen ? 20 : 25),
 
                       PlayerNameWidget(
                         name: currentPlayer.name,
@@ -254,83 +376,102 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                         team: currentPlayer.team,
                       ),
 
-                      SizedBox(height: isSmallScreen ? 15 : 10),
-
-                      ChronometerWidget(
-                        key: ValueKey(
-                          '${currentPlayer.id}-$totalLettersSelected',
-                        ),
-                        duration: gameTime,
-                        onTimeEnd: () {
-                          debugPrint(
-                            "Tiempo terminado para ${currentPlayer.name}",
-                          );
-                          if (!hasSelectedLetter) {
-                            _nextPlayer();
-                          }
-                        },
-                        isActive:
-                            chronometerActive &&
-                            !gameEnded &&
-                            !hasSelectedLetter,
-                      ),
-
-                      SizedBox(height: isSmallScreen ? 15 : 20),
+                      SizedBox(height: isSmallScreen ? 25 : 35),
 
                       Center(
-                        child: BoardPage(
-                          key: ValueKey(
-                            'board-${categories[currentCategoryIndex].name}',
-                          ),
-                          onLetterSelected: _onLetterSelected,
-                        ),
+                        child: hasWildcards
+                            ? BoardGameWildcards(
+                                key: _boardWildcardsKey,
+                                selectedWildcards: context
+                                    .read<GameTeam>()
+                                    .selectedWildcards,
+                                onLetterSelected: _onLetterSelected,
+                                onWildcardActivated: _onWildcardActivated,
+                                onExtraTimeGranted: _onExtraTimeGranted,
+                                onSkipTurn: _nextPlayer,
+                                onSkipTurnPoints: _addSkipTurnPoints,
+                                onDoublePointsActivated: () {
+                                  setState(() {
+                                    doublePointsActive = true;
+                                  });
+                                },
+                                onPauseChronometer: _pauseChronometer,
+                                onResumeChronometer: _resumeChronometer,
+                              )
+                            : BoardPage(
+                                key: ValueKey(
+                                  'board-${categories[currentCategoryIndex].name}',
+                                ),
+                                onLetterSelected: _onLetterSelected,
+                              ),
                       ),
 
-                      SizedBox(height: isSmallScreen ? 15 : 20),
+                      SizedBox(height: isSmallScreen ? 120 : 30),
 
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          final categories = context
-                              .read<GameTeam>()
-                              .categories;
-                          setState(() {
-                            if (currentCategoryIndex < categories.length - 1) {
-                              currentCategoryIndex++;
-                              totalLettersSelected = 0;
-                              categoryShown = false;
-                              chronometerActive = false;
-                              _showCategoryDialog();
-                            } else {
-                              gameEnded = true;
-                            }
-                          });
-                        },
-                        icon: const Icon(Icons.skip_next, color: Colors.white),
-                        label: const Text(
-                          "Siguiente categoría",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                final categories = context
+                                    .read<GameTeam>()
+                                    .categories;
+                                setState(() {
+                                  if (currentCategoryIndex <
+                                      categories.length - 1) {
+                                    currentCategoryIndex++;
+                                    totalLettersSelected = 0;
+                                    categoryShown = false;
+                                    chronometerActive = false;
+                                    hasSelectedLetter = false;
+                                    if (hasWildcards) {
+                                      _boardWildcardsKey.currentState
+                                          ?.initializeWildcardPool();
+                                      _boardWildcardsKey.currentState
+                                          ?.initializeGame();
+                                    }
+
+                                    _showCategoryDialog();
+                                  } else {
+                                    gameEnded = true;
+                                  }
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.skip_next,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              label: const Text(
+                                "Siguiente",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                elevation: 3,
+                              ),
+                            ),
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+
+                          const SizedBox(width: 12),
+
+                          Expanded(child: EndGameButton(onPressed: _endGame)),
+                        ],
                       ),
 
-                      SizedBox(height: isSmallScreen ? 8 : 10),
-
-                      EndGameButton(onPressed: _endGame),
-
-                      SizedBox(height: height * 0.05),
+                      SizedBox(height: isSmallScreen ? 80 : 90),
                     ],
                   ),
                 ),

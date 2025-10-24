@@ -99,14 +99,14 @@ class ButtonPopup extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: GameButtons(
                   onCorrect: () {
-                    onCorrect();
                     SoundManager.playSuccess();
                     Navigator.of(context).pop();
+                    Future.microtask(() => onCorrect());
                   },
                   onReset: () {
-                    onReset();
                     SoundManager.playError();
                     Navigator.of(context).pop();
+                    Future.microtask(() => onReset());
                   },
                 ),
               ),
