@@ -102,7 +102,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
         chronometerActive = true;
       });
       // 🔊 Iniciar sonido cuando comienza el turno
-      SoundManager.playStartRound();
+      //SoundManager.playStartRound();
     });
   }
 
@@ -218,7 +218,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     // Usar un pequeño delay para asegurar que el estado esté actualizado
     Future.delayed(const Duration(milliseconds: 100), () {
       if (!gameEnded && chronometerActive && mounted) {
-        SoundManager.playStartRound();
+        //SoundManager.playStartRound();
       }
     });
   }

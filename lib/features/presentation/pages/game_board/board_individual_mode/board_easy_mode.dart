@@ -101,7 +101,7 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
         chronometerActive = true;
       });
       // 🔊 Iniciar sonido cuando comienza el turno
-      SoundManager.playStartRound();
+      //SoundManager.playStartRound();
     });
   }
 
@@ -170,7 +170,7 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
     // Usar un pequeño delay para asegurar que el estado esté actualizado
     Future.delayed(const Duration(milliseconds: 100), () {
       if (!gameEnded && chronometerActive && mounted) {
-        SoundManager.playStartRound();
+        //SoundManager.playStartRound();
       }
     });
   }
@@ -255,7 +255,7 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
     setState(() {
       chronometerActive = true;
       chronometerPaused = false;
-      SoundManager.playStartRound();
+      //SoundManager.playStartRound();
     });
   }
 
@@ -396,32 +396,6 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
                       ),
 
                       SizedBox(height: isSmallScreen ? 15 : 10),
-
-                      ChronometerWidget(
-                        key: ValueKey(
-                          '${currentPlayer.id}-$totalLettersSelected',
-                        ),
-                        duration: gameTime,
-                        onTimeEnd: () {
-                          if (!hasSelectedLetter) {
-                            // 🔊 Detener sonido cuando se acaba el tiempo
-                            SoundManager.stopTimer();
-                            
-                            // Pequeño delay antes de pasar al siguiente
-                            Future.delayed(const Duration(milliseconds: 50), () {
-                              if (mounted) {
-                                _nextPlayer();
-                              }
-                            });
-                          }
-                        },
-                        isActive:
-                            chronometerActive &&
-                            !gameEnded &&
-                            !hasSelectedLetter,
-                      ),
-
-                      SizedBox(height: isSmallScreen ? 25 : 35),
 
                       // Tablero de juego centrado (con o sin comodines)
                       Center(

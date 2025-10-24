@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:programacion_movil/features/presentation/utils/sound_manager.dart';
 
 class ChronometerWidget extends StatefulWidget {
   final Duration duration;
@@ -29,9 +30,7 @@ class ChronometerWidgetState extends State<ChronometerWidget> {
   void initState() {
     super.initState();
     seconds = widget.duration.inSeconds;
-    if (widget.isActive) {
-      _startTimer();
-    }
+    if (widget.isActive) _startTimer();
   }
 
   @override
@@ -39,9 +38,7 @@ class ChronometerWidgetState extends State<ChronometerWidget> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.duration != widget.duration) {
-      setState(() {
-        seconds = widget.duration.inSeconds;
-      });
+      setState(() => seconds = widget.duration.inSeconds);
     }
 
     if (!oldWidget.isActive && widget.isActive) {
@@ -57,31 +54,42 @@ class ChronometerWidgetState extends State<ChronometerWidget> {
     if (!widget.isActive) return;
 
     timer?.cancel();
-    timer = Timer.periodic(const Duration(seconds: 1), (t) {
+    timer = Timer.periodic(const Duration(seconds: 1), (t) async {
       if (seconds > 0) {
+        await SoundManager.playTick(); // sonido “tic” sincronizado
         setState(() => seconds--);
       } else {
         t.cancel();
-        if (widget.isActive) {
-          widget.onTimeEnd();
-        }
+        if (widget.isActive) widget.onTimeEnd();
       }
     });
   }
 
-  void _addTime() {
-    setState(() {
-      seconds += 5;
-    });
-    if (widget.onAddTime != null) {
-      widget.onAddTime!();
-    }
+  void _increaseSeconds(int value) {
+    setState(() => seconds += value);
   }
 
-  void addExtraTime(int extraSeconds) {
-    setState(() {
-      seconds += extraSeconds;
-    });
+  void _addTime() {
+    _increaseSeconds(5);
+    widget.onAddTime?.call();
+  }
+
+  void addExtraTime(int extraSeconds) => _increaseSeconds(extraSeconds);
+
+  /// Reinicia el cronómetro con una nueva duración.
+  void reset({required Duration newDuration, bool start = true}) {
+    timer?.cancel();
+    setState(() => seconds = newDuration.inSeconds);
+    if (start) _startTimer();
+  }
+
+  void pause() {
+    timer?.cancel();
+    SoundManager.stopTimer();
+  }
+
+  void resume() {
+    if (widget.isActive) _startTimer();
   }
 
   @override
@@ -114,11 +122,12 @@ class ChronometerWidgetState extends State<ChronometerWidget> {
               child: Container(
                 width: 28,
                 height: 28,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.green,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.add, color: Colors.white, size: 18),
+                child: const Icon(Icons.add,
+                    color: Colors.white, size: 18),
               ),
             ),
           ],

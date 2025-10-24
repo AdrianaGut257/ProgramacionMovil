@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
-import 'package:programacion_movil/features/presentation/utils/sound_manager.dart';
+//import 'package:programacion_movil/features/presentation/utils/sound_manager.dart';
 
 class CategoryPopup extends StatelessWidget {
   final String categoryName;
@@ -95,7 +95,7 @@ class CategoryPopup extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pop();
                   onStart();
-                  SoundManager.playStartRound();
+                  //SoundManager.playStartRound();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.secondary,

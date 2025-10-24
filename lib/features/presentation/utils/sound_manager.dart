@@ -64,7 +64,7 @@ class SoundManager {
   static Future<void> playError() async {
     try {
       final player = _getNextPlayer();
-      await player.setAsset('assets/sounds/rechazado1.mp3');
+      await player.setAsset('assets/sounds/error1.mp3');
       await player.seek(Duration.zero);
       player.play();
     } catch (e) {
@@ -127,6 +127,17 @@ class SoundManager {
     if (_timerPlayer != null) {
       await _timerPlayer!.dispose();
       _timerPlayer = null;
+    }
+  }
+
+  static Future<void> playTick() async {
+    try {
+      final player = _getNextPlayer();
+      await player.setAsset('assets/sounds/tick.mp3');
+      await player.seek(Duration.zero);
+      player.play();
+    } catch (e) {
+      //print('❌ Error al reproducir tick: $e');
     }
   }
 }
