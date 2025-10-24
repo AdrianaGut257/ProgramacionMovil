@@ -9,6 +9,7 @@ import 'package:programacion_movil/features/presentation/pages/game_board/board_
 import 'package:programacion_movil/features/presentation/state/game_individual.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/ranking/screens/stopwords_winners_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:programacion_movil/features/presentation/utils/sound_manager.dart';
 
 class BoardHardModePage extends StatefulWidget {
   const BoardHardModePage({super.key});
@@ -55,6 +56,13 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     });
   }
 
+  // 🧹 Limpiar sonido cuando se destruya el widget
+  @override
+  void dispose() {
+    SoundManager.stopTimer();
+    super.dispose();
+  }
+  
   void _checkWildcards() {
     final wildcards = context.read<GameIndividual>().selectedWildcards;
 
@@ -80,8 +88,12 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     final categories = context.read<GameIndividual>().categories;
     if (currentCategoryIndex >= categories.length) {
       setState(() => gameEnded = true);
+      SoundManager.stopTimer(); // 🔊 Detener sonido al terminar
       return;
     }
+    
+    // 🔊 Detener sonido mientras se muestra el popup de categoría
+    SoundManager.stopTimer();
     setState(() => chronometerActive = false);
 
     CategoryPopup.show(context, categories[currentCategoryIndex].name, () {
@@ -89,6 +101,8 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
         categoryShown = true;
         chronometerActive = true;
       });
+      // 🔊 Iniciar sonido cuando comienza el turno
+      //SoundManager.playStartRound();
     });
   }
 
@@ -132,6 +146,8 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
 
   void _nextPlayer() {
     if (gameEnded || activePlayers.isEmpty) return;
+    // 🔊 Detener sonido al cambiar de categoría
+    SoundManager.stopTimer();
     final categories = context.read<GameIndividual>().categories;
 
     setState(() {
@@ -161,6 +177,8 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
         currentCategoryIndex++;
         categoryShown = false;
         chronometerActive = false;
+        
+        
         hasSelectedLetter = false;
 
         if (currentCategoryIndex >= categories.length) {
@@ -194,6 +212,14 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
       
       // Reiniciar key del cronómetro
       _chronometerKey = GlobalKey<ChronometerWidgetState>();
+    });
+    
+    // 🔊 Reiniciar sonido DESPUÉS de que setState se complete
+    // Usar un pequeño delay para asegurar que el estado esté actualizado
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!gameEnded && chronometerActive && mounted) {
+        //SoundManager.playStartRound();
+      }
     });
   }
 
@@ -233,6 +259,9 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
 
   void _onLetterSelected() {
     if (hasSelectedLetter) return;
+
+    // 🔊 DETENER el sonido PRIMERO (antes del setState)
+    SoundManager.stopTimer();
 
     setState(() {
       hasSelectedLetter = true;
@@ -291,7 +320,12 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     _chronometerKey.currentState?.addExtraTime(seconds);
   }
 
-  void _endGame() => setState(() => gameEnded = true);
+  void _endGame() {
+    setState(() => gameEnded = true);
+    // 🔊 Detener sonido al terminar el juego
+    SoundManager.stopTimer();
+    SoundManager.playWinners();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -310,6 +344,8 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     // Mostrar ranking cuando el juego termina o no quedan jugadores activos
     if (gameEnded || activePlayers.isEmpty) {
       return StopWordsWinnersScreen(playerScores: playerScores);
+      SoundManager.stopTimer();
+      return RankingGame(playerScores: playerScores);
     }
 
     final currentPlayer = activePlayers[currentPlayerIndex];
@@ -478,6 +514,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () {
+                                SoundManager.stopTimer();
                                 if (currentCategoryIndex <
                                     categories.length - 1) {
                                   setState(() {

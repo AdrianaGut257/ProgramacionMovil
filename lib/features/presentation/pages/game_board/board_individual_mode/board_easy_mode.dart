@@ -10,6 +10,7 @@ import 'package:programacion_movil/features/presentation/pages/game_board/board_
 import 'package:programacion_movil/features/presentation/state/game_individual.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/ranking/screens/stopwords_winners_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:programacion_movil/features/presentation/utils/sound_manager.dart'; 
 
 class BoardEasyModePage extends StatefulWidget {
   const BoardEasyModePage({super.key});
@@ -55,6 +56,13 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
     });
   }
 
+  // 🧹 Limpiar sonido cuando se destruya el widget
+  @override
+  void dispose() {
+    SoundManager.stopTimer();
+    super.dispose();
+  }
+
   void _checkWildcards() {
     final wildcards = context.read<GameIndividual>().selectedWildcards;
 
@@ -79,8 +87,12 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
     final categories = context.read<GameIndividual>().categories;
     if (currentCategoryIndex >= categories.length) {
       setState(() => gameEnded = true);
+      SoundManager.stopTimer(); // 🔊 Detener sonido al terminar
       return;
     }
+    
+    // 🔊 Detener sonido mientras se muestra el popup de categoría
+    SoundManager.stopTimer();
     setState(() => chronometerActive = false);
 
     CategoryPopup.show(context, categories[currentCategoryIndex].name, () {
@@ -88,13 +100,15 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
         categoryShown = true;
         chronometerActive = true;
       });
+      // 🔊 Iniciar sonido cuando comienza el turno
+      //SoundManager.playStartRound();
     });
   }
 
   void _nextPlayer() {
     if (gameEnded || players.isEmpty) return;
     final categories = context.read<GameIndividual>().categories;
-
+    SoundManager.stopTimer();
     setState(() {
       totalLettersSelected++;
       
@@ -151,6 +165,14 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
       // Reiniciar key del cronómetro
       _chronometerKey = GlobalKey<ChronometerWidgetState>();
     });
+    
+    // 🔊 Reiniciar sonido DESPUÉS de que setState se complete
+    // Usar un pequeño delay para asegurar que el estado esté actualizado
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!gameEnded && chronometerActive && mounted) {
+        //SoundManager.playStartRound();
+      }
+    });
   }
 
   void _increaseScore() {
@@ -190,6 +212,9 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
   void _onLetterSelected() {
     if (hasSelectedLetter) return;
 
+    // 🔊 DETENER el sonido PRIMERO (antes del setState)
+    SoundManager.stopTimer();
+
     setState(() {
       hasSelectedLetter = true;
       chronometerActive = false;
@@ -220,6 +245,7 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
 
   void _pauseChronometer() {
     setState(() {
+      SoundManager.stopTimer();
       chronometerActive = false;
       chronometerPaused = true;
     });
@@ -229,6 +255,7 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
     setState(() {
       chronometerActive = true;
       chronometerPaused = false;
+      //SoundManager.playStartRound();
     });
   }
 
@@ -240,7 +267,13 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
     _chronometerKey.currentState?.addExtraTime(seconds);
   }
 
-  void _endGame() => setState(() => gameEnded = true);
+  void _endGame() {
+    setState(() => gameEnded = true);
+    // 🔊 Detener sonido al terminar el juego
+    SoundManager.stopTimer();
+    SoundManager.playWinners();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -258,6 +291,11 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
   if (gameEnded) {
   return StopWordsWinnersScreen(playerScores: playerScores);
 }
+    if (gameEnded) {
+      // 🔊 Asegurarse de detener el sonido
+      SoundManager.stopTimer();
+      return RankingGame(playerScores: playerScores);
+    }
 
     final currentPlayer = players[currentPlayerIndex];
 
@@ -360,7 +398,7 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
                         team: 1,
                       ),
 
-                      SizedBox(height: isSmallScreen ? 25 : 35),
+                      SizedBox(height: isSmallScreen ? 15 : 10),
 
                       // Tablero de juego centrado (con o sin comodines)
                       Center(
@@ -401,6 +439,7 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () {
+                                SoundManager.stopTimer();
                                 final categories = context
                                     .read<GameIndividual>()
                                     .categories;

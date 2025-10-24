@@ -43,6 +43,7 @@ dependencies:
   sqflite: ^2.4.2
   path: ^1.9.1
   provider: ^6.0.5
+  just_audio: ^0.9.36
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,7 @@ flutter:
 
   assets:
     - assets/icons/
+    - assets/sounds/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
