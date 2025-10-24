@@ -12,7 +12,7 @@ import 'package:programacion_movil/features/presentation/widgets/game/ranking/sc
 import 'package:provider/provider.dart';
 
 class BoardTeamModePage extends StatefulWidget {
-  const BoardTeamModePage({super.key});
+  const BoardTeamModePage({super.key}); 
 
   @override
   State<BoardTeamModePage> createState() => _BoardTeamModePageState();
