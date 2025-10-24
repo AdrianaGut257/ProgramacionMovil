@@ -13,7 +13,7 @@ class SoundManager {
   /// Inicializar el sistema de sonido (llamar al inicio de la app)
   static Future<void> init() async {
     //print('🔧 Inicializando sonidos...');
-    
+
     // Crear 3 reproductores para efectos
     for (int i = 0; i < _poolSize; i++) {
       final player = AudioPlayer();
@@ -25,7 +25,7 @@ class SoundManager {
     _timerPlayer = AudioPlayer();
     await _timerPlayer!.setVolume(1.0);
     await _timerPlayer!.setLoopMode(LoopMode.one); // Activar bucle infinito
-    
+
     //print('✅ Sonidos listos');
   }
 
@@ -76,7 +76,7 @@ class SoundManager {
   static Future<void> playStartRound() async {
     try {
       if (_timerPlayer == null) return;
-      
+
       // Si ya está sonando, no hacer nada
       if (_isTimerPlaying) return;
 
@@ -84,7 +84,7 @@ class SoundManager {
       await _timerPlayer!.seek(Duration.zero);
       await _timerPlayer!.play();
       _isTimerPlaying = true;
-      
+
       //print('⏰ Timer iniciado');
     } catch (e) {
       //print('❌ Error al reproducir timer: $e');
@@ -95,11 +95,11 @@ class SoundManager {
   static Future<void> stopTimer() async {
     try {
       if (_timerPlayer == null) return;
-      
+
       await _timerPlayer!.pause();
       await _timerPlayer!.seek(Duration.zero); // Reiniciar posición
       _isTimerPlaying = false;
-      
+
       //print('⏸️ Timer detenido');
     } catch (e) {
       //print('❌ Error al detener timer: $e');
@@ -123,7 +123,7 @@ class SoundManager {
     for (var player in _sfxPool) {
       await player.dispose();
     }
-    
+
     if (_timerPlayer != null) {
       await _timerPlayer!.dispose();
       _timerPlayer = null;
