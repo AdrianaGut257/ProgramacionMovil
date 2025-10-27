@@ -411,7 +411,7 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
 
   void _handleBlockLetters(WildcardInfo wildcard, int index) async {
     widget.onPauseChronometer?.call();
-    _timer?.cancel(); // Pausar rotación automática
+    _timer?.cancel();
 
     bool wasCorrect = false;
 
@@ -507,7 +507,7 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
     );
 
     widget.onResumeChronometer?.call();
-    _startTimer(); // Reanudar rotación automática
+    _startTimer();
 
     widget.onSkipTurn?.call();
   }
