@@ -10,6 +10,8 @@ import 'package:programacion_movil/features/presentation/pages/game_board/board_
 import 'package:programacion_movil/features/presentation/state/game_team.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/ranking/screens/stopwords_winners_screen.dart';
 import 'package:provider/provider.dart';
+// 🆕 Importar la base de datos
+import 'package:programacion_movil/data/datasources/app_database.dart';
 
 class BoardTeamModePage extends StatefulWidget {
   const BoardTeamModePage({super.key}); 
@@ -45,6 +47,9 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
   final GlobalKey<BoardGameWildcardsState> _boardWildcardsKey =
       GlobalKey<BoardGameWildcardsState>();
+
+  // 🆕 Variable para controlar si ya se guardó la partida
+  bool _gameSaved = false;
 
   @override
   void initState() {
@@ -139,6 +144,8 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
         if (currentCategoryIndex >= categories.length) {
           gameEnded = true;
+          // 🆕 Guardar la partida cuando termina
+          _saveGameToDatabase();
           return;
         }
 
@@ -259,6 +266,56 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     setState(() {
       gameEnded = true;
     });
+    // 🆕 Guardar la partida cuando el usuario la finaliza manualmente
+    _saveGameToDatabase();
+  }
+
+  // 🆕 Método para guardar la partida en la base de datos
+  Future<void> _saveGameToDatabase() async {
+    // Evitar guardar duplicados
+    if (_gameSaved) {
+      debugPrint('⚠️ La partida ya fue guardada anteriormente');
+      return;
+    }
+
+    try {
+      final categories = context.read<GameTeam>().categories;
+      final categoryNames = categories.map((c) => c.name).toList();
+
+      final gameId = await AppDatabase.instance.saveTeamGameHistory(
+        gameMode: 'Team Mode',
+        playerScores: playerScores,
+        orderedPlayers: orderedPlayers,
+        categories: categoryNames,
+      );
+
+      _gameSaved = true;
+
+      debugPrint('✅ Partida guardada exitosamente con ID: $gameId');
+      
+      // Opcional: Mostrar un SnackBar de confirmación
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Partida guardada en el historial!'),
+            duration: Duration(seconds: 2),
+            backgroundColor: AppColors.primary,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Error al guardar la partida: $e');
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al guardar la partida: $e'),
+            duration: const Duration(seconds: 3),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -435,6 +492,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                                     _showCategoryDialog();
                                   } else {
                                     gameEnded = true;
+                                    _saveGameToDatabase();
                                   }
                                 });
                               },

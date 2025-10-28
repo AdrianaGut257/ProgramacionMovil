@@ -10,6 +10,7 @@ import 'package:programacion_movil/features/presentation/state/game_individual.d
 import 'package:programacion_movil/features/presentation/widgets/game/ranking/screens/stopwords_winners_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:programacion_movil/features/presentation/utils/sound_manager.dart';
+import 'package:programacion_movil/data/datasources/app_database.dart';
 
 class BoardHardModePage extends StatefulWidget {
   const BoardHardModePage({super.key});
@@ -45,6 +46,8 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
       GlobalKey<ChronometerWidgetState>();
   final GlobalKey<BoardGameHardWildcardsState> _boardHardWildcardsKey =
       GlobalKey<BoardGameHardWildcardsState>();
+
+  bool _gameSaved = false;
 
   @override
   void initState() {
@@ -85,6 +88,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     if (currentCategoryIndex >= categories.length) {
       setState(() => gameEnded = true);
       SoundManager.stopTimer(); // 🔊 Detener sonido al terminar
+      _saveGameToHistory();
       return;
     }
 
@@ -121,6 +125,8 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
       // Si no quedan jugadores activos, terminar el juego
       if (activePlayers.isEmpty) {
         gameEnded = true;
+        SoundManager.stopTimer(); // 🔊 Detener sonido al terminar
+        _saveGameToHistory();
         return;
       }
 
@@ -178,6 +184,7 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
 
         if (currentCategoryIndex >= categories.length) {
           gameEnded = true;
+          _saveGameToHistory();
           return;
         }
 
@@ -319,6 +326,53 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
     // 🔊 Detener sonido al terminar el juego
     SoundManager.stopTimer();
     SoundManager.playWinners();
+    _saveGameToHistory();
+  }
+
+  Future<void> _saveGameToHistory() async {
+    // Evitar guardar múltiples veces
+    if (_gameSaved) {
+      debugPrint('⚠️ La partida ya fue guardada anteriormente');
+      return;
+    }
+
+    try {
+      final categories = context.read<GameIndividual>().categories;
+      
+      // Obtener nombres de las categorías jugadas
+      List<String> playedCategories = [];
+      for (int i = 0; i <= currentCategoryIndex && i < categories.length; i++) {
+        playedCategories.add(categories[i].name);
+      }
+
+      // Guardar en la base de datos
+      final gameId = await AppDatabase.instance.saveGameHistory(
+        gameMode: 'Hard Mode',
+        playerScores: playerScores,
+        categories: playedCategories,
+      );
+
+      _gameSaved = true; // Marcar como guardado
+
+      // Verificar que se guardó correctamente
+      final savedGame = await AppDatabase.instance.getGameById(gameId);
+      if (savedGame != null) {
+        
+        for (var player in savedGame['players']) {
+          debugPrint('   ${player['position']}º - ${player['player_name']}: ${player['score']} pts');
+        }
+        
+        debugPrint('📚 Categorías guardadas: ${savedGame['categories'].length}');
+        for (var cat in savedGame['categories']) {
+          debugPrint('   - ${cat['category_name']}');
+        }
+        debugPrint('==========================================');
+      }
+
+    } catch (e) {
+      debugPrint('❌ ERROR AL GUARDAR LA PARTIDA: $e');
+      debugPrint('==========================================');
+    }
   }
 
   @override

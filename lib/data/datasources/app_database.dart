@@ -21,15 +21,14 @@ class AppDatabase {
     final path = join(dbPath, 'app_database.db');
     return await openDatabase(
       path,
-      version: 4,
+      version: 5,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
       onConfigure: (db) async {
-      // ✅ Habilitar claves foráneas
-      await db.execute('PRAGMA foreign_keys = ON');
-    },
-  );
-}
+        await db.execute('PRAGMA foreign_keys = ON');
+      },
+    );
+  }
 
   Future _onCreate(Database db, int version) async {
     await db.execute('''
@@ -54,11 +53,13 @@ class AppDatabase {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         date TEXT NOT NULL,
         game_mode TEXT NOT NULL,
-        created_at TEXT NOT NULL
+        created_at TEXT NOT NULL,
+        winner_team INTEGER,
+        team1_score INTEGER DEFAULT 0,
+        team2_score INTEGER DEFAULT 0
       )
     ''');
 
-    // Tabla de jugadores por partida
     await db.execute('''
       CREATE TABLE game_players (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,11 +67,11 @@ class AppDatabase {
         player_name TEXT NOT NULL,
         score INTEGER NOT NULL,
         position INTEGER NOT NULL,
+        team INTEGER,
         FOREIGN KEY (game_id) REFERENCES game_history (id) ON DELETE CASCADE
       )
     ''');
 
-    // Tabla de categorías por partida
     await db.execute('''
       CREATE TABLE game_categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -95,7 +96,6 @@ class AppDatabase {
     }
 
     if (oldVersion < 4) {
-      // Crear tabla de historial de partidas
       await db.execute('''
         CREATE TABLE game_history (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -105,7 +105,6 @@ class AppDatabase {
         )
       ''');
 
-      // Crear tabla de jugadores por partida
       await db.execute('''
         CREATE TABLE game_players (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -117,7 +116,6 @@ class AppDatabase {
         )
       ''');
 
-      // Crear tabla de categorías por partida
       await db.execute('''
         CREATE TABLE game_categories (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -131,12 +129,38 @@ class AppDatabase {
         debugPrint("✅ Tablas de historial creadas correctamente");
       }
     }
+
+    // 🆕 Nueva migración para soporte de equipos
+    if (oldVersion < 5) {
+      // Agregar columnas para equipos en game_history
+      await db.execute('''
+        ALTER TABLE game_history ADD COLUMN winner_team INTEGER
+      ''');
+      
+      await db.execute('''
+        ALTER TABLE game_history ADD COLUMN team1_score INTEGER DEFAULT 0
+      ''');
+      
+      await db.execute('''
+        ALTER TABLE game_history ADD COLUMN team2_score INTEGER DEFAULT 0
+      ''');
+
+      // Agregar columna de equipo en game_players
+      await db.execute('''
+        ALTER TABLE game_players ADD COLUMN team INTEGER
+      ''');
+
+      if (kDebugMode) {
+        debugPrint("✅ Tablas actualizadas con soporte para equipos");
+      }
+    }
   }
 
   Future<void> _runSeeders(Database db) async {
     await CategorySeeder.run(db);
   }
 
+  /// Guarda una partida en modo INDIVIDUAL
   Future<int> saveGameHistory({
     required String gameMode,
     required Map<String, int> playerScores,
@@ -145,18 +169,15 @@ class AppDatabase {
     final db = await database;
     final now = DateTime.now().toIso8601String();
 
-    // 1. Insertar el registro de la partida
     final gameId = await db.insert('game_history', {
       'date': now,
       'game_mode': gameMode,
       'created_at': now,
     });
 
-    // 2. Ordenar jugadores por puntuación (de mayor a menor)
     final sortedPlayers = playerScores.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    // 3. Insertar jugadores con sus posiciones
     int position = 1;
     for (final entry in sortedPlayers) {
       await db.insert('game_players', {
@@ -164,6 +185,88 @@ class AppDatabase {
         'player_name': entry.key,
         'score': entry.value,
         'position': position,
+      });
+      position++;
+    }
+
+    for (final categoryName in categories) {
+      await db.insert('game_categories', {
+        'game_id': gameId,
+        'category_name': categoryName,
+      });
+    }
+
+    if (kDebugMode) {
+      debugPrint("✅ Partida individual guardada con ID: $gameId");
+    }
+
+    return gameId;
+  }
+
+  /// 🆕 Guarda una partida en modo EQUIPOS
+  Future<int> saveTeamGameHistory({
+    required String gameMode,
+    required Map<String, int> playerScores,
+    required List<dynamic> orderedPlayers, // Lista de objetos Player con .name y .team
+    required List<String> categories,
+  }) async {
+    final db = await database;
+    final now = DateTime.now().toIso8601String();
+
+    // Calcular puntuaciones por equipo
+    int team1Score = 0;
+    int team2Score = 0;
+
+    for (final player in orderedPlayers) {
+      final playerName = player.name;
+      final playerTeam = player.team;
+      final score = playerScores[playerName] ?? 0;
+
+      if (playerTeam == 1) {
+        team1Score += score;
+      } else if (playerTeam == 2) {
+        team2Score += score;
+      }
+    }
+
+    // Determinar equipo ganador
+    int? winnerTeam;
+    if (team1Score > team2Score) {
+      winnerTeam = 1;
+    } else if (team2Score > team1Score) {
+      winnerTeam = 2;
+    }
+    // Si es empate, winnerTeam queda null
+
+    // 1. Insertar el registro de la partida
+    final gameId = await db.insert('game_history', {
+      'date': now,
+      'game_mode': gameMode,
+      'created_at': now,
+      'winner_team': winnerTeam,
+      'team1_score': team1Score,
+      'team2_score': team2Score,
+    });
+
+    // 2. Ordenar jugadores por puntuación (de mayor a menor)
+    final sortedPlayers = playerScores.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    // 3. Insertar jugadores con sus posiciones y equipos
+    int position = 1;
+    for (final entry in sortedPlayers) {
+      // Encontrar el equipo de este jugador
+      final player = orderedPlayers.firstWhere(
+        (p) => p.name == entry.key,
+        orElse: () => null,
+      );
+
+      await db.insert('game_players', {
+        'game_id': gameId,
+        'player_name': entry.key,
+        'score': entry.value,
+        'position': position,
+        'team': player?.team,
       });
       position++;
     }
@@ -177,7 +280,10 @@ class AppDatabase {
     }
 
     if (kDebugMode) {
-      debugPrint("✅ Partida guardada con ID: $gameId");
+      debugPrint("✅ Partida de equipos guardada con ID: $gameId");
+      debugPrint("   Team 1: $team1Score puntos");
+      debugPrint("   Team 2: $team2Score puntos");
+      debugPrint("   Ganador: ${winnerTeam != null ? 'Equipo $winnerTeam' : 'Empate'}");
     }
 
     return gameId;
@@ -197,7 +303,6 @@ class AppDatabase {
     for (final game in games) {
       final gameId = game['id'] as int;
 
-      // Obtener jugadores de esta partida
       final players = await db.query(
         'game_players',
         where: 'game_id = ?',
@@ -205,7 +310,6 @@ class AppDatabase {
         orderBy: 'position ASC',
       );
 
-      // Obtener categorías de esta partida
       final categories = await db.query(
         'game_categories',
         where: 'game_id = ?',
@@ -217,6 +321,9 @@ class AppDatabase {
         'date': game['date'],
         'game_mode': game['game_mode'],
         'created_at': game['created_at'],
+        'winner_team': game['winner_team'],
+        'team1_score': game['team1_score'],
+        'team2_score': game['team2_score'],
         'players': players,
         'categories': categories,
       });
@@ -239,7 +346,6 @@ class AppDatabase {
 
     final game = games.first;
 
-    // Obtener jugadores
     final players = await db.query(
       'game_players',
       where: 'game_id = ?',
@@ -247,7 +353,6 @@ class AppDatabase {
       orderBy: 'position ASC',
     );
 
-    // Obtener categorías
     final categories = await db.query(
       'game_categories',
       where: 'game_id = ?',
@@ -259,6 +364,9 @@ class AppDatabase {
       'date': game['date'],
       'game_mode': game['game_mode'],
       'created_at': game['created_at'],
+      'winner_team': game['winner_team'],
+      'team1_score': game['team1_score'],
+      'team2_score': game['team2_score'],
       'players': players,
       'categories': categories,
     };
@@ -288,7 +396,7 @@ class AppDatabase {
     }
   }
 
-  /// Obtiene estadísticas generales
+  /// Obtiene estadísticas generales (actualizada con equipos)
   Future<Map<String, dynamic>> getStatistics() async {
     final db = await database;
 
@@ -297,7 +405,7 @@ class AppDatabase {
       await db.rawQuery('SELECT COUNT(*) FROM game_history'),
     ) ?? 0;
 
-    // Jugador con más victorias
+    // Jugador con más victorias (posición 1)
     final winnerQuery = await db.rawQuery('''
       SELECT player_name, COUNT(*) as wins
       FROM game_players
@@ -312,6 +420,23 @@ class AppDatabase {
     if (winnerQuery.isNotEmpty) {
       topPlayer = winnerQuery.first['player_name'] as String;
       topPlayerWins = winnerQuery.first['wins'] as int;
+    }
+
+    // Equipo con más victorias
+    final teamWinsQuery = await db.rawQuery('''
+      SELECT winner_team, COUNT(*) as wins
+      FROM game_history
+      WHERE winner_team IS NOT NULL
+      GROUP BY winner_team
+      ORDER BY wins DESC
+      LIMIT 1
+    ''');
+
+    int? topTeam;
+    int topTeamWins = 0;
+    if (teamWinsQuery.isNotEmpty) {
+      topTeam = teamWinsQuery.first['winner_team'] as int;
+      topTeamWins = teamWinsQuery.first['wins'] as int;
     }
 
     // Categoría más jugada
@@ -334,11 +459,12 @@ class AppDatabase {
       'total_games': totalGames,
       'top_player': topPlayer,
       'top_player_wins': topPlayerWins,
+      'top_team': topTeam,
+      'top_team_wins': topTeamWins,
       'top_category': topCategory,
       'category_plays': categoryPlays,
     };
   }
-
 
   Future<void> _markDefaultCategories(Database db) async {
     final seederCategories = [
