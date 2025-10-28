@@ -438,8 +438,14 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
                         Row(
                           children: [
                             Icon(
-                              Icons.gamepad,
-                              color: AppColors.primary,
+                              gameMode == 'Hard Mode'
+                                  ? Icons
+                                        .flash_on // 🔥 Fuego para difícil
+                                  : Icons
+                                        .gamepad, // 😊 Cara feliz para fácil
+                              color: gameMode == 'Hard Mode'
+                                  ? Colors.red
+                                  : AppColors.primary,
                               size: 20,
                             ),
                             const SizedBox(width: 8),
@@ -448,7 +454,9 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
+                                color: gameMode == 'Hard Mode'
+                                    ? Colors.red
+                                    : AppColors.primary,
                               ),
                             ),
                           ],
