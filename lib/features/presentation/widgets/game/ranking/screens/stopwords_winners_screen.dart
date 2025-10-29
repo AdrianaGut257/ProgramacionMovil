@@ -118,9 +118,11 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
             child: Container(
               height: config.size.height * 0.055,
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: AppColors.primary.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(
+                  // ignore: deprecated_member_use
                   color: AppColors.primary.withOpacity(0.5),
                   width: 1,
                 ),
@@ -134,6 +136,7 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
                       width: config.size.width * 0.08,
                       height: config.size.width * 0.08,
                       decoration: BoxDecoration(
+                        // ignore: deprecated_member_use
                         color: AppColors.primary.withOpacity(0.6),
                         shape: BoxShape.circle,
                       ),
@@ -168,6 +171,7 @@ class _StopWordsWinnersScreenState extends State<StopWordsWinnersScreen>
                     Text(
                       '${player.value}',
                       style: TextStyle(
+                        // ignore: deprecated_member_use
                         color: AppColors.white.withOpacity(0.8),
                         fontWeight: FontWeight.bold,
                         fontSize: config.size.width * 0.042,
