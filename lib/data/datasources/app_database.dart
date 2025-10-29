@@ -572,4 +572,25 @@ class AppDatabase {
       whereArgs: [name],
     );
   }
+
+  Future<List<Map<String, dynamic>>> getPlayerRankings() async {
+  final db = await database;
+
+  final rankings = await db.rawQuery('''
+    SELECT 
+      player_name,
+      SUM(score) as total_points,
+      COUNT(*) as games_played,
+      SUM(CASE WHEN position = 1 THEN 1 ELSE 0 END) as victories
+    FROM game_players
+    GROUP BY player_name
+    ORDER BY total_points DESC
+  ''');
+
+  if (kDebugMode) {
+    debugPrint('📊 Ranking cargado: ${rankings.length} jugadores');
+  }
+
+  return rankings;
+}
 }
