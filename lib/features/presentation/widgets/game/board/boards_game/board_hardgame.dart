@@ -216,8 +216,9 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
   }
 
   void _shuffleLetters() {
-    if (pendingBlockWildcard != null)
+    if (pendingBlockWildcard != null) {
       return; // No rotar si hay bloqueo pendiente
+    }
 
     setState(() {
       // Recolectar letras actuales
