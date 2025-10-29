@@ -8,9 +8,8 @@ import 'package:programacion_movil/features/presentation/pages/game_board/board_
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
 import 'package:programacion_movil/features/presentation/pages/game_board/board_team_mode/widgets/end_game_button.dart';
 import 'package:programacion_movil/features/presentation/state/game_team.dart';
-import 'package:programacion_movil/features/presentation/widgets/game/ranking/screens/stopwords_winners_screen.dart';
+import 'package:programacion_movil/features/presentation/widgets/game/ranking/widgets/teamode_winners.dart';
 import 'package:provider/provider.dart';
-// 🆕 Importar la base de datos
 import 'package:programacion_movil/data/datasources/app_database.dart';
 
 class BoardTeamModePage extends StatefulWidget {
@@ -333,7 +332,12 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
     if (orderedPlayers.isEmpty) return const SizedBox();
 
-    if (gameEnded) return StopWordsWinnersScreen(playerScores: playerScores);
+      if (gameEnded) {
+        return TeamModeWinnersScreen(
+          playerScores: playerScores,
+          orderedPlayers: orderedPlayers,
+        );
+      }
 
     final currentPlayer = orderedPlayers[currentPlayerIndex];
 
