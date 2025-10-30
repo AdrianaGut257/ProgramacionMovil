@@ -4,7 +4,7 @@ import 'package:programacion_movil/data/datasources/app_database.dart';
 import 'package:programacion_movil/features/presentation/widgets/game/board_information/button_popup.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/add_remove_button.dart';
 import 'package:programacion_movil/config/icons.dart';
-import '../../widgets/home_header.dart';
+//import '../../widgets/home_header.dart';
 
 class CategoriasPage extends StatefulWidget {
   const CategoriasPage({super.key});
@@ -148,7 +148,19 @@ void _showDeleteConfirmationDialog(Map<String, dynamic> category) {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             children: [
-              HomeHeader(),
+              SizedBox(height: 20),
+                Center(
+                child: FractionallySizedBox(
+                  widthFactor: 0.9,
+                  child: AspectRatio(
+                    aspectRatio: 370 / 170,
+                    child: Image.asset(
+                      'assets/icons/logo.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ),
               SizedBox(height: isSmallScreen ? 8 : 16),
               Text(
                 "Categorías",
