@@ -112,7 +112,7 @@ class _CategoryState extends State<Category> {
           body: SafeArea(
             child: Column(
               children: [
-                // TODO es scrolleable ahora
+                // Todo es scrolleable ahora
                 Expanded(
                   child: SingleChildScrollView(
                     child: Padding(

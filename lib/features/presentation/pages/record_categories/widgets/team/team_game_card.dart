@@ -154,10 +154,41 @@ class TeamGameCard extends StatelessWidget {
             ],
           ),
         ),
-        IconButton(
-          icon: const Icon(Icons.delete_outline, color: Colors.red),
-          onPressed: onDelete,
-          tooltip: 'Eliminar',
+        Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFFF87171), Color(0xFFEF4444), Color(0xFFDC2626)],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFEF4444).withValues(alpha: 0.4),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => onDelete(),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Icons.delete_outline_rounded,
+                  color: AppColors.white,
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     );

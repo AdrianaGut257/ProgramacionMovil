@@ -6,7 +6,7 @@ import 'package:programacion_movil/features/presentation/pages/record_categories
 import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/individual/individual_game_card.dart';
 import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/team/team_game_card.dart';
 import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/shared/empty_state_widget.dart';
-//import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/ranking/ranking_list.dart';
+import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/button/button_popup_delete.dart';
 
 class RecordPage extends StatefulWidget {
   const RecordPage({super.key});
@@ -73,42 +73,32 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
   }
 
   Future<void> _deleteGame(int gameId) async {
-    final confirm = await showDialog<bool>(
+    showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Eliminar partida'),
-        content: const Text('¿Estás seguro de eliminar esta partida del historial?'),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Eliminar',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
-    );
+      builder: (BuildContext dialogContext) {
+        return ButtonPopupDelete(
+          title: '¿Eliminar esta partida del historial?',
+          onCorrect: () async {
+            // Eliminar la partida
+            await AppDatabase.instance.deleteGameHistory(gameId);
+            _loadHistory();
 
-    if (confirm == true) {
-      await AppDatabase.instance.deleteGameHistory(gameId);
-      _loadHistory();
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Partida eliminada'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 2),
-          ),
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Partida eliminada'),
+                  backgroundColor: Colors.red,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
+          },
+          onReset: () {
+            // No hacer nada, ButtonPopupDelete lo cierra automáticamente
+          },
         );
-      }
-    }
+      },
+    );
   }
 
   Future<void> _clearAllHistory() async {
