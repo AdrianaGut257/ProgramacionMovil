@@ -102,45 +102,33 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
   }
 
   Future<void> _clearAllHistory() async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Borrar todo el historial'),
-        content: const Text(
-          '¿Estás seguro? Esta acción no se puede deshacer.',
-        ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Borrar todo',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      await AppDatabase.instance.clearAllHistory();
-      _loadHistory();
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Todo el historial ha sido eliminado'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-    }
-  }
+  showDialog(
+    context: context,
+    builder: (BuildContext dialogContext) {
+      return ButtonPopupDelete(
+        title: '¿Borrar todo el historial? Esta acción no se puede deshacer.',
+        onCorrect: () async {
+          // Borrar todo el historial
+          await AppDatabase.instance.clearAllHistory();
+          _loadHistory();
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Todo el historial ha sido eliminado'),
+                backgroundColor: Colors.red,
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+        },
+        onReset: () {
+          // No hacer nada, ButtonPopupDelete lo cierra automáticamente
+        },
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
