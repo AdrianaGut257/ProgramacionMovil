@@ -108,85 +108,97 @@ class _CategoryState extends State<Category> {
       builder: (_, selected, __) {
         return Scaffold(
           backgroundColor: AppColors.white,
+          resizeToAvoidBottomInset: true,
           body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-              
-                children: [
-                      Row(
+            child: Column(
+              children: [
+                // Todo es scrolleable ahora
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          BackButtonCustom(onPressed: () => context.pop()),
-                          const Spacer(),
-                        ],
-                      ),
-                      SizedBox(height: 2),
-                     Center(
-                          child: FractionallySizedBox(
-                            widthFactor: 0.9, 
-                            child: AspectRatio(
-                              aspectRatio: 370 / 170, 
-                              child: Image.asset(
-                                'assets/icons/logo.png',
-                                fit: BoxFit.contain, 
+                          Row(
+                            children: [
+                              BackButtonCustom(onPressed: () => context.pop()),
+                              const Spacer(),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Center(
+                            child: FractionallySizedBox(
+                              widthFactor: 0.9,
+                              child: AspectRatio(
+                                aspectRatio: 370 / 170,
+                                child: Image.asset(
+                                  'assets/icons/logo.png',
+                                  fit: BoxFit.contain,
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                          SizedBox(height: isSmallScreen ? 5 : 10),
+                          Text(
+                            "Seleccione categorías",
+                            style: GoogleFonts.titanOne().copyWith(
+                              fontSize: isSmallScreen ? 24 : 30,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.primary,
+                              letterSpacing: 0,
+                              height: 1.1,
+                            ),
+                          ),
+                          SizedBox(height: isSmallScreen ? 10 : 15),
+                          CategorySelector(
+                            currentIndex: _currentIndex,
+                            onTabChanged: _onTabChanged,
+                          ),
+                          SizedBox(height: isSmallScreen ? 15 : 20),
 
-                      SizedBox(height: isSmallScreen ? 5 : 10),
-
-                  Text(
-                    "Seleccione categorías",
-                    style: GoogleFonts.titanOne().copyWith(
-                      fontSize: isSmallScreen ? 24 : 30,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.primary,
-                      letterSpacing: 0,
-                      height: 1.1,
+                          // IndexedStack con altura fija
+                          SizedBox(
+                            height:
+                                400, // Altura fija para el contenido de categorías
+                            child: IndexedStack(
+                              index: _currentIndex,
+                              children: [
+                                SelectedCategory(
+                                  selectedCategories: selected,
+                                  onToggle: toggleCategory,
+                                ),
+                                PredCategory(
+                                  selectedCategories: selected,
+                                  onToggle: toggleCategory,
+                                ),
+                                CreateCategory(
+                                  selectedCategories: selected,
+                                  onToggle: toggleCategory,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+                ),
 
-                  SizedBox(height: isSmallScreen ? 10 : 15),
-
-                  CategorySelector(
-                    currentIndex: _currentIndex,
-                    onTabChanged: _onTabChanged,
+                // Botón fijo en la parte inferior
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    isSmallScreen ? 5 : 10,
+                    20,
+                    isSmallScreen ? 5 : 10,
                   ),
-
-                  SizedBox(height: isSmallScreen ? 15 : 20),
-
-                  Expanded(
-                    child: IndexedStack(
-                      index: _currentIndex,
-                      children: [
-                        SelectedCategory(
-                          selectedCategories: selected,
-                          onToggle: toggleCategory,
-                        ),
-                        PredCategory(
-                          selectedCategories: selected,
-                          onToggle: toggleCategory,
-                        ),
-                        CreateCategory(
-                          selectedCategories: selected,
-                          onToggle: toggleCategory,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: isSmallScreen ? 5 : 10),
-
-                  CustomButton(
+                  child: CustomButton(
                     text: "Jugar",
                     onPressed: _saveCategoriesToGameState,
                   ),
-
-                  SizedBox(height: isSmallScreen ? 5 : 10),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
