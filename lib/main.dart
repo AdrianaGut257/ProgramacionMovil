@@ -3,20 +3,21 @@ import 'config/router.dart';
 import 'config/theme.dart';
 import 'features/presentation/state/game_team.dart';
 import 'features/presentation/state/game_individual.dart';
-import 'features/presentation/utils/sound_manager.dart'; // 🔹 Importar SoundManager
+import 'features/presentation/utils/sound_manager.dart';
+import 'features/presentation/state/selected_categories.dart';
 import 'package:provider/provider.dart';
 
-Future<void> main() async { // 🔹 Agregar async
-  WidgetsFlutterBinding.ensureInitialized(); // 🔹 Requerido para inicializar antes de runApp
-  
-  // 🔹 Inicializar sistema de sonidos
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   await SoundManager.init();
-  
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => GameTeam()),
         ChangeNotifierProvider(create: (_) => GameIndividual()),
+        ChangeNotifierProvider(create: (_) => SelectedCategories()),
       ],
       child: const StopWordsApp(),
     ),

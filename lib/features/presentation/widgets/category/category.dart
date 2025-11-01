@@ -9,6 +9,7 @@ import 'package:programacion_movil/features/presentation/widgets/category/widget
 import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
 import 'package:programacion_movil/features/presentation/state/game_team.dart';
 import 'package:programacion_movil/features/presentation/state/game_individual.dart';
+import 'package:programacion_movil/features/presentation/state/selected_categories.dart';
 import 'package:programacion_movil/data/models/category.dart' as models;
 import 'package:programacion_movil/data/repositories/category_repository.dart';
 import 'package:programacion_movil/features/presentation/widgets/modals/validation_dialog.dart';
@@ -28,32 +29,70 @@ class Category extends StatefulWidget {
 }
 
 class _CategoryState extends State<Category> {
-  final ValueNotifier<List<String>> selectedCategories = ValueNotifier([
-    "Musica",
-    "Animales",
-    "Paises",
-    "Frutas",
-    "Vegetales",
-    "Colores",
-  ]);
-
   final CategoryRepository _repository = CategoryRepository();
   int _currentIndex = 0;
+  Key _createCategoryKey = UniqueKey();
 
-  void toggleCategory(String category) {
-    final current = List<String>.from(selectedCategories.value);
-    current.contains(category)
-        ? current.remove(category)
-        : current.add(category);
-    selectedCategories.value = current;
+  @override
+  void initState() {
+    super.initState();
+    _syncCategories();
   }
 
   void _onTabChanged(int index) {
-    setState(() => _currentIndex = index);
+    setState(() {
+      if (index == 2 && _currentIndex != 2) {
+        _createCategoryKey = UniqueKey();
+      }
+      _currentIndex = index;
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncCategories();
+    if (_currentIndex == 2) {
+      setState(() {
+        _createCategoryKey = UniqueKey();
+      });
+    }
+  }
+
+  Future<void> _syncCategories() async {
+    try {
+      final selectedCategoriesProvider = Provider.of<SelectedCategories>(
+        context,
+        listen: false,
+      );
+
+      final allCategoriesMap = await _repository.getAllCategories();
+      final dbCategoryNames = allCategoriesMap
+          .map((catMap) => catMap['name'] as String)
+          .toSet();
+
+      final selectedCategories = selectedCategoriesProvider.categories;
+
+      final categoriesToRemove = selectedCategories
+          .where((category) => !dbCategoryNames.contains(category))
+          .toList();
+
+      for (final category in categoriesToRemove) {
+        selectedCategoriesProvider.removeCategory(category);
+      }
+    } catch (e) {
+      debugPrint('Error sincronizando categorías: $e');
+    }
   }
 
   Future<void> _saveCategoriesToGameState() async {
-    if (selectedCategories.value.isEmpty) {
+    final selectedCategoriesProvider = Provider.of<SelectedCategories>(
+      context,
+      listen: false,
+    );
+    final selectedCategoryNames = selectedCategoriesProvider.categories;
+
+    if (selectedCategoryNames.isEmpty) {
       ValidationDialog.show(
         context,
         "Seleccione categorías predeterminadas o creadas para continuar",
@@ -65,14 +104,14 @@ class _CategoryState extends State<Category> {
     try {
       final allCategoriesMap = await _repository.getAllCategories();
       final selectedCategoryObjects = allCategoriesMap
-          .where((catMap) => selectedCategories.value.contains(catMap['name']))
+          .where((catMap) => selectedCategoryNames.contains(catMap['name']))
           .map((catMap) => models.Category.fromMap(catMap))
           .toList();
 
       if (!mounted) return;
 
       if (widget.mode == 'group') {
-        final gameTeam = context.read<GameTeam>();
+        final gameTeam = Provider.of<GameTeam>(context, listen: false);
         gameTeam.clearCategories();
         gameTeam.setCategories(selectedCategoryObjects);
         context.push('/board-game');
@@ -80,7 +119,10 @@ class _CategoryState extends State<Category> {
       }
 
       if (widget.mode == 'individual') {
-        final gameIndividual = context.read<GameIndividual>();
+        final gameIndividual = Provider.of<GameIndividual>(
+          context,
+          listen: false,
+        );
         gameIndividual.clearCategories();
         gameIndividual.setCategories(selectedCategoryObjects);
 
@@ -104,9 +146,10 @@ class _CategoryState extends State<Category> {
     final height = size.height;
     final isSmallScreen = height < 700;
 
-    return ValueListenableBuilder<List<String>>(
-      valueListenable: selectedCategories,
-      builder: (_, selected, __) {
+    return Consumer<SelectedCategories>(
+      builder: (context, selectedCategoriesProvider, child) {
+        final selected = selectedCategoriesProvider.categories;
+
         return Scaffold(
           backgroundColor: AppColors.white,
           resizeToAvoidBottomInset: true,
@@ -164,15 +207,19 @@ class _CategoryState extends State<Category> {
                               children: [
                                 SelectedCategory(
                                   selectedCategories: selected,
-                                  onToggle: toggleCategory,
+                                  onToggle:
+                                      selectedCategoriesProvider.toggleCategory,
                                 ),
                                 PredCategory(
                                   selectedCategories: selected,
-                                  onToggle: toggleCategory,
+                                  onToggle:
+                                      selectedCategoriesProvider.toggleCategory,
                                 ),
                                 CreateCategory(
+                                  key: _createCategoryKey,
                                   selectedCategories: selected,
-                                  onToggle: toggleCategory,
+                                  onToggle:
+                                      selectedCategoriesProvider.toggleCategory,
                                 ),
                               ],
                             ),

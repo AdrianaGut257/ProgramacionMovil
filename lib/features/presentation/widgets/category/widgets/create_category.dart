@@ -21,7 +21,6 @@ class CreateCategory extends StatefulWidget {
 
 class _CreateCategoryState extends State<CreateCategory> {
   final CategoryRepository _repository = CategoryRepository();
-  final TextEditingController _nameController = TextEditingController();
   final List<String> _customCategories = [];
   bool _isLoading = true;
 
@@ -32,14 +31,24 @@ class _CreateCategoryState extends State<CreateCategory> {
   }
 
   @override
+  void didUpdateWidget(CreateCategory oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedCategories != widget.selectedCategories) {
+      _loadCategories();
+    }
+  }
+
+  @override
   void dispose() {
-    _nameController.dispose();
     super.dispose();
   }
 
   Future<void> _loadCategories() async {
     try {
       final categories = await _repository.getCustomCategories();
+
+      if (!mounted) return;
+
       setState(() {
         _customCategories.clear();
         _customCategories.addAll(
@@ -52,6 +61,8 @@ class _CreateCategoryState extends State<CreateCategory> {
         print("Categorías personalizadas cargadas: $_customCategories");
       }
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         _isLoading = false;
       });
@@ -59,89 +70,6 @@ class _CreateCategoryState extends State<CreateCategory> {
         print("Error al cargar categorías: $e");
       }
     }
-  }
-
-  Future<void> _saveCategory() async {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('El nombre no puede estar vacío')),
-      );
-      return;
-    }
-
-    final allCategories = await _repository.getAllCategories();
-    final allNames = allCategories.map((c) => c['name'] as String).toList();
-
-    if (allNames.contains(name)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('La categoría "$name" ya existe')),
-        );
-      }
-      return;
-    }
-
-    await _repository.addCategory(name);
-
-    setState(() {
-      _customCategories.add(name);
-      _nameController.clear();
-    });
-
-    if (kDebugMode) {
-      print("Categoría guardada: $name");
-    }
-  }
-
-  Widget _inputField() {
-    return Container(
-      width: 280,
-      decoration: BoxDecoration(
-        color: AppColors.primaryVariant,
-        borderRadius: BorderRadius.circular(25),
-        border: Border(
-          bottom: BorderSide(color: AppColors.primaryVariant, width: 4),
-        ),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(25),
-          border: Border(
-            bottom: BorderSide(color: AppColors.primaryVariant, width: 3),
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _nameController,
-                style: const TextStyle(color: Colors.white, fontSize: 20),
-                textAlignVertical: TextAlignVertical.center,
-                decoration: const InputDecoration(
-                  hintText: 'Escribe aquí',
-                  hintStyle: TextStyle(color: Colors.white70),
-                  prefixIcon: Icon(
-                    Icons.category_outlined,
-                    color: Colors.white,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 15,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 9),
-              child: AddRemoveButton(isAdd: true, onPressed: _saveCategory),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget _categoryCard(String category, bool isSelected) {
@@ -162,29 +90,24 @@ class _CreateCategoryState extends State<CreateCategory> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(
-            left: 16,
-            top: 12,
-            bottom: 12,
-            right: 9,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(Icons.label, color: Colors.white, size: 20),
-              const SizedBox(width: 10),
-              Flexible(
+              const SizedBox(width: 8),
+              Expanded(
                 child: Text(
                   category,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
                   overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
-              const SizedBox(width: 50),
+              const SizedBox(width: 4),
               AddRemoveButton(
                 isAdd: !isSelected,
                 onPressed: () => widget.onToggle(category),
@@ -198,24 +121,15 @@ class _CreateCategoryState extends State<CreateCategory> {
 
   @override
   Widget build(BuildContext context) {
+    final availableCategories = _customCategories
+        .where((category) => !widget.selectedCategories.contains(category))
+        .toList();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Crea tu categoría',
-            style: GoogleFonts.titanOne().copyWith(
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-              color: AppColors.primary,
-              letterSpacing: 0,
-              height: 1.1,
-            ),
-          ),
-          const SizedBox(height: 15),
-          _inputField(),
-          const SizedBox(height: 30),
           Text(
             "Tus categorías creadas",
             style: GoogleFonts.titanOne().copyWith(
@@ -230,11 +144,14 @@ class _CreateCategoryState extends State<CreateCategory> {
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : _customCategories.isEmpty
-                ? const Center(
+                : availableCategories.isEmpty
+                ? Center(
                     child: Text(
-                      "No hay categorías creadas aún",
-                      style: TextStyle(color: Colors.grey, fontSize: 18),
+                      _customCategories.isEmpty
+                          ? "No hay categorías creadas aún"
+                          : "Todas las categorías creadas han sido seleccionada",
+                      style: const TextStyle(color: Colors.grey, fontSize: 18),
+                      textAlign: TextAlign.center,
                     ),
                   )
                 : GridView.builder(
@@ -245,9 +162,9 @@ class _CreateCategoryState extends State<CreateCategory> {
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
                         ),
-                    itemCount: _customCategories.length,
+                    itemCount: availableCategories.length,
                     itemBuilder: (context, index) {
-                      final category = _customCategories[index];
+                      final category = availableCategories[index];
                       final isSelected = widget.selectedCategories.contains(
                         category,
                       );
