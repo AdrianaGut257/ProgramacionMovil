@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/utils/record_helpers.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/utils/record_helpers.dart';
 
 class TeamGameDetails extends StatelessWidget {
   final Map<String, dynamic> game;
 
-  const TeamGameDetails({
-    super.key,
-    required this.game,
-  });
+  const TeamGameDetails({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {
@@ -105,11 +102,7 @@ class TeamGameDetails extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.groups,
-                color: AppColors.primary,
-                size: 24,
-              ),
+              Icon(Icons.groups, color: AppColors.primary, size: 24),
               const SizedBox(width: 8),
               Text(
                 'Team Mode',
@@ -122,13 +115,7 @@ class TeamGameDetails extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          Text(
-            date,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
+          Text(date, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
         ],
       ),
     );
@@ -152,11 +139,7 @@ class TeamGameDetails extends StatelessWidget {
             child: Column(
               children: [
                 if (winnerTeam == 1)
-                  const Icon(
-                    Icons.emoji_events,
-                    color: Colors.amber,
-                    size: 32,
-                  ),
+                  const Icon(Icons.emoji_events, color: Colors.amber, size: 32),
                 Text(
                   'Equipo 1',
                   style: TextStyle(
@@ -176,40 +159,27 @@ class TeamGameDetails extends StatelessWidget {
                 ),
                 Text(
                   'puntos',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Text(
               'VS',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
             child: Column(
               children: [
                 if (winnerTeam == 2)
-                  const Icon(
-                    Icons.emoji_events,
-                    color: Colors.amber,
-                    size: 32,
-                  ),
+                  const Icon(Icons.emoji_events, color: Colors.amber, size: 32),
                 Text(
                   'Equipo 2',
                   style: TextStyle(
@@ -229,10 +199,7 @@ class TeamGameDetails extends StatelessWidget {
                 ),
                 Text(
                   'puntos',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -247,10 +214,7 @@ class TeamGameDetails extends StatelessWidget {
       padding: const EdgeInsets.only(top: 12),
       child: Center(
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 10,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
             color: Colors.amber[100],
             borderRadius: BorderRadius.circular(12),
@@ -263,10 +227,7 @@ class TeamGameDetails extends StatelessWidget {
               SizedBox(width: 8),
               Text(
                 'Empate',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -291,27 +252,20 @@ class TeamGameDetails extends StatelessWidget {
                 color: teamColor,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
-                Icons.groups,
-                color: Colors.white,
-                size: 20,
-              ),
+              child: const Icon(Icons.groups, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 12),
             Text(
               'Equipo $teamNumber (${teamPlayers.length} jugadores)',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        ...teamPlayers.map((player) => _buildTeamPlayerCard(
-              player: player,
-              teamColor: teamColor,
-            )),
+        ...teamPlayers.map(
+          (player) =>
+              _buildTeamPlayerCard(player: player, teamColor: teamColor),
+        ),
       ],
     );
   }
@@ -330,9 +284,7 @@ class TeamGameDetails extends StatelessWidget {
       decoration: BoxDecoration(
         color: teamColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: teamColor.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: teamColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -360,17 +312,11 @@ class TeamGameDetails extends StatelessWidget {
           Expanded(
             child: Text(
               name,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 6,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: teamColor,
               borderRadius: BorderRadius.circular(10),
@@ -395,19 +341,17 @@ class TeamGameDetails extends StatelessWidget {
       children: [
         const Text(
           'Categorías Jugadas',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: categories
-              .map((cat) => RecordHelpers.buildLargeCategoryChip(
-                    cat['category_name'],
-                  ))
+              .map(
+                (cat) =>
+                    RecordHelpers.buildLargeCategoryChip(cat['category_name']),
+              )
               .toList(),
         ),
       ],

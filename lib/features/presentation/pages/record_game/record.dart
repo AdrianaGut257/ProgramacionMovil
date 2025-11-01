@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/ranking/ranking_list.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/record_header.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/record_tab_bar.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/individual/individual_game_card.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/team/team_game_card.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/shared/empty_state_widget.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/button/button_popup_delete.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/widgets/ranking/ranking_list.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/widgets/record_header.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/widgets/record_tab_bar.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/widgets/individual/individual_game_card.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/widgets/team/team_game_card.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/widgets/shared/empty_state_widget.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/widgets/button/button_popup_delete.dart';
 
 class RecordPage extends StatefulWidget {
   const RecordPage({super.key});
@@ -15,7 +15,8 @@ class RecordPage extends StatefulWidget {
   State<RecordPage> createState() => _RecordPageState();
 }
 
-class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateMixin {
+class _RecordPageState extends State<RecordPage>
+    with SingleTickerProviderStateMixin {
   List<Map<String, dynamic>> _gameHistory = [];
   bool _isLoading = true;
   Map<String, dynamic>? _statistics;
@@ -41,28 +42,28 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
 
   Future<void> _loadHistory() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final history = await AppDatabase.instance.getGameHistory();
       final stats = await AppDatabase.instance.getStatistics();
       final rankings = await AppDatabase.instance.getPlayerRankings();
       _rankings = rankings;
-      setState((){
+      setState(() {
         _gameHistory = history;
         _statistics = stats;
-        
+
         // Separar juegos por modo
-        _individualGames = history.where((game) => 
-          game['game_mode'] != 'Team Mode'
-        ).toList();
-        
-        _teamGames = history.where((game) => 
-          game['game_mode'] == 'Team Mode'
-        ).toList();
-        
+        _individualGames = history
+            .where((game) => game['game_mode'] != 'Team Mode')
+            .toList();
+
+        _teamGames = history
+            .where((game) => game['game_mode'] == 'Team Mode')
+            .toList();
+
         _isLoading = false;
       });
-      
+
       debugPrint('📊 Historial cargado: ${_gameHistory.length} partidas');
       debugPrint('   Individual: ${_individualGames.length}');
       debugPrint('   Equipos: ${_teamGames.length}');
@@ -102,33 +103,33 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
   }
 
   Future<void> _clearAllHistory() async {
-  showDialog(
-    context: context,
-    builder: (BuildContext dialogContext) {
-      return ButtonPopupDelete(
-        title: '¿Borrar todo el historial? Esta acción no se puede deshacer.',
-        onCorrect: () async {
-          // Borrar todo el historial
-          await AppDatabase.instance.clearAllHistory();
-          _loadHistory();
-          
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Todo el historial ha sido eliminado'),
-                backgroundColor: Colors.red,
-                duration: Duration(seconds: 2),
-              ),
-            );
-          }
-        },
-        onReset: () {
-          // No hacer nada, ButtonPopupDelete lo cierra automáticamente
-        },
-      );
-    },
-  );
-}
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return ButtonPopupDelete(
+          title: '¿Borrar todo el historial? Esta acción no se puede deshacer.',
+          onCorrect: () async {
+            // Borrar todo el historial
+            await AppDatabase.instance.clearAllHistory();
+            _loadHistory();
+
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Todo el historial ha sido eliminado'),
+                  backgroundColor: Colors.red,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
+          },
+          onReset: () {
+            // No hacer nada, ButtonPopupDelete lo cierra automáticamente
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +164,10 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
                         _buildGamesList(_individualGames, false),
                         // Tab Equipos
                         _buildGamesList(_teamGames, true),
-                        RankingList(rankings: _rankings, onRefresh: _loadHistory)
+                        RankingList(
+                          rankings: _rankings,
+                          onRefresh: _loadHistory,
+                        ),
                       ],
                     ),
             ),
@@ -185,7 +189,7 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
         itemCount: games.length,
         itemBuilder: (context, index) {
           final game = games[index];
-          return isTeamMode 
+          return isTeamMode
               ? TeamGameCard(
                   game: game,
                   onDelete: () => _deleteGame(game['id']),

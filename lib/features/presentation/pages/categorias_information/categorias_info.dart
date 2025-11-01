@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/button/button_popup_delete.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/widgets/button/button_popup_delete.dart';
 import 'package:programacion_movil/config/icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -44,10 +44,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
       builder: (context, double value, child) {
         return Transform.translate(
           offset: Offset(0, 20 * (1 - value)),
-          child: Opacity(
-            opacity: value,
-            child: child,
-          ),
+          child: Opacity(opacity: value, child: child),
         );
       },
       child: Container(
@@ -57,7 +54,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withValues(alpha:0.08),
+              color: AppColors.primary.withValues(alpha: 0.08),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -93,7 +90,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                AppColors.primary.withValues(alpha:0.8),
+                                AppColors.primary.withValues(alpha: 0.8),
                                 AppColors.primary,
                                 AppColors.primaryVariant,
                               ],
@@ -101,7 +98,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withValues(alpha:0.3),
+                                color: AppColors.primary.withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -122,10 +119,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
                           duration: const Duration(milliseconds: 1000),
                           tween: Tween<double>(begin: 0.8, end: 1.0),
                           builder: (context, double scale, child) {
-                            return Transform.scale(
-                              scale: scale,
-                              child: child,
-                            );
+                            return Transform.scale(scale: scale, child: child);
                           },
                           onEnd: () {
                             // Repetir animación
@@ -173,7 +167,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFEF4444).withValues(alpha:0.4),
+                          color: const Color(0xFFEF4444).withValues(alpha: 0.4),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -209,11 +203,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
   Future _deleteCategory(int id) async {
     final db = AppDatabase.instance;
     await db.database.then((database) async {
-      await database.delete(
-        'category',
-        where: 'id = ?',
-        whereArgs: [id],
-      );
+      await database.delete('category', where: 'id = ?', whereArgs: [id]);
     });
 
     final categories = await db.getCategories();
@@ -304,34 +294,34 @@ class _CategoriasPageState extends State<CategoriasPage> {
                 child: isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : selectedCategories.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.category_outlined,
-                                  size: 64,
-                                  color: AppColors.grey.withValues(alpha:0.5),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  "No hay categorías creadas",
-                                  style: GoogleFonts.poppins(
-                                    color: AppColors.grey,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.category_outlined,
+                              size: 64,
+                              color: AppColors.grey.withValues(alpha: 0.5),
                             ),
-                          )
-                        : ListView.builder(
-                            itemCount: selectedCategories.length,
-                            itemBuilder: (context, index) {
-                              final category = selectedCategories[index];
-                              return _categoryCard(category, index);
-                            },
-                          ),
+                            const SizedBox(height: 16),
+                            Text(
+                              "No hay categorías creadas",
+                              style: GoogleFonts.poppins(
+                                color: AppColors.grey,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: selectedCategories.length,
+                        itemBuilder: (context, index) {
+                          final category = selectedCategories[index];
+                          return _categoryCard(category, index);
+                        },
+                      ),
               ),
               SizedBox(height: height * 0.02),
             ],

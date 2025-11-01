@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 //import 'package:programacion_movil/config/colors.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/utils/record_helpers.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/utils/record_helpers.dart';
 
 class IndividualGameDetails extends StatelessWidget {
   final Map<String, dynamic> game;
 
-  const IndividualGameDetails({
-    super.key,
-    required this.game,
-  });
+  const IndividualGameDetails({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {
@@ -96,13 +93,7 @@ class IndividualGameDetails extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          Text(
-            date,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
+          Text(date, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
         ],
       ),
     );
@@ -114,10 +105,7 @@ class IndividualGameDetails extends StatelessWidget {
       children: [
         const Text(
           'Clasificación Final',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         ...players.map((player) => _buildPlayerCard(player)),
@@ -151,10 +139,7 @@ class IndividualGameDetails extends StatelessWidget {
           Expanded(
             child: Text(
               name,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
           RecordHelpers.buildLargeScoreBadge(score),
@@ -169,19 +154,17 @@ class IndividualGameDetails extends StatelessWidget {
       children: [
         const Text(
           'Categorías Jugadas',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: categories
-              .map((cat) => RecordHelpers.buildLargeCategoryChip(
-                    cat['category_name'],
-                  ))
+              .map(
+                (cat) =>
+                    RecordHelpers.buildLargeCategoryChip(cat['category_name']),
+              )
               .toList(),
         ),
       ],
