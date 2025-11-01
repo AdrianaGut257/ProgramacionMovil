@@ -26,7 +26,7 @@ class CustomNavigationBar extends StatelessWidget {
             () => context.go('/'),
           ),
           _buildNavItem(
-            Icons.videogame_asset,
+            Icons.category_outlined,
             currentLocation == '/categorias-info',
             () => context.go('/categorias-info'),
           ),

@@ -373,17 +373,6 @@ class _CategoriasPageState extends State<CategoriasPage> {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: isSmallScreen ? 8 : 16),
-              Text(
-                "Gestiona tus categorías personalizadas",
-                style: GoogleFonts.poppins(
-                  fontSize: width * 0.035,
-                  color: const Color(0xFF6B7280),
-                  fontWeight: FontWeight.w500,
-                  height: 1.3,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
 
               Text(
                 'Crea tu categoría',
