@@ -8,6 +8,9 @@ enum ValidationType {
   duplicateNames,
   noPlayers,
   noCategories,
+  emptyName,
+  nameTooLong,
+  categoryExists,
 }
 
 class ValidationDialog extends StatelessWidget {
@@ -42,6 +45,12 @@ class ValidationDialog extends StatelessWidget {
         return Icons.person_off_outlined;
       case ValidationType.noCategories:
         return Icons.category_outlined;
+      case ValidationType.emptyName:
+        return Icons.edit_off;
+      case ValidationType.nameTooLong:
+        return Icons.text_fields;
+      case ValidationType.categoryExists:
+        return Icons.error_outline;
     }
   }
 
@@ -54,8 +63,10 @@ class ValidationDialog extends StatelessWidget {
       case ValidationType.noPlayers:
         return AppColors.secondary;
       case ValidationType.duplicateNames:
-        return AppColors.errorPrimary;
       case ValidationType.noCategories:
+      case ValidationType.emptyName:
+      case ValidationType.nameTooLong:
+      case ValidationType.categoryExists:
         return AppColors.errorPrimary;
     }
   }

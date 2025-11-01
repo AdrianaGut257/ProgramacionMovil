@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:provider/provider.dart';
 import 'package:programacion_movil/features/presentation/state/selected_categories.dart';
+import 'package:programacion_movil/features/presentation/widgets/modals/validation_dialog.dart';
 
 class CategoriasPage extends StatefulWidget {
   const CategoriasPage({super.key});
@@ -29,7 +30,6 @@ class _CategoriasPageState extends State<CategoriasPage> {
   Future<void> _loadCategories() async {
     final db = AppDatabase.instance;
     final categories = await db.getCategories();
-
     final filtered = categories.where((c) => c['is_default'] == 0).toList();
 
     setState(() {
@@ -40,9 +40,21 @@ class _CategoriasPageState extends State<CategoriasPage> {
 
   Future<void> _saveCategory() async {
     final name = _nameController.text.trim();
+
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('El nombre no puede estar vacío')),
+      ValidationDialog.show(
+        context,
+        'El nombre no puede estar vacío',
+        ValidationType.emptyName,
+      );
+      return;
+    }
+
+    if (name.length > 20) {
+      ValidationDialog.show(
+        context,
+        'El nombre de la categoría es demasiado largo',
+        ValidationType.nameTooLong,
       );
       return;
     }
@@ -51,10 +63,17 @@ class _CategoriasPageState extends State<CategoriasPage> {
     final allCategories = await db.getCategories();
     final allNames = allCategories.map((c) => c['name'] as String).toList();
 
-    if (allNames.contains(name)) {
+    final nameLower = name.toLowerCase();
+    final nameExists = allNames.any(
+      (existingName) => existingName.toLowerCase() == nameLower,
+    );
+
+    if (nameExists) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('La categoría "$name" ya existe')),
+        ValidationDialog.show(
+          context,
+          'El nombre de la categoría ya existe',
+          ValidationType.categoryExists,
         );
       }
       return;
