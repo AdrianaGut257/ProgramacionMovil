@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/utils/record_helpers.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/utils/record_helpers.dart';
 
 class RankingPlayerCard extends StatelessWidget {
   final String playerName;
@@ -67,10 +67,7 @@ class RankingPlayerCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   '$gamesPlayed ${gamesPlayed == 1 ? 'partida' : 'partidas'}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -121,18 +118,12 @@ class RankingPlayerCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.amber.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.amber.withValues(alpha: 0.4),
-        ),
+        border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
-            Icons.emoji_events,
-            color: Colors.amber,
-            size: 16,
-          ),
+          const Icon(Icons.emoji_events, color: Colors.amber, size: 16),
           const SizedBox(width: 4),
           Text(
             '$victories',

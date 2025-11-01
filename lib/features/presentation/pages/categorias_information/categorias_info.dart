@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/button/button_popup_delete.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/widgets/button/button_popup_delete.dart';
 import 'package:programacion_movil/config/icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'package:provider/provider.dart';
+import 'package:programacion_movil/features/presentation/state/selected_categories.dart';
+import 'package:programacion_movil/features/presentation/widgets/modals/validation_dialog.dart';
 
 class CategoriasPage extends StatefulWidget {
   const CategoriasPage({super.key});
@@ -15,6 +19,7 @@ class CategoriasPage extends StatefulWidget {
 class _CategoriasPageState extends State<CategoriasPage> {
   List<Map<String, dynamic>> selectedCategories = [];
   bool isLoading = true;
+  final TextEditingController _nameController = TextEditingController();
 
   @override
   void initState() {
@@ -25,14 +30,131 @@ class _CategoriasPageState extends State<CategoriasPage> {
   Future<void> _loadCategories() async {
     final db = AppDatabase.instance;
     final categories = await db.getCategories();
-
-    // Filtrar solo las categorías personalizadas
     final filtered = categories.where((c) => c['is_default'] == 0).toList();
 
     setState(() {
       selectedCategories = filtered;
       isLoading = false;
     });
+  }
+
+  Future<void> _saveCategory() async {
+    final name = _nameController.text.trim();
+
+    if (name.isEmpty) {
+      ValidationDialog.show(
+        context,
+        'El nombre no puede estar vacío',
+        ValidationType.emptyName,
+      );
+      return;
+    }
+
+    if (name.length > 20) {
+      ValidationDialog.show(
+        context,
+        'El nombre de la categoría es demasiado largo',
+        ValidationType.nameTooLong,
+      );
+      return;
+    }
+
+    final db = AppDatabase.instance;
+    final allCategories = await db.getCategories();
+    final allNames = allCategories.map((c) => c['name'] as String).toList();
+
+    final nameLower = name.toLowerCase();
+    final nameExists = allNames.any(
+      (existingName) => existingName.toLowerCase() == nameLower,
+    );
+
+    if (nameExists) {
+      if (mounted) {
+        ValidationDialog.show(
+          context,
+          'El nombre de la categoría ya existe',
+          ValidationType.categoryExists,
+        );
+      }
+      return;
+    }
+
+    await db.database.then((database) async {
+      await database.insert('category', {'name': name, 'is_default': 0});
+    });
+
+    _nameController.clear();
+    await _loadCategories();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Categoría creada exitosamente'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  Widget _inputField() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.primaryVariant,
+        borderRadius: BorderRadius.circular(25),
+        border: Border(
+          bottom: BorderSide(color: AppColors.primaryVariant, width: 4),
+        ),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(25),
+          border: Border(
+            bottom: BorderSide(color: AppColors.primaryVariant, width: 3),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _nameController,
+                style: const TextStyle(color: Colors.white, fontSize: 20),
+                textAlignVertical: TextAlignVertical.center,
+                decoration: const InputDecoration(
+                  hintText: 'Escribe aquí',
+                  hintStyle: TextStyle(color: Colors.white70),
+                  prefixIcon: Icon(
+                    Icons.category_outlined,
+                    color: Colors.white,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 15,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 9),
+              child: GestureDetector(
+                onTap: _saveCategory,
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.add, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _categoryCard(Map<String, dynamic> category, int index) {
@@ -44,10 +166,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
       builder: (context, double value, child) {
         return Transform.translate(
           offset: Offset(0, 20 * (1 - value)),
-          child: Opacity(
-            opacity: value,
-            child: child,
-          ),
+          child: Opacity(opacity: value, child: child),
         );
       },
       child: Container(
@@ -57,7 +176,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withValues(alpha:0.08),
+              color: AppColors.primary.withValues(alpha: 0.08),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -67,12 +186,11 @@ class _CategoriasPageState extends State<CategoriasPage> {
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(24),
-            onTap: () {}, // Opcional: acción al tocar
+            onTap: () {},
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Row(
                 children: [
-                  // Ícono con badge
                   Stack(
                     clipBehavior: Clip.none,
                     children: [
@@ -93,7 +211,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                AppColors.primary.withValues(alpha:0.8),
+                                AppColors.primary.withValues(alpha: 0.8),
                                 AppColors.primary,
                                 AppColors.primaryVariant,
                               ],
@@ -101,7 +219,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withValues(alpha:0.3),
+                                color: AppColors.primary.withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -114,31 +232,9 @@ class _CategoriasPageState extends State<CategoriasPage> {
                           ),
                         ),
                       ),
-                      // Badge verde "Activa"
-                      Positioned(
-                        top: -4,
-                        right: -4,
-                        child: TweenAnimationBuilder(
-                          duration: const Duration(milliseconds: 1000),
-                          tween: Tween<double>(begin: 0.8, end: 1.0),
-                          builder: (context, double scale, child) {
-                            return Transform.scale(
-                              scale: scale,
-                              child: child,
-                            );
-                          },
-                          onEnd: () {
-                            // Repetir animación
-                            if (mounted) {
-                              setState(() {});
-                            }
-                          },
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(width: 16),
-                  // Nombre y estado
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,7 +252,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
                       ],
                     ),
                   ),
-                  // Botón eliminar
+
                   Container(
                     width: 48,
                     height: 48,
@@ -173,7 +269,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFEF4444).withValues(alpha:0.4),
+                          color: const Color(0xFFEF4444).withValues(alpha: 0.4),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -206,15 +302,19 @@ class _CategoriasPageState extends State<CategoriasPage> {
     );
   }
 
-  Future _deleteCategory(int id) async {
+  Future _deleteCategory(int id, String categoryName) async {
     final db = AppDatabase.instance;
     await db.database.then((database) async {
-      await database.delete(
-        'category',
-        where: 'id = ?',
-        whereArgs: [id],
-      );
+      await database.delete('category', where: 'id = ?', whereArgs: [id]);
     });
+
+    if (mounted) {
+      final selectedCategoriesProvider = Provider.of<SelectedCategories>(
+        context,
+        listen: false,
+      );
+      selectedCategoriesProvider.removeCategory(categoryName);
+    }
 
     final categories = await db.getCategories();
 
@@ -227,9 +327,9 @@ class _CategoriasPageState extends State<CategoriasPage> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Categoría eliminada'),
-        duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text('Categoría "$categoryName" eliminada'),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -241,7 +341,10 @@ class _CategoriasPageState extends State<CategoriasPage> {
         return ButtonPopupDelete(
           title: '¿Eliminar la categoría "${category['name']}"?',
           onCorrect: () async {
-            await _deleteCategory(category['id'] as int);
+            await _deleteCategory(
+              category['id'] as int,
+              category['name'] as String,
+            );
           },
           onReset: () {},
         );
@@ -288,6 +391,22 @@ class _CategoriasPageState extends State<CategoriasPage> {
                 ),
                 textAlign: TextAlign.center,
               ),
+              SizedBox(height: isSmallScreen ? 8 : 16),
+
+              Text(
+                'Crea tu categoría',
+                style: GoogleFonts.titanOne().copyWith(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.primary,
+                  letterSpacing: 0,
+                  height: 1.1,
+                ),
+              ),
+              const SizedBox(height: 15),
+              _inputField(),
+
+              const SizedBox(height: 24),
               SizedBox(height: isSmallScreen ? 4 : 8),
               Text(
                 "Selecciona una categoría para eliminarla",
@@ -304,34 +423,34 @@ class _CategoriasPageState extends State<CategoriasPage> {
                 child: isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : selectedCategories.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.category_outlined,
-                                  size: 64,
-                                  color: AppColors.grey.withValues(alpha:0.5),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  "No hay categorías creadas",
-                                  style: GoogleFonts.poppins(
-                                    color: AppColors.grey,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.category_outlined,
+                              size: 64,
+                              color: AppColors.grey.withValues(alpha: 0.5),
                             ),
-                          )
-                        : ListView.builder(
-                            itemCount: selectedCategories.length,
-                            itemBuilder: (context, index) {
-                              final category = selectedCategories[index];
-                              return _categoryCard(category, index);
-                            },
-                          ),
+                            const SizedBox(height: 16),
+                            Text(
+                              "No hay categorías creadas",
+                              style: GoogleFonts.poppins(
+                                color: AppColors.grey,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: selectedCategories.length,
+                        itemBuilder: (context, index) {
+                          final category = selectedCategories[index];
+                          return _categoryCard(category, index);
+                        },
+                      ),
               ),
               SizedBox(height: height * 0.02),
             ],

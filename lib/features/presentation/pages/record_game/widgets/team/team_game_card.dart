@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/utils/record_helpers.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/team/team_game_details.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/utils/record_helpers.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/widgets/team/team_game_details.dart';
 
 class TeamGameCard extends StatelessWidget {
   final Map<String, dynamic> game;
   final VoidCallback onDelete;
 
-  const TeamGameCard({
-    super.key,
-    required this.game,
-    required this.onDelete,
-  });
+  const TeamGameCard({super.key, required this.game, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +21,7 @@ class TeamGameCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: () => _showDetails(context),
@@ -117,11 +111,7 @@ class TeamGameCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(
-                    Icons.groups,
-                    color: AppColors.primary,
-                    size: 20,
-                  ),
+                  Icon(Icons.groups, color: AppColors.primary, size: 20),
                   const SizedBox(width: 8),
                   Text(
                     'Team Mode',
@@ -136,18 +126,11 @@ class TeamGameCard extends StatelessWidget {
               const SizedBox(height: 4),
               Row(
                 children: [
-                  Icon(
-                    Icons.calendar_today,
-                    size: 14,
-                    color: Colors.grey[600],
-                  ),
+                  Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
                   const SizedBox(width: 4),
                   Text(
                     date,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],
               ),
@@ -213,11 +196,7 @@ class TeamGameCard extends StatelessWidget {
             child: Column(
               children: [
                 if (winnerTeam == 1)
-                  const Icon(
-                    Icons.emoji_events,
-                    color: Colors.amber,
-                    size: 24,
-                  ),
+                  const Icon(Icons.emoji_events, color: Colors.amber, size: 24),
                 Text(
                   'Equipo 1',
                   style: TextStyle(
@@ -266,11 +245,7 @@ class TeamGameCard extends StatelessWidget {
             child: Column(
               children: [
                 if (winnerTeam == 2)
-                  const Icon(
-                    Icons.emoji_events,
-                    color: Colors.amber,
-                    size: 24,
-                  ),
+                  const Icon(Icons.emoji_events, color: Colors.amber, size: 24),
                 Text(
                   'Equipo 2',
                   style: TextStyle(
@@ -304,15 +279,14 @@ class TeamGameCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: RecordHelpers.getPositionColor(position).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: RecordHelpers.getPositionColor(position).withValues(alpha: 0.3),
+          color: RecordHelpers.getPositionColor(
+            position,
+          ).withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -330,10 +304,7 @@ class TeamGameCard extends StatelessWidget {
           Expanded(
             child: Text(
               name,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
           ),
           RecordHelpers.buildScoreBadge(score),
@@ -351,9 +322,9 @@ class TeamGameCard extends StatelessWidget {
           runSpacing: 6,
           children: categories
               .take(3)
-              .map((cat) => RecordHelpers.buildCategoryChip(
-                    cat['category_name'],
-                  ))
+              .map(
+                (cat) => RecordHelpers.buildCategoryChip(cat['category_name']),
+              )
               .toList(),
         ),
         if (categories.length > 3)
@@ -361,10 +332,7 @@ class TeamGameCard extends StatelessWidget {
             padding: const EdgeInsets.only(top: 6),
             child: Text(
               '+ ${categories.length - 3} categoría(s) más',
-              style: TextStyle(
-                fontSize: 11,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
             ),
           ),
       ],

@@ -12,7 +12,7 @@ import '../features/presentation/pages/modality_information/team_mode.dart';
 import '../features/presentation/pages/game_board/board_team_mode/board_team_mode.dart';
 import '../features/presentation/pages/game_board/board_individual_mode/board_easy_mode.dart';
 import '../features/presentation/pages/game_board/board_individual_mode/board_hard_mode.dart';
-import '../features/presentation/pages/record_categories/record.dart';
+import '../features/presentation/pages/record_game/record.dart';
 
 import '../features/presentation/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';

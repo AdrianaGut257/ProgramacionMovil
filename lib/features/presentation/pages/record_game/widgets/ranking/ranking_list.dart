@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:programacion_movil/features/presentation/pages/record_categories/widgets/ranking/ranking_player_card.dart';
+import 'package:programacion_movil/features/presentation/pages/record_game/widgets/ranking/ranking_player_card.dart';
 
 class RankingList extends StatelessWidget {
   final List<Map<String, dynamic>> rankings;
@@ -29,7 +29,7 @@ class RankingList extends StatelessWidget {
             totalPoints: player['total_points'] as int,
             gamesPlayed: player['games_played'] as int,
             victories: player['victories'] as int,
-            position: index + 1, // Posición basada en el índice
+            position: index + 1,
           );
         },
       ),
@@ -41,11 +41,7 @@ class RankingList extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.leaderboard,
-            size: 80,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.leaderboard, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             'No hay jugadores aún',
@@ -58,10 +54,7 @@ class RankingList extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Juega algunas partidas para ver el ranking',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[500],
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
         ],
       ),
