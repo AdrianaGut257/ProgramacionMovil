@@ -11,6 +11,7 @@ import 'package:programacion_movil/features/presentation/state/game_team.dart';
 import 'package:programacion_movil/features/presentation/state/game_individual.dart';
 import 'package:programacion_movil/data/models/category.dart' as models;
 import 'package:programacion_movil/data/repositories/category_repository.dart';
+import 'package:programacion_movil/features/presentation/widgets/modals/validation_dialog.dart';
 
 import 'package:programacion_movil/config/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -53,10 +54,10 @@ class _CategoryState extends State<Category> {
 
   Future<void> _saveCategoriesToGameState() async {
     if (selectedCategories.value.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debes seleccionar al menos una categoría'),
-        ),
+      ValidationDialog.show(
+        context,
+        "Seleccione categorías predeterminadas o creadas para continuar",
+        ValidationType.noCategories,
       );
       return;
     }
@@ -112,7 +113,6 @@ class _CategoryState extends State<Category> {
           body: SafeArea(
             child: Column(
               children: [
-                // Todo es scrolleable ahora
                 Expanded(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -157,10 +157,8 @@ class _CategoryState extends State<Category> {
                           ),
                           SizedBox(height: isSmallScreen ? 15 : 20),
 
-                          // IndexedStack con altura fija
                           SizedBox(
-                            height:
-                                400, // Altura fija para el contenido de categorías
+                            height: 400,
                             child: IndexedStack(
                               index: _currentIndex,
                               children: [
@@ -185,7 +183,6 @@ class _CategoryState extends State<Category> {
                   ),
                 ),
 
-                // Botón fijo en la parte inferior
                 Padding(
                   padding: EdgeInsets.fromLTRB(
                     20,

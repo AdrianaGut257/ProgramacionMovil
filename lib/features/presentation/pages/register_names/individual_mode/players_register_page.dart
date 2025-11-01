@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:programacion_movil/features/presentation/pages/register_names/group_mode/widgets/validation_dialog.dart';
+import 'package:programacion_movil/features/presentation/widgets/modals/validation_dialog.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/back_button_custom.dart';
 import 'package:provider/provider.dart';
 import 'package:programacion_movil/config/colors.dart';

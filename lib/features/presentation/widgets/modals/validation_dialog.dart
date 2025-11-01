@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../../../config/colors.dart';
+import '../../../../config/colors.dart';
 
 enum ValidationType {
   unequalTeams,
@@ -7,6 +7,7 @@ enum ValidationType {
   minPlayers,
   duplicateNames,
   noPlayers,
+  noCategories,
 }
 
 class ValidationDialog extends StatelessWidget {
@@ -39,6 +40,8 @@ class ValidationDialog extends StatelessWidget {
         return Icons.content_copy;
       case ValidationType.noPlayers:
         return Icons.person_off_outlined;
+      case ValidationType.noCategories:
+        return Icons.category_outlined;
     }
   }
 
@@ -51,6 +54,8 @@ class ValidationDialog extends StatelessWidget {
       case ValidationType.noPlayers:
         return AppColors.secondary;
       case ValidationType.duplicateNames:
+        return AppColors.errorPrimary;
+      case ValidationType.noCategories:
         return AppColors.errorPrimary;
     }
   }
