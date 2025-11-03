@@ -376,260 +376,261 @@ class _BoardHardModePageState extends State<BoardHardModePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final height = size.height;
-    final isSmallScreen = height < 700;
-    final categories = context.watch<GameIndividual>().categories;
+Widget build(BuildContext context) {
+  final size = MediaQuery.of(context).size;
+  final height = size.height;
+  final width = size.width;
+  final isSmallScreen = height < 700;
+  final categories = context.watch<GameIndividual>().categories;
 
-    if (categories.isEmpty) {
-      return const Scaffold(
-        body: Center(child: Text('No hay categorías disponibles')),
-      );
-    }
-    if (players.isEmpty) return const SizedBox();
+  if (categories.isEmpty) {
+    return const Scaffold(
+      body: Center(child: Text('No hay categorías disponibles')),
+    );
+  }
+  if (players.isEmpty) return const SizedBox();
 
-    // Mostrar ranking cuando el juego termina o no quedan jugadores activos
-    if (gameEnded || activePlayers.isEmpty) {
-      SoundManager.stopTimer();
-      return StopWordsWinnersScreen(playerScores: playerScores);
-    }
+  // Mostrar ranking cuando el juego termina o no quedan jugadores activos
+  if (gameEnded || activePlayers.isEmpty) {
+    SoundManager.stopTimer();
+    return StopWordsWinnersScreen(playerScores: playerScores);
+  }
 
-    final currentPlayer = activePlayers[currentPlayerIndex];
+  final currentPlayer = activePlayers[currentPlayerIndex];
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Column(
-                    children: [
-                      SizedBox(height: isSmallScreen ? 20 : 30),
-
-                      /// Header: Categoría + Cronómetro
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    // ignore: deprecated_member_use
-                                    color: AppColors.primary.withOpacity(0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.category_rounded,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: Text(
-                                      categories[currentCategoryIndex].name
-                                          .toUpperCase(),
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        letterSpacing: 0.5,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          ChronometerWidget(
-                            key: _chronometerKey,
-                            duration: Duration(
-                              seconds: gameTime.inSeconds + extraTimeSeconds,
-                            ),
-                            onTimeEnd: _onTimeEnd,
-                            isActive:
-                                chronometerActive &&
-                                !gameEnded &&
-                                !hasSelectedLetter,
-                          ),
-                        ],
-                      ),
-
-                      SizedBox(height: isSmallScreen ? 20 : 25),
-
-                      /// Nombre del jugador + Indicador de jugadores activos
-                      Column(
-                        children: [
-                          PlayerNameWidget(
-                            name: currentPlayer.name,
-                            score: playerScores[currentPlayer.name] ?? 0,
-                            team: 1,
-                          ),
-                          const SizedBox(height: 8),
-                          // Indicador de jugadores restantes
-                          Container(
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: width * 0.05,
+                  vertical: isSmallScreen ? 10 : 20,
+                ),
+                child: Column(
+                  children: [
+                    // ---------- CABECERA ----------
+                    SizedBox(height: isSmallScreen ? 10 : 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
+                              horizontal: 16,
+                              vertical: 12,
                             ),
                             decoration: BoxDecoration(
-                              color: activePlayers.length == 1
-                                  ? Colors.orange.shade100
-                                  : Colors.blue.shade50,
-                              borderRadius: BorderRadius.circular(12),
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  Icons.people,
-                                  size: 16,
-                                  color: activePlayers.length == 1
-                                      ? Colors.orange.shade700
-                                      : Colors.blue.shade700,
+                                const Icon(
+                                  Icons.category_rounded,
+                                  color: Colors.white,
+                                  size: 20,
                                 ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  activePlayers.length == 1
-                                      ? '¡Último jugador!'
-                                      : '${activePlayers.length} jugadores activos',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: activePlayers.length == 1
-                                        ? Colors.orange.shade700
-                                        : Colors.blue.shade700,
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    categories[currentCategoryIndex]
+                                        .name
+                                        .toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      letterSpacing: 0.5,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
+                        ),
+                        const SizedBox(width: 12),
+                        ChronometerWidget(
+                          key: _chronometerKey,
+                          duration: Duration(
+                            seconds: gameTime.inSeconds + extraTimeSeconds,
+                          ),
+                          onTimeEnd: _onTimeEnd,
+                          isActive: chronometerActive &&
+                              !gameEnded &&
+                              !hasSelectedLetter,
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: isSmallScreen ? 10 : 20),
+
+                    // ---------- JUGADOR ACTUAL ----------
+                    PlayerNameWidget(
+                      name: currentPlayer.name,
+                      score: playerScores[currentPlayer.name] ?? 0,
+                      team: 1,
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Indicador de jugadores activos
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
                       ),
-
-                      SizedBox(height: isSmallScreen ? 25 : 35),
-
-                      Center(
-                        child: hasWildcards
-                            ? BoardGameHardWildcards(
-                                key: _boardHardWildcardsKey,
-                                selectedWildcards: context
-                                    .read<GameIndividual>()
-                                    .selectedWildcards,
-                                onLetterSelected: _onLetterSelected,
-                                onWildcardActivated: _onWildcardActivated,
-                                onExtraTimeGranted: _onExtraTimeGranted,
-                                onSkipTurn: _nextPlayer,
-                                onSkipTurnPoints: _addSkipTurnPoints,
-                                onDoublePointsActivated: () {
-                                  setState(() {
-                                    doublePointsActive = true;
-                                  });
-                                },
-                                onPauseChronometer: _pauseChronometer,
-                                onResumeChronometer: _resumeChronometer,
-                              )
-                            : BoardGameHardWildcards(
-                                key: ValueKey(
-                                  'hard-${categories[currentCategoryIndex].name}',
-                                ),
-                                onLetterSelected: _onLetterSelected,
-                              ),
+                      decoration: BoxDecoration(
+                        color: activePlayers.length == 1
+                            ? Colors.orange.shade100
+                            : Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-
-                      SizedBox(height: isSmallScreen ? 25 : 55),
-
-                      /// Botones inferiores
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                SoundManager.stopTimer();
-                                if (currentCategoryIndex <
-                                    categories.length - 1) {
-                                  setState(() {
-                                    currentCategoryIndex++;
-                                    totalLettersSelected = 0;
-                                    categoryShown = false;
-                                    chronometerActive = false;
-                                    hasSelectedLetter = false;
-
-                                    // Reinicializar tablero con comodines
-                                    if (hasWildcards) {
-                                      _boardHardWildcardsKey.currentState
-                                          ?.initializeWildcardPool();
-                                      _boardHardWildcardsKey.currentState
-                                          ?.initializeGame();
-                                    }
-                                  });
-                                  _showCategoryDialog();
-                                } else {
-                                  _endGame();
-                                }
-                              },
-                              icon: const Icon(
-                                Icons.skip_next,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              label: const Text(
-                                "Siguiente",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 14,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                elevation: 3,
-                              ),
+                          Icon(
+                            Icons.people,
+                            size: 16,
+                            color: activePlayers.length == 1
+                                ? Colors.orange.shade700
+                                : Colors.blue.shade700,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            activePlayers.length == 1
+                                ? '¡Último jugador!'
+                                : '${activePlayers.length} jugadores activos',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: activePlayers.length == 1
+                                  ? Colors.orange.shade700
+                                  : Colors.blue.shade700,
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(child: EndGameButton(onPressed: _endGame)),
                         ],
                       ),
-                      SizedBox(height: isSmallScreen ? 20 : 30),
-                    ],
-                  ),
+                    ),
+
+                    SizedBox(height: isSmallScreen ? 20 : 30),
+
+                    // ---------- TABLERO ----------
+                    Center(
+                      child: hasWildcards
+                          ? BoardGameHardWildcards(
+                              key: _boardHardWildcardsKey,
+                              selectedWildcards: context
+                                  .read<GameIndividual>()
+                                  .selectedWildcards,
+                              onLetterSelected: _onLetterSelected,
+                              onWildcardActivated: _onWildcardActivated,
+                              onExtraTimeGranted: _onExtraTimeGranted,
+                              onSkipTurn: _nextPlayer,
+                              onSkipTurnPoints: _addSkipTurnPoints,
+                              onDoublePointsActivated: () {
+                                setState(() {
+                                  doublePointsActive = true;
+                                });
+                              },
+                              onPauseChronometer: _pauseChronometer,
+                              onResumeChronometer: _resumeChronometer,
+                            )
+                          : BoardGameHardWildcards(
+                              key: ValueKey(
+                                'hard-${categories[currentCategoryIndex].name}',
+                              ),
+                              onLetterSelected: _onLetterSelected,
+                            ),
+                    ),
+
+                    // Espaciado flexible antes de botones
+                    SizedBox(height: height * 0.04),
+
+                    // ---------- BOTONES INFERIORES ----------
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              SoundManager.stopTimer();
+                              if (currentCategoryIndex <
+                                  categories.length - 1) {
+                                setState(() {
+                                  currentCategoryIndex++;
+                                  totalLettersSelected = 0;
+                                  categoryShown = false;
+                                  chronometerActive = false;
+                                  hasSelectedLetter = false;
+
+                                  if (hasWildcards) {
+                                    _boardHardWildcardsKey.currentState
+                                        ?.initializeWildcardPool();
+                                    _boardHardWildcardsKey.currentState
+                                        ?.initializeGame();
+                                  }
+                                });
+                                _showCategoryDialog();
+                              } else {
+                                _endGame();
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.skip_next,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            label: const Text(
+                              "Siguiente",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: isSmallScreen ? 12 : 14,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 3,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(child: EndGameButton(onPressed: _endGame)),
+                      ],
+                    ),
+
+                    SizedBox(height: height * 0.03),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
+}
 }

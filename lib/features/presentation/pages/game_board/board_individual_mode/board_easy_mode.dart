@@ -326,236 +326,232 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final height = size.height;
-    final isSmallScreen = height < 700;
+Widget build(BuildContext context) {
+  final size = MediaQuery.of(context).size;
+  final height = size.height;
+  final isSmallScreen = height < 700;
 
-    final categories = context.watch<GameIndividual>().categories;
-    if (categories.isEmpty) {
-      return const Scaffold(
-        body: Center(child: Text('No hay categorías disponibles')),
-      );
-    }
-    if (players.isEmpty) return const SizedBox();
-  if (gameEnded) {
-      SoundManager.stopTimer();
-  return StopWordsWinnersScreen(playerScores: playerScores);
-}
-    
-
-    final currentPlayer = players[currentPlayerIndex];
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Column(
-                    children: [
-                      SizedBox(height: isSmallScreen ? 20 : 30),
-
-                      // Header con categoría y cronómetro en fila
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // Categoría
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    // ignore: deprecated_member_use
-                                    color: AppColors.primary.withOpacity(0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.category_rounded,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: Text(
-                                      categories[currentCategoryIndex].name
-                                          .toUpperCase(),
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        letterSpacing: 0.5,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(width: 12),
-
-                          // Cronómetro compacto
-                          ChronometerWidget(
-                            key: _chronometerKey,
-                            duration: Duration(
-                              seconds: gameTime.inSeconds + extraTimeSeconds,
-                            ),
-                            onTimeEnd: () {
-                              debugPrint(
-                                "Tiempo terminado para ${currentPlayer.name}",
-                              );
-                              if (!hasSelectedLetter) {
-                                _nextPlayer();
-                              }
-                            },
-                            isActive: chronometerActive &&
-                                !gameEnded &&
-                                !hasSelectedLetter,
-                          ),
-                        ],
-                      ),
-
-                      SizedBox(height: isSmallScreen ? 20 : 25),
-
-                      // Nombre del jugador centrado
-                      PlayerNameWidget(
-                        name: currentPlayer.name,
-                        score: playerScores[currentPlayer.name] ?? 0,
-                        team: 1,
-                      ),
-
-                      SizedBox(height: isSmallScreen ? 15 : 10),
-
-                      // Tablero de juego centrado (con o sin comodines)
-                      Center(
-                        child: hasWildcards
-                            ? BoardGameWildcards(
-                                key: _boardWildcardsKey,
-                                selectedWildcards: context
-                                    .read<GameIndividual>()
-                                    .selectedWildcards,
-                                onLetterSelected: _onLetterSelected,
-                                onWildcardActivated: _onWildcardActivated,
-                                onExtraTimeGranted: _onExtraTimeGranted,
-                                onSkipTurn: _nextPlayer,
-                                onSkipTurnPoints: _addSkipTurnPoints,
-                                onDoublePointsActivated: () {
-                                  setState(() {
-                                    doublePointsActive = true;
-                                  });
-                                },
-                                onPauseChronometer: _pauseChronometer,
-                                onResumeChronometer: _resumeChronometer,
-                              )
-                            : BoardPage(
-                                key: ValueKey(
-                                  'board-${categories[currentCategoryIndex].name}',
-                                ),
-                                onLetterSelected: _onLetterSelected,
-                              ),
-                      ),
-
-                      SizedBox(height: isSmallScreen ? 120 : 100),
-
-                      // Botones de acción en fila horizontal
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Botón siguiente categoría
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                SoundManager.stopTimer();
-                                final categories = context
-                                    .read<GameIndividual>()
-                                    .categories;
-                                if (currentCategoryIndex < categories.length - 1) {
-                                  setState(() {
-                                    currentCategoryIndex++;
-                                    totalLettersSelected = 0;
-                                    categoryShown = false;
-                                    chronometerActive = false;
-                                    hasSelectedLetter = false;
-                                    
-                                    // Reinicializar tablero con comodines
-                                    if (hasWildcards) {
-                                      _boardWildcardsKey.currentState
-                                          ?.initializeWildcardPool();
-                                      _boardWildcardsKey.currentState
-                                          ?.initializeGame();
-                                    }
-                                  });
-                                  _showCategoryDialog();
-                                } else {
-                                  _endGame();
-                                }
-                              },
-                              icon: const Icon(
-                                Icons.skip_next,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              label: const Text(
-                                "Siguiente",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 14,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                elevation: 3,
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(width: 12),
-
-                          // Botón terminar juego
-                          Expanded(
-                            child: EndGameButton(onPressed: _endGame),
-                          ),
-                        ],
-                      ),
-
-                      SizedBox(height: isSmallScreen ? 20 : 30),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
+  final categories = context.watch<GameIndividual>().categories;
+  if (categories.isEmpty) {
+    return const Scaffold(
+      body: Center(child: Text('No hay categorías disponibles')),
     );
   }
+  if (players.isEmpty) return const SizedBox();
+  if (gameEnded) {
+    SoundManager.stopTimer();
+    return StopWordsWinnersScreen(playerScores: playerScores);
+  }
+
+  final currentPlayer = players[currentPlayerIndex];
+
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: isSmallScreen ? 10 : 20,
+                ),
+                child: Column(
+                  children: [
+                    // Header
+                    SizedBox(height: isSmallScreen ? 10 : 20),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Categoría
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.category_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    categories[currentCategoryIndex]
+                                        .name
+                                        .toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      letterSpacing: 0.5,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        // Cronómetro
+                        ChronometerWidget(
+                          key: _chronometerKey,
+                          duration: Duration(
+                            seconds: gameTime.inSeconds + extraTimeSeconds,
+                          ),
+                          onTimeEnd: () {
+                            if (!hasSelectedLetter) {
+                              _nextPlayer();
+                            }
+                          },
+                          isActive: chronometerActive &&
+                              !gameEnded &&
+                              !hasSelectedLetter,
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: isSmallScreen ? 10 : 20),
+
+                    // Nombre jugador
+                    PlayerNameWidget(
+                      name: currentPlayer.name,
+                      score: playerScores[currentPlayer.name] ?? 0,
+                      team: 1,
+                    ),
+
+                    SizedBox(height: isSmallScreen ? 10 : 15),
+
+                    // Tablero
+                    Center(
+                      child: hasWildcards
+                          ? BoardGameWildcards(
+                              key: _boardWildcardsKey,
+                              selectedWildcards: context
+                                  .read<GameIndividual>()
+                                  .selectedWildcards,
+                              onLetterSelected: _onLetterSelected,
+                              onWildcardActivated: _onWildcardActivated,
+                              onExtraTimeGranted: _onExtraTimeGranted,
+                              onSkipTurn: _nextPlayer,
+                              onSkipTurnPoints: _addSkipTurnPoints,
+                              onDoublePointsActivated: () {
+                                setState(() {
+                                  doublePointsActive = true;
+                                });
+                              },
+                              onPauseChronometer: _pauseChronometer,
+                              onResumeChronometer: _resumeChronometer,
+                            )
+                          : BoardPage(
+                              key: ValueKey(
+                                'board-${categories[currentCategoryIndex].name}',
+                              ),
+                              onLetterSelected: _onLetterSelected,
+                            ),
+                    ),
+
+                    // Espaciado flexible antes de botones
+                    SizedBox(height: height * 0.04),
+
+                    // Botones de acción
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              SoundManager.stopTimer();
+                              final categories =
+                                  context.read<GameIndividual>().categories;
+                              if (currentCategoryIndex <
+                                  categories.length - 1) {
+                                setState(() {
+                                  currentCategoryIndex++;
+                                  totalLettersSelected = 0;
+                                  categoryShown = false;
+                                  chronometerActive = false;
+                                  hasSelectedLetter = false;
+                                  if (hasWildcards) {
+                                    _boardWildcardsKey.currentState
+                                        ?.initializeWildcardPool();
+                                    _boardWildcardsKey.currentState
+                                        ?.initializeGame();
+                                  }
+                                });
+                                _showCategoryDialog();
+                              } else {
+                                _endGame();
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.skip_next,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            label: const Text(
+                              "Siguiente",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 14,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 3,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: EndGameButton(onPressed: _endGame),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: height * 0.03),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    ),
+  );
+}
 }
