@@ -43,7 +43,6 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
     teamScores = {1: 0, 2: 0};
     teamPlayers = {1: [], 2: []};
 
-    // Sumar puntos por equipo y agrupar jugadores
     for (var player in widget.orderedPlayers) {
       final playerName = player.name;
       final team = player.team;
@@ -53,16 +52,13 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
       teamPlayers[team]?.add(MapEntry(playerName, score));
     }
 
-    // Ordenar jugadores dentro de cada equipo por puntaje
     teamPlayers[1]?.sort((a, b) => b.value.compareTo(a.value));
     teamPlayers[2]?.sort((a, b) => b.value.compareTo(a.value));
 
-    // Determinar equipo ganador
     winnerTeam = (teamScores[1] ?? 0) > (teamScores[2] ?? 0) ? 1 : 2;
-    
-    // Si hay empate, ambos equipos son ganadores
+
     if (teamScores[1] == teamScores[2]) {
-      winnerTeam = 0; // 0 indica empate
+      winnerTeam = 0;
     }
   }
 
@@ -86,7 +82,7 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
       parent: _fadeController,
       curve: Curves.easeIn,
     );
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
@@ -111,13 +107,11 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
     super.dispose();
   }
 
-  Color _getTeamColor(int team) {
-    return team == 1 ? AppColors.tertiary : AppColors.secondary;
-  }
+  Color _getTeamColor(int team) =>
+      team == 1 ? AppColors.tertiary : AppColors.secondary;
 
-  Color _getTeamVariantColor(int team) {
-    return team == 1 ? AppColors.tertiaryVariant : AppColors.secondaryVariant;
-  }
+  Color _getTeamVariantColor(int team) =>
+      team == 1 ? AppColors.tertiaryVariant : AppColors.secondaryVariant;
 
   Widget _buildWinnerBanner(ScreenConfig config) {
     String title;
@@ -136,20 +130,19 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: colors,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
             color: colors.first.withOpacity(0.5),
-            offset: const Offset(0, 6),
-            blurRadius: 15,
+            offset: const Offset(0, 4),
+            blurRadius: 10,
           ),
         ],
       ),
@@ -160,31 +153,28 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
             child: Icon(
               icon,
               color: Colors.white,
-              size: config.size.width * 0.2,
+              size: config.size.width * 0.13,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             title,
             style: TextStyle(
-              fontSize: config.size.width * 0.065,
-              fontWeight: FontWeight.w900,
+              fontSize: config.size.width * 0.05,
+              fontWeight: FontWeight.w800,
               color: Colors.white,
-              letterSpacing: 1.2,
+              letterSpacing: 1,
             ),
           ),
-          if (winnerTeam != 0) ...[
-            const SizedBox(height: 8),
+          if (winnerTeam != 0)
             Text(
               '${teamScores[winnerTeam]} PUNTOS',
               style: TextStyle(
-                fontSize: config.size.width * 0.045,
+                fontSize: config.size.width * 0.04,
                 fontWeight: FontWeight.w600,
-                // ignore: deprecated_member_use
                 color: Colors.white.withOpacity(0.9),
               ),
             ),
-          ],
         ],
       ),
     );
@@ -198,27 +188,24 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
     final teamVariantColor = _getTeamVariantColor(team);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          // ignore: deprecated_member_use
-          colors: [teamColor.withOpacity(0.15), teamVariantColor.withOpacity(0.05)],
+          colors: [teamColor.withOpacity(0.12), teamVariantColor.withOpacity(0.04)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          // ignore: deprecated_member_use
           color: isWinner ? teamColor : teamColor.withOpacity(0.3),
-          width: isWinner ? 3 : 2,
+          width: isWinner ? 2.5 : 1.5,
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header del equipo
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [teamColor, teamVariantColor],
@@ -226,8 +213,8 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
                 end: Alignment.centerRight,
               ),
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(18),
-                topRight: Radius.circular(18),
+                topLeft: Radius.circular(14),
+                topRight: Radius.circular(14),
               ),
             ),
             child: Row(
@@ -235,79 +222,49 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
               children: [
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
+                    Icon(Icons.groups_rounded,
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.groups_rounded,
-                        color: teamColor,
-                        size: config.size.width * 0.06,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
+                        size: config.size.width * 0.045),
+                    const SizedBox(width: 8),
                     Text(
                       'EQUIPO $team',
                       style: TextStyle(
-                        fontSize: config.size.width * 0.05,
-                        fontWeight: FontWeight.w900,
+                        fontSize: config.size.width * 0.04,
+                        fontWeight: FontWeight.w800,
                         color: Colors.white,
-                        letterSpacing: 0.5,
                       ),
                     ),
                   ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
+                Text(
+                  '$totalScore pts',
+                  style: TextStyle(
+                    fontSize: config.size.width * 0.04,
+                    fontWeight: FontWeight.bold,
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '$totalScore pts',
-                    style: TextStyle(
-                      fontSize: config.size.width * 0.045,
-                      fontWeight: FontWeight.bold,
-                      color: teamColor,
-                    ),
                   ),
                 ),
               ],
             ),
           ),
-
-          // Lista de jugadores
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             child: Column(
               children: players.map((player) {
                 final index = players.indexOf(player);
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                  margin: const EdgeInsets.only(bottom: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      // ignore: deprecated_member_use
-                      color: teamColor.withOpacity(0.2),
-                      width: 1,
-                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: teamColor.withOpacity(0.15), width: 1),
                   ),
                   child: Row(
                     children: [
-                      // Posición en el equipo
                       Container(
-                        width: config.size.width * 0.08,
-                        height: config.size.width * 0.08,
+                        width: config.size.width * 0.065,
+                        height: config.size.width * 0.065,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [teamColor, teamVariantColor],
@@ -318,34 +275,29 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
                           child: Text(
                             '${index + 1}',
                             style: TextStyle(
-                              fontSize: config.size.width * 0.035,
+                              fontSize: config.size.width * 0.032,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ),
-                      
-                      const SizedBox(width: 12),
-                      
-                      // Nombre del jugador
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           player.key,
                           style: TextStyle(
-                            fontSize: config.size.width * 0.04,
+                            fontSize: config.size.width * 0.036,
                             fontWeight: FontWeight.w600,
                             color: AppColors.primaryVariant,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      
-                      // Puntos individuales
                       Text(
                         '${player.value}',
                         style: TextStyle(
-                          fontSize: config.size.width * 0.042,
+                          fontSize: config.size.width * 0.038,
                           fontWeight: FontWeight.bold,
                           color: teamColor,
                         ),
@@ -372,38 +324,29 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
       backgroundColor: AppColors.primaryVariant,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(config.horizontalPadding),
+          padding: EdgeInsets.all(config.horizontalPadding * 0.8),
           child: FadeTransition(
             opacity: _fadeAnimation,
             child: Column(
               children: [
-                // Título
                 Text(
-                   'Ranking',
-                        style: GoogleFonts.titanOne().copyWith(
-                          fontSize: 35,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.success,
-                          letterSpacing: 0,
-                          height: 1.1,
-                        ),
-                        textAlign: TextAlign.center,
-              
+                  'Ranking',
+                  style: GoogleFonts.titanOne().copyWith(
+                    fontSize: config.size.width * 0.08, // antes 35
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.success,
+                    letterSpacing: 0,
+                    height: 1.1,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                
-                const SizedBox(height: 20),
-                
-                // Banner del ganador
+                const SizedBox(height: 16),
                 _buildWinnerBanner(config),
-                
-                const SizedBox(height: 30),
-                
-                // Cards de equipos
+                const SizedBox(height: 24),
                 SlideTransition(
                   position: _slideAnimation,
                   child: Column(
                     children: [
-                      // Mostrar primero el equipo ganador
                       if (winnerTeam == 1 || winnerTeam == 0)
                         _buildTeamCard(1, config),
                       if (winnerTeam == 2 || winnerTeam == 0)
@@ -415,9 +358,7 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
                     ],
                   ),
                 ),
-                
-                const SizedBox(height: 30),
-                
+                const SizedBox(height: 20),
                 CustomButton(
                   text: 'Volver al inicio',
                   icon: Icons.home,
@@ -426,8 +367,7 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
                   borderColor: AppColors.secondaryVariant,
                   onPressed: () => context.push('/'),
                 ),
-                
-                SizedBox(height: isSmallScreen ? 10 : 20),
+                SizedBox(height: isSmallScreen ? 10 : 16),
               ],
             ),
           ),

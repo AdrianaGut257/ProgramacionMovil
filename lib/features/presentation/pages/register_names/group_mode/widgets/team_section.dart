@@ -27,7 +27,7 @@ class TeamSection extends StatelessWidget {
         Text(
           title,
           style: GoogleFonts.titanOne().copyWith(
-            fontSize: 23,
+            fontSize: 20,
             fontWeight: FontWeight.w900,
             color: AppColors.primary,
             letterSpacing: 0,
