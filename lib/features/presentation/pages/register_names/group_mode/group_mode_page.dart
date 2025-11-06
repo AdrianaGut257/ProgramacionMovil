@@ -46,24 +46,12 @@ class _GroupModePageState extends State<GroupModePage> {
   }
 
   void _startGame() {
-    List<String> currentPlayers = isDetermined
-        ? [...team1Players, ...team2Players]
-        : randomPlayers;
+    List<String> currentPlayers =
+        isDetermined ? [...team1Players, ...team2Players] : randomPlayers;
 
-    final validPlayers = currentPlayers
-        .where((p) => p.trim().isNotEmpty)
-        .toList();
+    final validPlayers = currentPlayers.where((p) => p.trim().isNotEmpty).toList();
 
-    if (validPlayers.isEmpty) {
-      ValidationDialog.show(
-        context,
-        "No puedes comenzar sin jugadores, agrega mínimo 2",
-        ValidationType.noPlayers,
-      );
-      return;
-    }
-
-    if (validPlayers.length < 2) {
+    if (validPlayers.isEmpty || validPlayers.length < 2) {
       ValidationDialog.show(
         context,
         "Se necesitan al menos 2 jugadores para comenzar",
@@ -83,12 +71,8 @@ class _GroupModePageState extends State<GroupModePage> {
     }
 
     if (isDetermined) {
-      final team1Valid = team1Players
-          .where((p) => p.trim().isNotEmpty)
-          .toList();
-      final team2Valid = team2Players
-          .where((p) => p.trim().isNotEmpty)
-          .toList();
+      final team1Valid = team1Players.where((p) => p.trim().isNotEmpty).toList();
+      final team2Valid = team2Players.where((p) => p.trim().isNotEmpty).toList();
 
       if (team1Valid.length != team2Valid.length) {
         ValidationDialog.show(
@@ -115,22 +99,23 @@ class _GroupModePageState extends State<GroupModePage> {
     if (isDetermined) {
       for (int i = 0; i < team1Players.length; i++) {
         if (team1Players[i].trim().isNotEmpty) {
-          gameTeam.addPlayer(
-            models.Player(id: i + 1, name: team1Players[i], score: 0, team: 1),
-          );
+          gameTeam.addPlayer(models.Player(
+            id: i + 1,
+            name: team1Players[i],
+            score: 0,
+            team: 1,
+          ));
         }
       }
 
       for (int i = 0; i < team2Players.length; i++) {
         if (team2Players[i].trim().isNotEmpty) {
-          gameTeam.addPlayer(
-            models.Player(
-              id: i + 100,
-              name: team2Players[i],
-              score: 0,
-              team: 2,
-            ),
-          );
+          gameTeam.addPlayer(models.Player(
+            id: i + 100,
+            name: team2Players[i],
+            score: 0,
+            team: 2,
+          ));
         }
       }
     } else {
@@ -138,20 +123,21 @@ class _GroupModePageState extends State<GroupModePage> {
       final halfSize = shuffledPlayers.length ~/ 2;
 
       for (int i = 0; i < halfSize; i++) {
-        gameTeam.addPlayer(
-          models.Player(id: i + 1, name: shuffledPlayers[i], score: 0, team: 1),
-        );
+        gameTeam.addPlayer(models.Player(
+          id: i + 1,
+          name: shuffledPlayers[i],
+          score: 0,
+          team: 1,
+        ));
       }
 
       for (int i = halfSize; i < shuffledPlayers.length; i++) {
-        gameTeam.addPlayer(
-          models.Player(
-            id: i + 100,
-            name: shuffledPlayers[i],
-            score: 0,
-            team: 2,
-          ),
-        );
+        gameTeam.addPlayer(models.Player(
+          id: i + 100,
+          name: shuffledPlayers[i],
+          score: 0,
+          team: 2,
+        ));
       }
     }
 
@@ -162,7 +148,12 @@ class _GroupModePageState extends State<GroupModePage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final height = size.height;
-    final isSmallScreen = height < 700;
+    final width = size.width;
+   
+    // Factores dinámicos de espaciado y tamaño
+    final double logoHeight = height * 0.18; 
+    final double titleFontSize = width * 0.075; 
+    final double topSpacing = height * 0.02;
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -174,51 +165,58 @@ class _GroupModePageState extends State<GroupModePage> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: width * 0.02, 
+                    vertical: height * 0.012,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      // Botón atrás con mejor proporción
                       Row(
                         children: [
-                          BackButtonCustom(onPressed: () => context.pop()),
+                          SizedBox(
+                            width: width * 0.12, // espacio controlado
+                            child: BackButtonCustom(onPressed: () => context.pop()),
+                          ),
                           const Spacer(),
                         ],
                       ),
-                      SizedBox(height: 2),
+
+                      SizedBox(height: topSpacing),
+
+                      // Logo proporcional (sin padding fijo)
                       Center(
-                        child: FractionallySizedBox(
-                          widthFactor: 0.9,
-                          child: AspectRatio(
-                            aspectRatio: 370 / 170,
-                            child: Image.asset(
-                              'assets/icons/logo.png',
-                              fit: BoxFit.contain,
-                            ),
+                        child: SizedBox(
+                          height: logoHeight,
+                          child: Image.asset(
+                            'assets/icons/logo.png',
+                            fit: BoxFit.contain,
                           ),
                         ),
                       ),
 
-                      SizedBox(height: isSmallScreen ? 5 : 10),
+                      SizedBox(height: height * 0.02),
 
+                      // Título responsivo
                       Text(
                         'Elige una opción',
-                        style: GoogleFonts.titanOne().copyWith(
-                          fontSize: 30,
+                        style: GoogleFonts.titanOne(
+                          fontSize: titleFontSize.clamp(22, 30),
                           fontWeight: FontWeight.w900,
                           color: AppColors.primary,
-                          letterSpacing: 0,
                           height: 1.1,
                         ),
                         textAlign: TextAlign.center,
                       ),
 
-                      SizedBox(height: isSmallScreen ? 8 : 10),
+                      SizedBox(height: height * 0.025),
 
                       GameModeSelector(
                         isDetermined: isDetermined,
                         onModeChanged: (value) {
                           setState(() {
-                            if (value == false && isDetermined == true) {
+                            if (!value && isDetermined) {
                               randomPlayers = [
                                 ...team1Players.where((p) => p.isNotEmpty),
                                 ...team2Players.where((p) => p.isNotEmpty),
@@ -230,56 +228,58 @@ class _GroupModePageState extends State<GroupModePage> {
                         },
                       ),
 
-                      SizedBox(height: isSmallScreen ? 15 : 20),
+                      SizedBox(height: height * 0.03),
 
-                      ConstrainedBox(
-                        constraints: BoxConstraints(minHeight: height * 0.30),
-                        child: Column(
-                          children: [
-                            if (isDetermined) ...[
-                              TeamSection(
-                                title: 'Equipo 1',
-                                players: team1Players,
-                                onUpdatePlayer: (i, v) =>
-                                    _updatePlayer(team1Players, i, v),
-                                onAddPlayer: () => _addPlayer(team1Players),
-                                onRemovePlayer: (i) =>
-                                    _removePlayer(team1Players, i),
-                              ),
-                              SizedBox(height: isSmallScreen ? 15 : 20),
-                              TeamSection(
-                                title: 'Equipo 2',
-                                players: team2Players,
-                                onUpdatePlayer: (i, v) =>
-                                    _updatePlayer(team2Players, i, v),
-                                onAddPlayer: () => _addPlayer(team2Players),
-                                onRemovePlayer: (i) =>
-                                    _removePlayer(team2Players, i),
-                              ),
-                            ] else ...[
-                              TeamSection(
-                                title: 'Ingresar nombres',
-                                players: randomPlayers,
-                                onUpdatePlayer: (i, v) =>
-                                    _updatePlayer(randomPlayers, i, v),
-                                onAddPlayer: () => _addPlayer(randomPlayers),
-                                onRemovePlayer: (i) =>
-                                    _removePlayer(randomPlayers, i),
-                              ),
-                            ],
+                      // Contenedor flexible de los equipos
+                      Column(
+                        children: [
+                          if (isDetermined) ...[
+                            TeamSection(
+                              title: 'Equipo 1',
+                              players: team1Players,
+                              onUpdatePlayer: (i, v) =>
+                                  _updatePlayer(team1Players, i, v),
+                              onAddPlayer: () => _addPlayer(team1Players),
+                              onRemovePlayer: (i) =>
+                                  _removePlayer(team1Players, i),
+                            ),
+                            SizedBox(height: height * 0.02),
+                            TeamSection(
+                              title: 'Equipo 2',
+                              players: team2Players,
+                              onUpdatePlayer: (i, v) =>
+                                  _updatePlayer(team2Players, i, v),
+                              onAddPlayer: () => _addPlayer(team2Players),
+                              onRemovePlayer: (i) =>
+                                  _removePlayer(team2Players, i),
+                            ),
+                          ] else ...[
+                            TeamSection(
+                              title: 'Ingresar nombres',
+                              players: randomPlayers,
+                              onUpdatePlayer: (i, v) =>
+                                  _updatePlayer(randomPlayers, i, v),
+                              onAddPlayer: () => _addPlayer(randomPlayers),
+                              onRemovePlayer: (i) =>
+                                  _removePlayer(randomPlayers, i),
+                            ),
                           ],
+                        ],
+                      ),
+
+                      SizedBox(height: height * 0.04),
+
+                      // Botón Jugar ajustado
+                      SizedBox(
+                        width: width * 0.8,
+                        child: CustomButton(
+                          text: "Jugar",
+                          icon: Icons.gamepad,
+                          onPressed: _startGame,
                         ),
                       ),
 
-                      SizedBox(height: isSmallScreen ? 20 : 30),
-
-                      CustomButton(
-                        text: "Jugar",
-                        icon: Icons.gamepad,
-                        onPressed: _startGame,
-                      ),
-
-                      SizedBox(height: height * 0.05),
+                      SizedBox(height: height * 0.07),
                     ],
                   ),
                 ),

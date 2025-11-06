@@ -14,86 +14,71 @@ class CategorySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Obtener dimensiones de la pantalla
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Escalas relativas para adaptarse a pantallas pequeñas y grandes
+    final double fontSize = screenWidth * 0.04; // ~15 en pantallas medianas
+    final double verticalPadding = screenHeight * 0.015;
+    final double horizontalPadding = screenWidth * 0.02;
+    final double spacing = screenWidth * 0.015;
+
+    // Lista de pestañas
+    final List<String> tabs = ['Seleccionadas', 'Predeterminadas', 'Creadas'];
+
     return Row(
-      children: [
-        Expanded(
-          child: GestureDetector(
-            onTap: () => onTabChanged(0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 7),
-              decoration: BoxDecoration(
-                color: currentIndex == 0
-                    ? AppColors.secondary
-                    : AppColors.lightGrey,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Text(
-                'Seleccionadas',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.rubik().copyWith(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w900,
-                  color: currentIndex == 0 ? AppColors.white : AppColors.grey,
-                  letterSpacing: 0,
-                  height: 1.1,
+      children: List.generate(tabs.length, (index) {
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(
+              right: index == tabs.length - 1 ? 0 : spacing,
+            ),
+            child: GestureDetector(
+              onTap: () => onTabChanged(index),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: EdgeInsets.symmetric(
+                  vertical: verticalPadding,
+                  horizontal: horizontalPadding,
+                ),
+                decoration: BoxDecoration(
+                  color: currentIndex == index
+                      ? AppColors.secondary
+                      : AppColors.lightGrey,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: currentIndex == index
+                      ? [
+                          BoxShadow(
+                            // ignore: deprecated_member_use
+                            color: AppColors.secondary.withOpacity(0.3),
+                            blurRadius: 5,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : [],
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    tabs[index],
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.rubik(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w900,
+                      color: currentIndex == index
+                          ? AppColors.white
+                          : AppColors.grey,
+                      letterSpacing: 0,
+                      height: 1.1,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 5),
-        Expanded(
-          child: GestureDetector(
-            onTap: () => onTabChanged(1),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 7),
-              decoration: BoxDecoration(
-                color: currentIndex == 1
-                    ? AppColors.secondary
-                    : AppColors.lightGrey,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Text(
-                'Predeterminadas',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.rubik().copyWith(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w900,
-                  color: currentIndex == 1 ? AppColors.white : AppColors.grey,
-                  letterSpacing: 0,
-                  height: 1.1,
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 5),
-        Expanded(
-          child: GestureDetector(
-            onTap: () => onTabChanged(2),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 7),
-              decoration: BoxDecoration(
-                color: currentIndex == 2
-                    ? AppColors.secondary
-                    : AppColors.lightGrey,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Text(
-                'Creadas',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.rubik().copyWith(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w900,
-                  color: currentIndex == 2 ? AppColors.white : AppColors.grey,
-                  letterSpacing: 0,
-                  height: 1.1,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
+        );
+      }),
     );
   }
 }
