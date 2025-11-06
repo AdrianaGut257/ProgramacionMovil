@@ -140,6 +140,7 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: colors.first.withOpacity(0.5),
             offset: const Offset(0, 4),
             blurRadius: 10,
@@ -172,6 +173,7 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
               style: TextStyle(
                 fontSize: config.size.width * 0.04,
                 fontWeight: FontWeight.w600,
+                // ignore: deprecated_member_use
                 color: Colors.white.withOpacity(0.9),
               ),
             ),
@@ -191,12 +193,14 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
+          // ignore: deprecated_member_use
           colors: [teamColor.withOpacity(0.12), teamVariantColor.withOpacity(0.04)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
+          // ignore: deprecated_member_use
           color: isWinner ? teamColor : teamColor.withOpacity(0.3),
           width: isWinner ? 2.5 : 1.5,
         ),
@@ -258,6 +262,7 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
+                    // ignore: deprecated_member_use
                     border: Border.all(color: teamColor.withOpacity(0.15), width: 1),
                   ),
                   child: Row(
