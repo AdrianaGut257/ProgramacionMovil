@@ -42,7 +42,7 @@ class _ComodinesPageState extends State<ComodinesPage>
       final mode = extras['mode'] ?? 'group';
 
       List<String> savedWildcards = [];
-      
+
       if (mode == 'individual') {
         final gameIndividual = context.read<GameIndividual>();
         savedWildcards = gameIndividual.selectedWildcards;
@@ -87,7 +87,6 @@ class _ComodinesPageState extends State<ComodinesPage>
     final width = size.width;
     final isSmallScreen = height < 700;
 
-    // 🔹 Obtener parámetros desde GoRouter
     final state = GoRouterState.of(context);
     final extras = state.extra as Map<String, dynamic>? ?? {};
 
@@ -177,7 +176,12 @@ class _ComodinesPageState extends State<ComodinesPage>
 
                       SizedBox(height: isSmallScreen ? 16 : 24),
 
-                      _buildPlayButton(isSmallScreen, mode, players, difficulty),
+                      _buildPlayButton(
+                        isSmallScreen,
+                        mode,
+                        players,
+                        difficulty,
+                      ),
 
                       SizedBox(height: height * 0.05),
                     ],
@@ -287,7 +291,11 @@ class _ComodinesPageState extends State<ComodinesPage>
   }
 
   Widget _buildPlayButton(
-      bool isSmallScreen, String mode, dynamic players, String difficulty) {
+    bool isSmallScreen,
+    String mode,
+    dynamic players,
+    String difficulty,
+  ) {
     return AnimatedBuilder(
       animation: _pulseController,
       builder: (context, child) {
@@ -303,7 +311,7 @@ class _ComodinesPageState extends State<ComodinesPage>
               // Obtener comodines seleccionados
               final selectedPowerUps = _selectedPowerUps.entries
                   .where((entry) => entry.value)
-                  .map((entry) => entry.key) 
+                  .map((entry) => entry.key)
                   .toList();
 
               debugPrint('=== COMODINES SELECCIONADOS ===');
@@ -334,15 +342,11 @@ class _ComodinesPageState extends State<ComodinesPage>
                 // Navegar al selector de categorías (modo grupal)
                 context.push(
                   '/select-categories',
-                  extra: {
-                    'mode': 'group',
-                    'powerUps': selectedPowerUps,
-                  },
+                  extra: {'mode': 'group', 'powerUps': selectedPowerUps},
                 );
               }
             },
           ),
-          
         );
       },
     );
