@@ -67,7 +67,6 @@ class HomePage extends StatelessWidget {
                             "icon": Icons.people_rounded,
                           },
                           {"text": "Más tiempo", "icon": Icons.timer_rounded},
-                          {"text": "Sin presión", "icon": Icons.spa_rounded},
                         ],
                         buttonText: "Jugar Fácil",
                         buttonIcon: Icons.sentiment_satisfied_alt_rounded,
@@ -92,12 +91,8 @@ class HomePage extends StatelessWidget {
                             "icon": Icons.people_rounded,
                           },
                           {
-                            "text": "Tiempo limitado",
+                            "text": "Menos tiempo",
                             "icon": Icons.hourglass_bottom_rounded,
-                          },
-                          {
-                            "text": "Cronómetro activo",
-                            "icon": Icons.timer_outlined,
                           },
                         ],
                         buttonText: "Jugar Difícil",
@@ -118,10 +113,6 @@ class HomePage extends StatelessWidget {
                         title: "Modo Grupal",
                         subtitle: "Diversión en equipo",
                         features: [
-                          {
-                            "text": "Jugadores pares",
-                            "icon": Icons.people_alt_rounded,
-                          },
                           {"text": "2 equipos", "icon": Icons.groups_2_rounded},
                           {
                             "text": "Competencia",
