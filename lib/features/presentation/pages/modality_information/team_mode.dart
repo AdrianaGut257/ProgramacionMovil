@@ -124,8 +124,8 @@ class TeamModePage extends StatelessWidget {
                               const SizedBox(width: 12),
                               InfoCard(
                                 icon: Icons.diversity_3,
-                                title: 'Jugadores',
-                                value: '2-10',
+                                title: 'Dificultad',
+                                value: 'Desafío',
                                 isSmallScreen: isSmallScreen,
                               ),
                             ],
