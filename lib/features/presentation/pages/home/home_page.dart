@@ -75,7 +75,10 @@ class HomePage extends StatelessWidget {
                             context.push('/modality-information-normal'),
                         isSmallScreen: isSmallScreen,
                         accentColor: AppColors.primary,
-                        gradientColors: [AppColors.primary, AppColors.primary],
+                        gradientColors: [
+                          AppColors.primary,
+                          AppColors.primaryVariant,
+                        ],
                       ),
 
                       SizedBox(height: isSmallScreen ? 20 : 25),
@@ -102,10 +105,10 @@ class HomePage extends StatelessWidget {
                         onPressed: () =>
                             context.push('/modality-information-hard'),
                         isSmallScreen: isSmallScreen,
-                        accentColor: const Color(0xFFE63946),
+                        accentColor: AppColors.errorPrimary,
                         gradientColors: [
-                          const Color(0xFFE63946),
-                          const Color(0xFFFF6B6B),
+                          AppColors.errorPrimary,
+                          AppColors.errorSecondary,
                         ],
                       ),
 
@@ -133,7 +136,7 @@ class HomePage extends StatelessWidget {
                         accentColor: AppColors.secondary,
                         gradientColors: [
                           AppColors.secondary,
-                          AppColors.secondary,
+                          AppColors.secondaryVariant,
                         ],
                       ),
 
