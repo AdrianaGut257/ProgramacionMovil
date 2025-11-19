@@ -313,9 +313,6 @@ class _ComodinesPageState extends State<ComodinesPage>
                   .map((entry) => entry.key)
                   .toList();
 
-              debugPrint('=== COMODINES SELECCIONADOS ===');
-              debugPrint('Modo: $mode');
-              debugPrint('Comodines: $selectedPowerUps');
               if (mode == 'individual') {
                 final gameIndividual = context.read<GameIndividual>();
                 gameIndividual.setWildcards(selectedPowerUps);
@@ -333,7 +330,6 @@ class _ComodinesPageState extends State<ComodinesPage>
               } else {
                 final gameTeam = context.read<GameTeam>();
                 gameTeam.setWildcards(selectedPowerUps);
-                debugPrint('Guardado en GameTeam');
 
                 context.push(
                   '/select-categories',

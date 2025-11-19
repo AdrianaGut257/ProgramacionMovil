@@ -5,7 +5,6 @@ import 'package:programacion_movil/features/presentation/pages/home/widgets/anim
 import 'package:programacion_movil/features/presentation/pages/home/widgets/info_modal.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
 
-
 class HomeStopWords extends StatefulWidget {
   const HomeStopWords({super.key});
 
@@ -27,19 +26,15 @@ class _HomeStopWordsState extends State<HomeStopWords>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeIn,
-      ),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.25),
       end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     _controller.forward();
   }
@@ -58,7 +53,6 @@ class _HomeStopWordsState extends State<HomeStopWords>
     return Scaffold(
       body: Stack(
         children: [
-          // Fondo con degradado principal
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -73,10 +67,8 @@ class _HomeStopWordsState extends State<HomeStopWords>
             ),
           ),
 
-          // Partículas animadas
           const AnimatedBackground(),
 
-          // Contenido principal
           SafeArea(
             child: Center(
               child: FadeTransition(
@@ -99,12 +91,10 @@ class _HomeStopWordsState extends State<HomeStopWords>
 
                         SizedBox(height: isSmallScreen ? 45 : 65),
 
-                        // Botón JUGAR
                         _buildPlayButton(isSmallScreen),
 
                         SizedBox(height: isSmallScreen ? 30 : 42),
 
-                        // Botones de info
                         _buildInfoButtons(context, isSmallScreen),
                       ],
                     ),
@@ -117,7 +107,6 @@ class _HomeStopWordsState extends State<HomeStopWords>
       ),
     );
   }
-
 
   Widget _buildPlayButton(bool isSmallScreen) {
     return SizedBox(
@@ -132,7 +121,6 @@ class _HomeStopWordsState extends State<HomeStopWords>
       ),
     );
   }
-
 
   Widget _buildInfoButtons(BuildContext context, bool isSmallScreen) {
     return Row(

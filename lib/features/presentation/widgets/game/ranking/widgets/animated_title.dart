@@ -10,18 +10,16 @@ class AnimatedTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Text(
-                        'Ranking',
-                        style: GoogleFonts.titanOne().copyWith(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.success,
-                          letterSpacing: 0,
-                          height: 1.1,
-                        ),
-                        textAlign: TextAlign.center,
-    );      
-}
+      'Ranking',
+      style: GoogleFonts.titanOne().copyWith(
+        fontSize: 30,
+        fontWeight: FontWeight.w900,
+        color: AppColors.success,
+        letterSpacing: 0,
+        height: 1.1,
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
 }

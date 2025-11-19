@@ -46,10 +46,13 @@ class _GroupModePageState extends State<GroupModePage> {
   }
 
   void _startGame() {
-    List<String> currentPlayers =
-        isDetermined ? [...team1Players, ...team2Players] : randomPlayers;
+    List<String> currentPlayers = isDetermined
+        ? [...team1Players, ...team2Players]
+        : randomPlayers;
 
-    final validPlayers = currentPlayers.where((p) => p.trim().isNotEmpty).toList();
+    final validPlayers = currentPlayers
+        .where((p) => p.trim().isNotEmpty)
+        .toList();
 
     if (validPlayers.isEmpty || validPlayers.length < 2) {
       ValidationDialog.show(
@@ -71,8 +74,12 @@ class _GroupModePageState extends State<GroupModePage> {
     }
 
     if (isDetermined) {
-      final team1Valid = team1Players.where((p) => p.trim().isNotEmpty).toList();
-      final team2Valid = team2Players.where((p) => p.trim().isNotEmpty).toList();
+      final team1Valid = team1Players
+          .where((p) => p.trim().isNotEmpty)
+          .toList();
+      final team2Valid = team2Players
+          .where((p) => p.trim().isNotEmpty)
+          .toList();
 
       if (team1Valid.length != team2Valid.length) {
         ValidationDialog.show(
@@ -99,23 +106,22 @@ class _GroupModePageState extends State<GroupModePage> {
     if (isDetermined) {
       for (int i = 0; i < team1Players.length; i++) {
         if (team1Players[i].trim().isNotEmpty) {
-          gameTeam.addPlayer(models.Player(
-            id: i + 1,
-            name: team1Players[i],
-            score: 0,
-            team: 1,
-          ));
+          gameTeam.addPlayer(
+            models.Player(id: i + 1, name: team1Players[i], score: 0, team: 1),
+          );
         }
       }
 
       for (int i = 0; i < team2Players.length; i++) {
         if (team2Players[i].trim().isNotEmpty) {
-          gameTeam.addPlayer(models.Player(
-            id: i + 100,
-            name: team2Players[i],
-            score: 0,
-            team: 2,
-          ));
+          gameTeam.addPlayer(
+            models.Player(
+              id: i + 100,
+              name: team2Players[i],
+              score: 0,
+              team: 2,
+            ),
+          );
         }
       }
     } else {
@@ -123,21 +129,20 @@ class _GroupModePageState extends State<GroupModePage> {
       final halfSize = shuffledPlayers.length ~/ 2;
 
       for (int i = 0; i < halfSize; i++) {
-        gameTeam.addPlayer(models.Player(
-          id: i + 1,
-          name: shuffledPlayers[i],
-          score: 0,
-          team: 1,
-        ));
+        gameTeam.addPlayer(
+          models.Player(id: i + 1, name: shuffledPlayers[i], score: 0, team: 1),
+        );
       }
 
       for (int i = halfSize; i < shuffledPlayers.length; i++) {
-        gameTeam.addPlayer(models.Player(
-          id: i + 100,
-          name: shuffledPlayers[i],
-          score: 0,
-          team: 2,
-        ));
+        gameTeam.addPlayer(
+          models.Player(
+            id: i + 100,
+            name: shuffledPlayers[i],
+            score: 0,
+            team: 2,
+          ),
+        );
       }
     }
 
@@ -149,10 +154,9 @@ class _GroupModePageState extends State<GroupModePage> {
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
-   
-    // Factores dinámicos de espaciado y tamaño
-    final double logoHeight = height * 0.18; 
-    final double titleFontSize = width * 0.075; 
+
+    final double logoHeight = height * 0.18;
+    final double titleFontSize = width * 0.075;
     final double topSpacing = height * 0.02;
 
     return Scaffold(
@@ -166,18 +170,19 @@ class _GroupModePageState extends State<GroupModePage> {
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: width * 0.02, 
+                    horizontal: width * 0.02,
                     vertical: height * 0.012,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Botón atrás con mejor proporción
                       Row(
                         children: [
                           SizedBox(
                             width: width * 0.12, // espacio controlado
-                            child: BackButtonCustom(onPressed: () => context.pop()),
+                            child: BackButtonCustom(
+                              onPressed: () => context.pop(),
+                            ),
                           ),
                           const Spacer(),
                         ],
@@ -185,7 +190,6 @@ class _GroupModePageState extends State<GroupModePage> {
 
                       SizedBox(height: topSpacing),
 
-                      // Logo proporcional (sin padding fijo)
                       Center(
                         child: SizedBox(
                           height: logoHeight,
@@ -198,7 +202,6 @@ class _GroupModePageState extends State<GroupModePage> {
 
                       SizedBox(height: height * 0.02),
 
-                      // Título responsivo
                       Text(
                         'Elige una opción',
                         style: GoogleFonts.titanOne(
@@ -230,7 +233,6 @@ class _GroupModePageState extends State<GroupModePage> {
 
                       SizedBox(height: height * 0.03),
 
-                      // Contenedor flexible de los equipos
                       Column(
                         children: [
                           if (isDetermined) ...[
@@ -269,7 +271,6 @@ class _GroupModePageState extends State<GroupModePage> {
 
                       SizedBox(height: height * 0.04),
 
-                      // Botón Jugar ajustado
                       SizedBox(
                         width: width * 0.8,
                         child: CustomButton(

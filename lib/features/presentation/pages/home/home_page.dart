@@ -35,7 +35,6 @@ class HomePage extends StatelessWidget {
                     children: [
                       SizedBox(height: isSmallHeight ? 10 : 25),
 
-                      /// LOGO RESPONSIVE
                       FractionallySizedBox(
                         widthFactor: isSmallWidth ? 0.9 : 0.8,
                         child: AspectRatio(
@@ -49,7 +48,6 @@ class HomePage extends StatelessWidget {
 
                       SizedBox(height: isSmallHeight ? 15 : 30),
 
-                      /// TÍTULO RESPONSIVE
                       Text(
                         'Selecciona una modalidad',
                         textAlign: TextAlign.center,
@@ -64,7 +62,6 @@ class HomePage extends StatelessWidget {
 
                       SizedBox(height: isSmallHeight ? 20 : 35),
 
-                      /// TARJETA MODO FÁCIL
                       ModeInfoCard(
                         title: "Modo Fácil",
                         subtitle: "Perfecto para comenzar",
@@ -89,7 +86,6 @@ class HomePage extends StatelessWidget {
 
                       SizedBox(height: isSmallHeight ? 15 : 25),
 
-                      /// TARJETA MODO DIFÍCIL
                       ModeInfoCard(
                         title: "Modo Difícil",
                         subtitle: "Para los más valientes",
@@ -117,7 +113,6 @@ class HomePage extends StatelessWidget {
 
                       SizedBox(height: isSmallHeight ? 15 : 25),
 
-                      /// TARJETA MODO GRUPAL
                       ModeInfoCard(
                         title: "Modo Grupal",
                         subtitle: "Diversión en equipo",

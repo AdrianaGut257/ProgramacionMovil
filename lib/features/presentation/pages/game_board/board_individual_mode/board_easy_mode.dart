@@ -69,9 +69,6 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
     setState(() {
       hasWildcards = wildcards.isNotEmpty;
     });
-    debugPrint('=== DEBUG WILDCARDS ===');
-    debugPrint('Comodines cargados: $wildcards');
-    debugPrint('hasWildcards: $hasWildcards');
   }
 
   void _initializePlayers() {
@@ -241,9 +238,7 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
     });
   }
 
-  void _onWildcardActivated(WildcardType type) {
-    debugPrint('Comodín activado: $type');
-  }
+  void _onWildcardActivated(WildcardType type) {}
 
   void _onExtraTimeGranted(int seconds) {
     _chronometerKey.currentState?.addExtraTime(seconds);
@@ -258,7 +253,6 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
 
   Future<void> _saveGameToHistory() async {
     if (_gameSaved) {
-      debugPrint('⚠️ La partida ya fue guardada anteriormente');
       return;
     }
 
@@ -269,33 +263,15 @@ class _BoardEasyModePageState extends State<BoardEasyModePage> {
         playedCategories.add(categories[i].name);
       }
 
-      final gameId = await AppDatabase.instance.saveGameHistory(
+      await AppDatabase.instance.saveGameHistory(
         gameMode: 'Easy Mode',
         playerScores: playerScores,
         categories: playedCategories,
       );
 
       _gameSaved = true;
-
-      final savedGame = await AppDatabase.instance.getGameById(gameId);
-      if (savedGame != null) {
-        for (var player in savedGame['players']) {
-          debugPrint(
-            '   ${player['position']}º - ${player['player_name']}: ${player['score']} pts',
-          );
-        }
-
-        debugPrint(
-          '📚 Categorías guardadas: ${savedGame['categories'].length}',
-        );
-        for (var cat in savedGame['categories']) {
-          debugPrint('   - ${cat['category_name']}');
-        }
-        debugPrint('==========================================');
-      }
     } catch (e) {
-      debugPrint('❌ ERROR AL GUARDAR LA PARTIDA: $e');
-      debugPrint('==========================================');
+      //
     }
   }
 

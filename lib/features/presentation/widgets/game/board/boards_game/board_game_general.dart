@@ -81,7 +81,7 @@ class _BoardGameState extends State<BoardGame> {
 
   @override
   Widget build(BuildContext context) {
-    final double radius = 120; // radio del círculo
+    final double radius = 120;
 
     return Column(
       children: [
@@ -91,7 +91,6 @@ class _BoardGameState extends State<BoardGame> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Círculo morado de fondo
               Container(
                 width: 380,
                 height: 380,
@@ -100,8 +99,6 @@ class _BoardGameState extends State<BoardGame> {
                   shape: BoxShape.circle,
                 ),
               ),
-
-              // Letras en círculo
               for (int i = 0; i < currentLetters.length; i++)
                 Transform.translate(
                   offset: Offset(
@@ -115,7 +112,6 @@ class _BoardGameState extends State<BoardGame> {
                   ),
                 ),
 
-              // Círculo central
               Container(
                 width: 80,
                 height: 80,

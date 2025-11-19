@@ -86,10 +86,7 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOut));
 
     _trophyScale = Tween<double>(begin: 1.0, end: 1.15).animate(
       CurvedAnimation(parent: _trophyController, curve: Curves.easeInOut),
@@ -140,8 +137,7 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
-            color: colors.first.withOpacity(0.5),
+            color: colors.first,
             offset: const Offset(0, 4),
             blurRadius: 10,
           ),
@@ -173,8 +169,8 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
               style: TextStyle(
                 fontSize: config.size.width * 0.04,
                 fontWeight: FontWeight.w600,
-                // ignore: deprecated_member_use
-                color: Colors.white.withOpacity(0.9),
+
+                color: Colors.white,
               ),
             ),
         ],
@@ -193,15 +189,13 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          // ignore: deprecated_member_use
-          colors: [teamColor.withOpacity(0.12), teamVariantColor.withOpacity(0.04)],
+          colors: [teamColor, teamVariantColor],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          // ignore: deprecated_member_use
-          color: isWinner ? teamColor : teamColor.withOpacity(0.3),
+          color: isWinner ? teamColor : teamColor,
           width: isWinner ? 2.5 : 1.5,
         ),
       ),
@@ -226,9 +220,11 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
               children: [
                 Row(
                   children: [
-                    Icon(Icons.groups_rounded,
-                        color: Colors.white,
-                        size: config.size.width * 0.045),
+                    Icon(
+                      Icons.groups_rounded,
+                      color: Colors.white,
+                      size: config.size.width * 0.045,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'EQUIPO $team',
@@ -258,12 +254,15 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
                 final index = players.indexOf(player);
                 return Container(
                   margin: const EdgeInsets.only(bottom: 6),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
-                    // ignore: deprecated_member_use
-                    border: Border.all(color: teamColor.withOpacity(0.15), width: 1),
+
+                    border: Border.all(color: teamColor, width: 1),
                   ),
                   child: Row(
                     children: [
@@ -337,7 +336,7 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
                 Text(
                   'Ranking',
                   style: GoogleFonts.titanOne().copyWith(
-                    fontSize: config.size.width * 0.08, // antes 35
+                    fontSize: config.size.width * 0.08,
                     fontWeight: FontWeight.w900,
                     color: AppColors.success,
                     letterSpacing: 0,
@@ -356,10 +355,8 @@ class _TeamModeWinnersScreenState extends State<TeamModeWinnersScreen>
                         _buildTeamCard(1, config),
                       if (winnerTeam == 2 || winnerTeam == 0)
                         _buildTeamCard(2, config),
-                      if (winnerTeam == 1)
-                        _buildTeamCard(2, config),
-                      if (winnerTeam == 2)
-                        _buildTeamCard(1, config),
+                      if (winnerTeam == 1) _buildTeamCard(2, config),
+                      if (winnerTeam == 2) _buildTeamCard(1, config),
                     ],
                   ),
                 ),

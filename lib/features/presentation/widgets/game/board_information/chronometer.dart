@@ -56,7 +56,7 @@ class ChronometerWidgetState extends State<ChronometerWidget> {
     timer?.cancel();
     timer = Timer.periodic(const Duration(seconds: 1), (t) async {
       if (seconds > 0) {
-        await SoundManager.playTick(); // sonido “tic” sincronizado
+        await SoundManager.playTick();
         setState(() => seconds--);
       } else {
         t.cancel();
@@ -76,7 +76,6 @@ class ChronometerWidgetState extends State<ChronometerWidget> {
 
   void addExtraTime(int extraSeconds) => _increaseSeconds(extraSeconds);
 
-  /// Reinicia el cronómetro con una nueva duración.
   void reset({required Duration newDuration, bool start = true}) {
     timer?.cancel();
     setState(() => seconds = newDuration.inSeconds);
@@ -126,8 +125,7 @@ class ChronometerWidgetState extends State<ChronometerWidget> {
                   color: Colors.green,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.add,
-                    color: Colors.white, size: 18),
+                child: const Icon(Icons.add, color: Colors.white, size: 18),
               ),
             ),
           ],
