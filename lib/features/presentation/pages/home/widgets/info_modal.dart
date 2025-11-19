@@ -50,11 +50,7 @@ class _InfoModalContent extends StatelessWidget {
       height: modalHeight,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppColors.primaryVariant,
-            AppColors.primary,
-            const Color(0xFF3D2C5E),
-          ],
+          colors: [AppColors.primaryVariant, AppColors.primary],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -68,8 +64,7 @@ class _InfoModalContent extends StatelessWidget {
             width: 45,
             height: 5,
             decoration: BoxDecoration(
-              // ignore: deprecated_member_use
-              color: Colors.white.withOpacity(0.35),
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(3),
             ),
           ),
@@ -95,7 +90,7 @@ class _InfoModalContent extends StatelessWidget {
                   child: Text(
                     title,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.white,
                       fontSize: isSmall ? 22 : 26,
                       fontWeight: FontWeight.bold,
                     ),
@@ -257,7 +252,7 @@ class _InfoModalContent extends StatelessWidget {
                           e['text'],
                           style: TextStyle(
                             fontSize: small ? 14 : 16,
-                            color: Colors.white,
+                            color: AppColors.white,
                             height: 1.45,
                           ),
                         ),
