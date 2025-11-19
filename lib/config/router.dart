@@ -1,10 +1,12 @@
 import 'package:go_router/go_router.dart';
 import 'package:programacion_movil/features/presentation/pages/comodines_information/comodines_info.dart';
 import 'package:programacion_movil/features/presentation/pages/categorias_information/categorias_info.dart';
+import 'package:programacion_movil/features/presentation/pages/home/home_page.dart';
+import 'package:programacion_movil/features/presentation/pages/home/home_principal.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/category.dart';
 import 'package:programacion_movil/features/presentation/pages/register_names/individual_mode/players_register_page.dart';
 
-import '../features/presentation/pages/home/home_page.dart';
+
 import '../features/presentation/pages/register_names/group_mode/group_mode_page.dart';
 import '../features/presentation/pages/modality_information/hard_mode.dart';
 import '../features/presentation/pages/modality_information/easy_mode.dart';
@@ -36,7 +38,16 @@ class AppRouter {
         },
         routes: [
           // Rutas principales de la barra de navegación
-          GoRoute(path: '/', builder: (context, state) => const HomePage()),
+          GoRoute(
+            path: '/', 
+            builder: (context, state) => const HomeStopWords(),
+          ),
+
+          GoRoute(
+            path: '/mode', 
+            builder: (context, state) => const HomePage(),
+          ),
+
           GoRoute(
             path: '/record',
             builder: (context, state) => const RecordPage(),

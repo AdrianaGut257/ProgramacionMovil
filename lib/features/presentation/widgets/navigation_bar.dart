@@ -22,8 +22,8 @@ class CustomNavigationBar extends StatelessWidget {
         children: [
           _buildNavItem(
             Icons.home,
-            currentLocation == '/',
-            () => context.go('/'),
+            currentLocation == '/mode',
+            () => context.go('/mode'),
           ),
           _buildNavItem(
             Icons.category_outlined,

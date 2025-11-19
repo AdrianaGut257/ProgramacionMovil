@@ -11,7 +11,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final height = size.height;
-    final isSmallScreen = height < 700;
+    final width = size.width;
+
+    final isSmallHeight = height < 700;
+    final isSmallWidth = width < 360;
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -23,17 +26,18 @@ class HomePage extends StatelessWidget {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0,
-                    vertical: 20.0,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isSmallWidth ? 16 : 24,
+                    vertical: isSmallHeight ? 12 : 20,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(height: isSmallScreen ? 15 : 25),
+                      SizedBox(height: isSmallHeight ? 10 : 25),
 
+                      /// LOGO RESPONSIVE
                       FractionallySizedBox(
-                        widthFactor: 0.8,
+                        widthFactor: isSmallWidth ? 0.9 : 0.8,
                         child: AspectRatio(
                           aspectRatio: 470 / 170,
                           child: Image.asset(
@@ -43,12 +47,14 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
 
-                      SizedBox(height: isSmallScreen ? 20 : 30),
+                      SizedBox(height: isSmallHeight ? 15 : 30),
 
+                      /// TÍTULO RESPONSIVE
                       Text(
                         'Selecciona una modalidad',
+                        textAlign: TextAlign.center,
                         style: GoogleFonts.titanOne().copyWith(
-                          fontSize: isSmallScreen ? 26 : 29,
+                          fontSize: isSmallHeight ? 20 : 20,
                           fontWeight: FontWeight.w900,
                           color: AppColors.primary,
                           letterSpacing: 0.5,
@@ -56,8 +62,9 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
 
-                      SizedBox(height: isSmallScreen ? 25 : 35),
+                      SizedBox(height: isSmallHeight ? 20 : 35),
 
+                      /// TARJETA MODO FÁCIL
                       ModeInfoCard(
                         title: "Modo Fácil",
                         subtitle: "Perfecto para comenzar",
@@ -72,7 +79,7 @@ class HomePage extends StatelessWidget {
                         buttonIcon: Icons.sentiment_satisfied_alt_rounded,
                         onPressed: () =>
                             context.push('/modality-information-normal'),
-                        isSmallScreen: isSmallScreen,
+                        isSmallScreen: isSmallHeight || isSmallWidth,
                         accentColor: AppColors.primary,
                         gradientColors: [
                           AppColors.primary,
@@ -80,8 +87,9 @@ class HomePage extends StatelessWidget {
                         ],
                       ),
 
-                      SizedBox(height: isSmallScreen ? 20 : 25),
+                      SizedBox(height: isSmallHeight ? 15 : 25),
 
+                      /// TARJETA MODO DIFÍCIL
                       ModeInfoCard(
                         title: "Modo Difícil",
                         subtitle: "Para los más valientes",
@@ -99,7 +107,7 @@ class HomePage extends StatelessWidget {
                         buttonIcon: Icons.local_fire_department_rounded,
                         onPressed: () =>
                             context.push('/modality-information-hard'),
-                        isSmallScreen: isSmallScreen,
+                        isSmallScreen: isSmallHeight || isSmallWidth,
                         accentColor: AppColors.errorPrimary,
                         gradientColors: [
                           AppColors.errorPrimary,
@@ -107,8 +115,9 @@ class HomePage extends StatelessWidget {
                         ],
                       ),
 
-                      SizedBox(height: isSmallScreen ? 20 : 25),
+                      SizedBox(height: isSmallHeight ? 15 : 25),
 
+                      /// TARJETA MODO GRUPAL
                       ModeInfoCard(
                         title: "Modo Grupal",
                         subtitle: "Diversión en equipo",
@@ -123,7 +132,7 @@ class HomePage extends StatelessWidget {
                         buttonIcon: Icons.groups_rounded,
                         onPressed: () =>
                             context.push('/modality-information-team'),
-                        isSmallScreen: isSmallScreen,
+                        isSmallScreen: isSmallHeight || isSmallWidth,
                         accentColor: AppColors.secondary,
                         gradientColors: [
                           AppColors.secondary,
@@ -131,7 +140,7 @@ class HomePage extends StatelessWidget {
                         ],
                       ),
 
-                      SizedBox(height: 20),
+                      SizedBox(height: isSmallHeight ? 15 : 20),
                     ],
                   ),
                 ),
