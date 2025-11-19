@@ -52,7 +52,6 @@ class _RecordPageState extends State<RecordPage>
         _gameHistory = history;
         _statistics = stats;
 
-        // Separar juegos por modo
         _individualGames = history
             .where((game) => game['game_mode'] != 'Team Mode')
             .toList();
@@ -63,12 +62,7 @@ class _RecordPageState extends State<RecordPage>
 
         _isLoading = false;
       });
-
-      debugPrint('📊 Historial cargado: ${_gameHistory.length} partidas');
-      debugPrint('   Individual: ${_individualGames.length}');
-      debugPrint('   Equipos: ${_teamGames.length}');
     } catch (e) {
-      debugPrint('❌ Error al cargar historial: $e');
       setState(() => _isLoading = false);
     }
   }
@@ -80,7 +74,6 @@ class _RecordPageState extends State<RecordPage>
         return ButtonPopupDelete(
           title: '¿Eliminar esta partida del historial?',
           onCorrect: () async {
-            // Eliminar la partida
             await AppDatabase.instance.deleteGameHistory(gameId);
             _loadHistory();
 
@@ -94,9 +87,7 @@ class _RecordPageState extends State<RecordPage>
               );
             }
           },
-          onReset: () {
-            // No hacer nada, ButtonPopupDelete lo cierra automáticamente
-          },
+          onReset: () {},
         );
       },
     );
@@ -109,7 +100,6 @@ class _RecordPageState extends State<RecordPage>
         return ButtonPopupDelete(
           title: '¿Borrar todo el historial? Esta acción no se puede deshacer.',
           onCorrect: () async {
-            // Borrar todo el historial
             await AppDatabase.instance.clearAllHistory();
             _loadHistory();
 
@@ -123,9 +113,7 @@ class _RecordPageState extends State<RecordPage>
               );
             }
           },
-          onReset: () {
-            // No hacer nada, ButtonPopupDelete lo cierra automáticamente
-          },
+          onReset: () {},
         );
       },
     );
@@ -138,7 +126,6 @@ class _RecordPageState extends State<RecordPage>
       body: SafeArea(
         child: Column(
           children: [
-            // Header con estadísticas
             RecordHeader(
               statistics: _statistics,
               hasGames: _gameHistory.isNotEmpty,
@@ -153,16 +140,13 @@ class _RecordPageState extends State<RecordPage>
               playersCount: _rankings.length,
             ),
 
-            // TabBarView con las listas
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : TabBarView(
                       controller: _tabController,
                       children: [
-                        // Tab Individual
                         _buildGamesList(_individualGames, false),
-                        // Tab Equipos
                         _buildGamesList(_teamGames, true),
                         RankingList(
                           rankings: _rankings,

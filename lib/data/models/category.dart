@@ -1,5 +1,3 @@
-// Archivo: lib/data/models/category.dart
-
 class Category {
   final int? id;
   final String name;

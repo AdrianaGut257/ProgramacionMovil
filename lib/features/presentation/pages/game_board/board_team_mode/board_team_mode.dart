@@ -65,7 +65,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     setState(() {
       hasWildcards = wildcards.isNotEmpty;
     });
-    debugPrint('Comodines cargados: $wildcards');
   }
 
   void _initializeOrderedPlayers() {
@@ -241,9 +240,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
     });
   }
 
-  void _onWildcardActivated(WildcardType type) {
-    debugPrint('Comodín activado: $type');
-  }
+  void _onWildcardActivated(WildcardType type) {}
 
   void _onExtraTimeGranted(int seconds) {
     _chronometerKey.currentState?.addExtraTime(seconds);
@@ -258,7 +255,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
   Future<void> _saveGameToDatabase() async {
     if (_gameSaved) {
-      debugPrint('⚠️ La partida ya fue guardada anteriormente');
       return;
     }
 
@@ -266,7 +262,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
       final categories = context.read<GameTeam>().categories;
       final categoryNames = categories.map((c) => c.name).toList();
 
-      final gameId = await AppDatabase.instance.saveTeamGameHistory(
+      await AppDatabase.instance.saveTeamGameHistory(
         gameMode: 'Team Mode',
         playerScores: playerScores,
         orderedPlayers: orderedPlayers,
@@ -274,8 +270,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
       );
 
       _gameSaved = true;
-
-      debugPrint('✅ Partida guardada exitosamente con ID: $gameId');
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -287,8 +281,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
         );
       }
     } catch (e) {
-      debugPrint('❌ Error al guardar la partida: $e');
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -345,7 +337,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                     children: [
                       SizedBox(height: isSmallScreen ? 10 : 20),
 
-                      // ---------- CABECERA ----------
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -361,8 +352,7 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    // ignore: deprecated_member_use
-                                    color: AppColors.primary.withOpacity(0.3),
+                                    color: AppColors.primary,
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
                                   ),
@@ -402,9 +392,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
                               seconds: gameTime.inSeconds + extraTimeSeconds,
                             ),
                             onTimeEnd: () {
-                              debugPrint(
-                                "Tiempo terminado para ${currentPlayer.name}",
-                              );
                               if (!hasSelectedLetter) _nextPlayer();
                             },
                             isActive:
@@ -417,7 +404,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
                       SizedBox(height: isSmallScreen ? 15 : 25),
 
-                      // ---------- JUGADOR ACTUAL ----------
                       PlayerNameWidget(
                         name: currentPlayer.name,
                         score: score,
@@ -426,7 +412,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
                       SizedBox(height: isSmallScreen ? 20 : 30),
 
-                      // ---------- TABLERO ----------
                       Center(
                         child: hasWildcards
                             ? BoardGameWildcards(
@@ -457,7 +442,6 @@ class _BoardTeamModePageState extends State<BoardTeamModePage> {
 
                       SizedBox(height: height * 0.04),
 
-                      // ---------- BOTONES INFERIORES ----------
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

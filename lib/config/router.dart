@@ -6,7 +6,6 @@ import 'package:programacion_movil/features/presentation/pages/home/home_princip
 import 'package:programacion_movil/features/presentation/widgets/category/category.dart';
 import 'package:programacion_movil/features/presentation/pages/register_names/individual_mode/players_register_page.dart';
 
-
 import '../features/presentation/pages/register_names/group_mode/group_mode_page.dart';
 import '../features/presentation/pages/modality_information/hard_mode.dart';
 import '../features/presentation/pages/modality_information/easy_mode.dart';
@@ -37,16 +36,12 @@ class AppRouter {
           );
         },
         routes: [
-          // Rutas principales de la barra de navegación
           GoRoute(
-            path: '/', 
+            path: '/',
             builder: (context, state) => const HomeStopWords(),
           ),
 
-          GoRoute(
-            path: '/mode', 
-            builder: (context, state) => const HomePage(),
-          ),
+          GoRoute(path: '/mode', builder: (context, state) => const HomePage()),
 
           GoRoute(
             path: '/record',

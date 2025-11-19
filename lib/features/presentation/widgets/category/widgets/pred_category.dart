@@ -104,7 +104,6 @@ class _PredCategoryState extends State<PredCategory> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // Filtrar solo las categorías predeterminadas NO seleccionadas
     final availableCategories = _defaultCategories
         .where((category) => !widget.selectedCategories.contains(category))
         .toList();
@@ -116,14 +115,14 @@ class _PredCategoryState extends State<PredCategory> {
         children: [
           Text(
             "Categorías predeterminadas disponibles",
-             style: GoogleFonts.openSans(
-              fontSize: 16,           
-              fontWeight: FontWeight.w600, 
-              color: AppColors.primary, 
-              height: 1.5,           
-              letterSpacing: 0.5,    
+            style: GoogleFonts.openSans(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primary,
+              height: 1.5,
+              letterSpacing: 0.5,
             ),
-            textAlign: TextAlign.center, 
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 15),
           Expanded(

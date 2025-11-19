@@ -13,15 +13,11 @@ class BackButtonCustom extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border(
-          bottom: BorderSide(
-            color: AppColors.tertiaryVariant,
-            width: 4,
-          ),
+          bottom: BorderSide(color: AppColors.tertiaryVariant, width: 4),
         ),
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
-            color: AppColors.tertiary.withOpacity(0.5),
+            color: AppColors.tertiary,
             blurRadius: 10,
             offset: const Offset(0, 4),
             spreadRadius: 1,

@@ -14,17 +14,14 @@ class CategorySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Obtener dimensiones de la pantalla
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Escalas relativas para adaptarse a pantallas pequeñas y grandes
-    final double fontSize = screenWidth * 0.04; // ~15 en pantallas medianas
+    final double fontSize = screenWidth * 0.04;
     final double verticalPadding = screenHeight * 0.015;
     final double horizontalPadding = screenWidth * 0.02;
     final double spacing = screenWidth * 0.015;
 
-    // Lista de pestañas
     final List<String> tabs = ['Seleccionadas', 'Predeterminadas', 'Creadas'];
 
     return Row(
@@ -50,8 +47,7 @@ class CategorySelector extends StatelessWidget {
                   boxShadow: currentIndex == index
                       ? [
                           BoxShadow(
-                            // ignore: deprecated_member_use
-                            color: AppColors.secondary.withOpacity(0.3),
+                            color: AppColors.secondary,
                             blurRadius: 5,
                             offset: const Offset(0, 2),
                           ),

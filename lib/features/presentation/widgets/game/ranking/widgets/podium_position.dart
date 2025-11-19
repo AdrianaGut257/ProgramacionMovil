@@ -12,35 +12,32 @@ class PodiumPositionGroup extends StatelessWidget {
     required this.config,
   });
 
-  // Agrupa jugadores por puntaje para detectar empates
   List<List<MapEntry<String, int>>> _groupByScore() {
     final Map<int, List<MapEntry<String, int>>> scoreGroups = {};
-    
+
     for (var entry in sortedScores) {
       if (!scoreGroups.containsKey(entry.value)) {
         scoreGroups[entry.value] = [];
       }
       scoreGroups[entry.value]!.add(entry);
     }
-    
-    // Ordenar por puntaje descendente y devolver grupos
-    final sortedScoreKeys = scoreGroups.keys.toList()..sort((a, b) => b.compareTo(a));
+
+    final sortedScoreKeys = scoreGroups.keys.toList()
+      ..sort((a, b) => b.compareTo(a));
     return sortedScoreKeys.map((score) => scoreGroups[score]!).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final groups = _groupByScore();
-    
-    // Si no hay suficientes grupos o hay empates, mostrar lista
+
     if (groups.isEmpty) {
       return const SizedBox.shrink();
     }
-    
-    // Verificar si hay empates en los primeros 3 lugares
+
     bool hasTopThreeTies = false;
     int podiumPositions = 0;
-    
+
     for (int i = 0; i < groups.length && podiumPositions < 3; i++) {
       if (groups[i].length > 1) {
         hasTopThreeTies = true;
@@ -48,25 +45,22 @@ class PodiumPositionGroup extends StatelessWidget {
       }
       podiumPositions++;
     }
-    
-    // Si hay empates en top 3, mostrar vista con empates
+
     if (hasTopThreeTies) {
       return _buildPodiumWithTies(groups);
     }
-    
-    // Si no hay empates, mostrar podio normal
+
     return _buildNormalPodium(groups);
   }
 
   Widget _buildPodiumWithTies(List<List<MapEntry<String, int>>> groups) {
     int currentPosition = 1;
     List<Widget> podiumItems = [];
-    
+
     for (int i = 0; i < groups.length && i < 3; i++) {
       final group = groups[i];
       final colors = _getColorsForPosition(currentPosition);
-      
-      // Agregar todos los jugadores del grupo (empate o no)
+
       for (var player in group) {
         podiumItems.add(
           _buildTiedPodiumItem(
@@ -76,14 +70,10 @@ class PodiumPositionGroup extends StatelessWidget {
           ),
         );
       }
-      
-      // Avanzar posición solo después de procesar todo el grupo
       currentPosition++;
     }
-    
-    return Column(
-      children: podiumItems,
-    );
+
+    return Column(children: podiumItems);
   }
 
   Widget _buildTiedPodiumItem({
@@ -104,8 +94,7 @@ class PodiumPositionGroup extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              // ignore: deprecated_member_use
-              color: colors.first.withOpacity(0.4),
+              color: colors.first,
               offset: const Offset(0, 3),
               blurRadius: 8,
             ),
@@ -124,8 +113,7 @@ class PodiumPositionGroup extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      // ignore: deprecated_member_use
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black,
                       offset: const Offset(0, 2),
                       blurRadius: 4,
                     ),
@@ -142,10 +130,9 @@ class PodiumPositionGroup extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
-              // Nombre del jugador
+
               Expanded(
                 child: Text(
                   player.key,
@@ -157,8 +144,7 @@ class PodiumPositionGroup extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              
-              // Puntaje
+
               Text(
                 '${player.value}',
                 style: TextStyle(
@@ -185,27 +171,24 @@ class PodiumPositionGroup extends StatelessWidget {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.end,
-          children: List.generate(
-            3,
-            (index) {
-              final positionIndex = displayOrder[index];
-              if (positionIndex >= top.length) {
-                return SizedBox(width: itemWidth);
-              }
+          children: List.generate(3, (index) {
+            final positionIndex = displayOrder[index];
+            if (positionIndex >= top.length) {
+              return SizedBox(width: itemWidth);
+            }
 
-              final player = top[positionIndex];
-              final position = positionIndex + 1;
+            final player = top[positionIndex];
+            final position = positionIndex + 1;
 
-              return SizedBox(
-                width: itemWidth,
-                child: _AnimatedPodiumItem(
-                  player: player,
-                  position: position,
-                  config: config,
-                ),
-              );
-            },
-          ),
+            return SizedBox(
+              width: itemWidth,
+              child: _AnimatedPodiumItem(
+                player: player,
+                position: position,
+                config: config,
+              ),
+            );
+          }),
         );
       },
     );
@@ -253,9 +236,10 @@ class _AnimatedPodiumItemState extends State<_AnimatedPodiumItem>
       duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
 
-    _bounce = Tween<double>(begin: 0.0, end: 6.0)
-        .chain(CurveTween(curve: Curves.easeInOut))
-        .animate(_controller);
+    _bounce = Tween<double>(
+      begin: 0.0,
+      end: 6.0,
+    ).chain(CurveTween(curve: Curves.easeInOut)).animate(_controller);
   }
 
   @override
@@ -345,8 +329,7 @@ class _AnimatedPodiumItemState extends State<_AnimatedPodiumItem>
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    // ignore: deprecated_member_use
-                    color: colors.first.withOpacity(0.6),
+                    color: colors.first,
                     offset: const Offset(0, 4),
                     blurRadius: 10,
                   ),
@@ -361,8 +344,7 @@ class _AnimatedPodiumItemState extends State<_AnimatedPodiumItem>
                     fontWeight: FontWeight.bold,
                     shadows: [
                       Shadow(
-                        // ignore: deprecated_member_use
-                        color: Colors.black.withOpacity(0.5),
+                        color: Colors.black,
                         offset: const Offset(1, 2),
                         blurRadius: 4,
                       ),

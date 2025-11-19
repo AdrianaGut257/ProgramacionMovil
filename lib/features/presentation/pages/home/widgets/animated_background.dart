@@ -53,18 +53,16 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
                     color: index % 3 == 0
                         ? AppColors.secondary
                         : index % 3 == 1
-                            ? AppColors.tertiary
-                            : AppColors.teal,
+                        ? AppColors.tertiary
+                        : AppColors.teal,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
                         color: (index % 3 == 0
-                                ? AppColors.secondary
-                                : index % 3 == 1
-                                    ? AppColors.tertiary
-                                    : AppColors.teal)
-                            // ignore: deprecated_member_use
-                            .withOpacity(0.6),
+                            ? AppColors.secondary
+                            : index % 3 == 1
+                            ? AppColors.tertiary
+                            : AppColors.teal),
                         blurRadius: 10,
                       ),
                     ],

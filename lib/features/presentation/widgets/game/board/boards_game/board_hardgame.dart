@@ -539,8 +539,7 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  // ignore: deprecated_member_use
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black,
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -594,8 +593,7 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      // ignore: deprecated_member_use
-                      color: AppColors.primary.withOpacity(0.3),
+                      color: AppColors.primary,
                       blurRadius: 20,
                       spreadRadius: 5,
                     ),
@@ -640,8 +638,7 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    // ignore: deprecated_member_use
-                                    color: Colors.black.withOpacity(0.3),
+                                    color: Colors.black,
                                     blurRadius: 4,
                                     offset: const Offset(0, 2),
                                   ),
@@ -659,8 +656,7 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              // ignore: deprecated_member_use
-                              color: Colors.black.withOpacity(0.7),
+                              color: Colors.black,
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -696,8 +692,7 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      // ignore: deprecated_member_use
-                      color: Colors.orange.withOpacity(0.5),
+                      color: Colors.orange,
                       blurRadius: 15,
                       spreadRadius: 2,
                     ),
@@ -724,8 +719,7 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  // ignore: deprecated_member_use
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary,
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),

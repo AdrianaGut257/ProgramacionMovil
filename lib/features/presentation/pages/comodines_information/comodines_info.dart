@@ -308,23 +308,16 @@ class _ComodinesPageState extends State<ComodinesPage>
             textColor: Colors.white,
             borderColor: AppColors.secondaryVariant,
             onPressed: () {
-              // Obtener comodines seleccionados
               final selectedPowerUps = _selectedPowerUps.entries
                   .where((entry) => entry.value)
                   .map((entry) => entry.key)
                   .toList();
 
-              debugPrint('=== COMODINES SELECCIONADOS ===');
-              debugPrint('Modo: $mode');
-              debugPrint('Comodines: $selectedPowerUps');
-
-              // GUARDAR EN EL PROVIDER CORRECTO SEGÚN EL MODO
               if (mode == 'individual') {
                 final gameIndividual = context.read<GameIndividual>();
                 gameIndividual.setWildcards(selectedPowerUps);
                 debugPrint('Guardado en GameIndividual');
 
-                // Navegar al selector de categorías (modo individual)
                 context.push(
                   '/select-categories',
                   extra: {
@@ -337,9 +330,7 @@ class _ComodinesPageState extends State<ComodinesPage>
               } else {
                 final gameTeam = context.read<GameTeam>();
                 gameTeam.setWildcards(selectedPowerUps);
-                debugPrint('Guardado en GameTeam');
 
-                // Navegar al selector de categorías (modo grupal)
                 context.push(
                   '/select-categories',
                   extra: {'mode': 'group', 'powerUps': selectedPowerUps},
