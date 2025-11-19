@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../presentation/pages/home/widgets/mode_info_card.dart';
+import '../selected_modality/widgets/mode_info_card.dart';
 import 'package:go_router/go_router.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:google_fonts/google_fonts.dart';

@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:programacion_movil/features/presentation/pages/comodines_information/comodines_info.dart';
 import 'package:programacion_movil/features/presentation/pages/categorias_information/categorias_info.dart';
-import 'package:programacion_movil/features/presentation/pages/home/home_page.dart';
+import 'package:programacion_movil/features/presentation/pages/selected_modality/selected_modality.dart';
 import 'package:programacion_movil/features/presentation/pages/home/home_principal.dart';
 import 'package:programacion_movil/features/presentation/widgets/category/category.dart';
 import 'package:programacion_movil/features/presentation/pages/register_names/individual_mode/players_register_page.dart';
