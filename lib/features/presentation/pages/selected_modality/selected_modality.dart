@@ -65,13 +65,7 @@ class HomePage extends StatelessWidget {
                       ModeInfoCard(
                         title: "Modo Fácil",
                         subtitle: "Perfecto para comenzar",
-                        features: [
-                          {
-                            "text": "2-10 jugadores",
-                            "icon": Icons.people_rounded,
-                          },
-                          {"text": "Más tiempo", "icon": Icons.timer_rounded},
-                        ],
+                        features: [],
                         buttonText: "Jugar Fácil",
                         buttonIcon: Icons.sentiment_satisfied_alt_rounded,
                         onPressed: () =>
@@ -89,16 +83,7 @@ class HomePage extends StatelessWidget {
                       ModeInfoCard(
                         title: "Modo Difícil",
                         subtitle: "Para los más valientes",
-                        features: [
-                          {
-                            "text": "2-10 jugadores",
-                            "icon": Icons.people_rounded,
-                          },
-                          {
-                            "text": "Menos tiempo",
-                            "icon": Icons.hourglass_bottom_rounded,
-                          },
-                        ],
+                        features: [],
                         buttonText: "Jugar Difícil",
                         buttonIcon: Icons.local_fire_department_rounded,
                         onPressed: () =>
@@ -116,13 +101,7 @@ class HomePage extends StatelessWidget {
                       ModeInfoCard(
                         title: "Modo Grupal",
                         subtitle: "Diversión en equipo",
-                        features: [
-                          {"text": "2 equipos", "icon": Icons.groups_2_rounded},
-                          {
-                            "text": "Competencia",
-                            "icon": Icons.emoji_events_rounded,
-                          },
-                        ],
+                        features: [],
                         buttonText: "Jugar en Grupo",
                         buttonIcon: Icons.groups_rounded,
                         onPressed: () =>
