@@ -58,11 +58,7 @@ class _HomeStopWordsState extends State<HomeStopWords>
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  AppColors.primaryVariant,
-                  AppColors.primary,
-                  Color(0xFF3D2C5E),
-                ],
+                colors: [AppColors.primaryVariant, AppColors.primary],
               ),
             ),
           ),

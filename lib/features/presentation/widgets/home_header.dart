@@ -76,19 +76,16 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // Obtener tamaño de pantalla
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
     double scale(double v) => v * (height / 800);
 
-    // Escalar tamaño de fuente según el ancho
     final double responsiveFontSize = (width * 0.1).clamp(
       28.0,
       48.0,
     ); // Mínimo 28, máximo 48
 
-    // Reducir márgenes en pantallas pequeñas
     final bool isSmallScreen = height < 700;
 
     return Container(
@@ -141,7 +138,6 @@ class _HomeHeaderState extends State<HomeHeader> with TickerProviderStateMixin {
 
           SizedBox(height: isSmallScreen ? 20 : 40),
 
-          // Título animado
           ScaleTransition(
             scale: _scaleAnimation,
             child: FadeTransition(

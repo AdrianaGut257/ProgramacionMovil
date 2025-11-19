@@ -380,10 +380,11 @@ class _CategoriasPageState extends State<CategoriasPage> {
                 ),
               ),
               SizedBox(height: isSmallScreen ? 8 : 16),
+
               Text(
                 "Categorías",
                 style: GoogleFonts.titanOne(
-                  fontSize: width * 0.065,
+                  fontSize: width * 0.095,
                   fontWeight: FontWeight.w900,
                   color: AppColors.primary,
                   letterSpacing: 0,
