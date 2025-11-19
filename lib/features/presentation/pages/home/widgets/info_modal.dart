@@ -80,7 +80,7 @@ class _InfoModalContentState extends State<_InfoModalContent>
       child: Container(
         height: modalHeight,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
           boxShadow: [
             BoxShadow(
@@ -125,7 +125,7 @@ class _InfoModalContentState extends State<_InfoModalContent>
                     ),
                     child: Icon(
                       widget.icon,
-                      color: Colors.white,
+                      color: AppColors.white,
                       size: isSmall ? 26 : 30,
                     ),
                   ),
@@ -149,7 +149,7 @@ class _InfoModalContentState extends State<_InfoModalContent>
                               ? 'Guía paso a paso'
                               : 'Normas del juego',
                           style: const TextStyle(
-                            color: Colors.white70,
+                            color: AppColors.white,
                             fontSize: 14,
                           ),
                         ),
@@ -338,7 +338,7 @@ class _InfoModalContentState extends State<_InfoModalContent>
     return Container(
       margin: EdgeInsets.only(bottom: small ? 14 : 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: color, width: 1.5),
         boxShadow: [
@@ -378,7 +378,7 @@ class _InfoModalContentState extends State<_InfoModalContent>
                 ),
                 Icon(
                   item['icon'] as IconData,
-                  color: Colors.white,
+                  color: AppColors.white,
                   size: small ? 24 : 26,
                 ),
               ],
@@ -406,7 +406,7 @@ class _InfoModalContentState extends State<_InfoModalContent>
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppColors.white,
                           ),
                         ),
                       ),
