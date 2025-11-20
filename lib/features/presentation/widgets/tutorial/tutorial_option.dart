@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'tutorial_categorias_screen.dart';
+import 'tutorial_game_screen.dart';
 
 class TutorialOptionScreen extends StatelessWidget {
   const TutorialOptionScreen({super.key});
@@ -126,28 +127,18 @@ class TutorialOptionScreen extends StatelessWidget {
 
                     _buildTutorialCard(
                       context,
-                      title: 'Registrar Gasto',
-                      description:
-                          'Descubre cómo añadir y editar tus gastos diarios',
-                      icon: Icons.attach_money,
+                      title: 'Jugar juego',
+                      description: 'Aprende a como funciona el juego',
+                      icon: Icons.gamepad,
                       gradientColors: [
                         AppColors.secondary,
                         AppColors.secondaryVariant,
                       ],
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Tutorial próximamente disponible',
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            backgroundColor: AppColors.secondary,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TutorialGameScreen(),
                           ),
                         );
                       },
