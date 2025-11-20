@@ -4,6 +4,7 @@ import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/pages/home/widgets/animated_background.dart';
 import 'package:programacion_movil/features/presentation/pages/home/widgets/info_modal.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
+import 'package:programacion_movil/features/presentation/widgets/tutorial/tutorial_tooltip.dart';
 
 class HomeStopWords extends StatefulWidget {
   const HomeStopWords({super.key});
@@ -17,6 +18,7 @@ class _HomeStopWordsState extends State<HomeStopWords>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  bool _showTooltip = false;
 
   @override
   void initState() {
@@ -37,6 +39,30 @@ class _HomeStopWordsState extends State<HomeStopWords>
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     _controller.forward();
+
+    _checkIfShouldShowTooltip();
+  }
+
+  Future<void> _checkIfShouldShowTooltip() async {
+    await Future.delayed(const Duration(milliseconds: 1200));
+
+    if (mounted) {
+      setState(() {
+        _showTooltip = true;
+      });
+    }
+  }
+
+  void _dismissTooltip() {
+    if (mounted) {
+      setState(() {
+        _showTooltip = false;
+      });
+    }
+  }
+
+  void _openTutorial() {
+    context.push('/tutorial-categorias');
   }
 
   @override
@@ -76,7 +102,6 @@ class _HomeStopWordsState extends State<HomeStopWords>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // LOGO
                         Hero(
                           tag: 'logo',
                           child: Image.asset(
@@ -99,6 +124,12 @@ class _HomeStopWordsState extends State<HomeStopWords>
               ),
             ),
           ),
+
+          if (_showTooltip)
+            TutorialTooltip(
+              onDismiss: _dismissTooltip,
+              onOpenTutorial: _openTutorial,
+            ),
         ],
       ),
     );
@@ -173,22 +204,17 @@ class _HomeStopWordsState extends State<HomeStopWords>
             vertical: paddingV,
           ),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                color,
-                // ignore: deprecated_member_use
-                color.withOpacity(0.75),
-              ],
+            gradient: const LinearGradient(
+              colors: [AppColors.secondary, Color(0xBF4A90E2)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
-                // ignore: deprecated_member_use
-                color: color.withOpacity(0.35),
+                color: Color(0x594A90E2),
                 blurRadius: 12,
-                offset: const Offset(0, 5),
+                offset: Offset(0, 5),
               ),
             ],
           ),

@@ -676,7 +676,6 @@ class SpotlightPainter extends CustomPainter {
     }
 
     if (highlightRect != null) {
-      // Crear path con el recorte
       final path = Path()
         ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
         ..addRRect(highlightRect)

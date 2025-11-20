@@ -3,7 +3,9 @@ import 'package:programacion_movil/config/colors.dart';
 import 'tutorial_categorias_screen.dart';
 
 class TutorialButton extends StatelessWidget {
-  const TutorialButton({super.key});
+  final GlobalKey? buttonKey;
+
+  const TutorialButton({super.key, this.buttonKey});
 
   void _openTutorial(BuildContext context) {
     Navigator.of(context).push(
@@ -20,6 +22,7 @@ class TutorialButton extends StatelessWidget {
       bottom: 100,
       right: 16,
       child: Container(
+        key: buttonKey,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           boxShadow: [
