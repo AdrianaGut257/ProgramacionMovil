@@ -157,9 +157,9 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                 const SizedBox(height: 16),
 
                 Text(
-                  "Tutorial: Categorías",
+                  "Categorías",
                   style: GoogleFonts.titanOne(
-                    fontSize: width * 0.08,
+                    fontSize: width * 0.095,
                     fontWeight: FontWeight.w900,
                     color: AppColors.primary,
                     letterSpacing: 0,
@@ -170,16 +170,14 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
 
                 const SizedBox(height: 16),
 
-                // Subtítulo
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Text(
-                    'Crea tu categoría',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
-                    ),
+                Text(
+                  'Crea tu categoría',
+                  style: GoogleFonts.titanOne().copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.primary,
+                    letterSpacing: 0,
+                    height: 1.1,
                   ),
                 ),
 
@@ -192,17 +190,15 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
 
                 const SizedBox(height: 24),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Text(
-                    "Tus categorías",
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: const Color(0xFF6B7280),
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
+                Text(
+                  "Selecciona una categoría para eliminarla",
+                  style: GoogleFonts.poppins(
+                    fontSize: width * 0.035,
+                    color: const Color(0xFF6B7280),
+                    fontWeight: FontWeight.w500,
+                    height: 1.3,
                   ),
+                  textAlign: TextAlign.center,
                 ),
 
                 const SizedBox(height: 16),
@@ -247,7 +243,12 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
       decoration: BoxDecoration(
         color: AppColors.white,
         boxShadow: [
-          BoxShadow(color: AppColors.grey, spreadRadius: 1, blurRadius: 5),
+          BoxShadow(
+            color: AppColors.grey,
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, -1),
+          ),
         ],
       ),
       child: Row(
@@ -456,8 +457,15 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.category_outlined, size: 64, color: AppColors.grey),
+            Icon(
+              Icons.category_outlined,
+              size: 64,
+              color: AppColors.grey.withValues(
+                alpha: 0.5,
+              ), // Agregar transparencia
+            ),
             const SizedBox(height: 16),
+
             Text(
               "No hay categorías creadas",
               style: GoogleFonts.poppins(
@@ -488,25 +496,25 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
 
   Widget _buildCategoryCard(String name, IconData icon) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: AppColors.primary,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 8,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -517,23 +525,23 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                     AppColors.primaryVariant,
                   ],
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.primary,
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
-              child: Icon(icon, color: AppColors.white, size: 28),
+              child: Icon(icon, color: AppColors.white, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 name,
                 style: GoogleFonts.poppins(
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF1F2937),
                   height: 1.2,
@@ -542,8 +550,8 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
             ),
             Container(
               key: _deleteButtonKey,
-              width: 48,
-              height: 48,
+              width: 42,
+              height: 42,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
@@ -554,19 +562,19 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                     Color(0xFFDC2626),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0xFFEF4444),
                     blurRadius: 8,
-                    offset: const Offset(0, 4),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
               child: const Icon(
                 Icons.delete_outline_rounded,
                 color: AppColors.white,
-                size: 24,
+                size: 22,
               ),
             ),
           ],
