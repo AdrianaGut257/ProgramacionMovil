@@ -632,21 +632,33 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
             const SizedBox(width: 90),
 
           Row(
-            children: List.generate(
-              _steps.length,
-              (index) => AnimatedContainer(
+            children: List.generate(_steps.length > 3 ? 3 : _steps.length, (
+              index,
+            ) {
+              int displayStep;
+              if (_steps.length <= 3) {
+                displayStep = index;
+              } else if (_currentStep == 0) {
+                displayStep = index;
+              } else if (_currentStep == _steps.length - 1) {
+                displayStep = _steps.length - 3 + index;
+              } else {
+                displayStep = _currentStep - 1 + index;
+              }
+
+              return AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: index == _currentStep ? 24 : 8,
+                width: displayStep == _currentStep ? 24 : 8,
                 height: 8,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  color: index == _currentStep
+                  color: displayStep == _currentStep
                       ? AppColors.primary
                       : AppColors.grey,
                 ),
-              ),
-            ),
+              );
+            }),
           ),
 
           ElevatedButton.icon(
