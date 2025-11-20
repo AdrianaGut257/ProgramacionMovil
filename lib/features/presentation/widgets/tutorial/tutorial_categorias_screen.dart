@@ -16,11 +16,22 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
   final GlobalKey _addButtonKey = GlobalKey();
   final GlobalKey _categoryListKey = GlobalKey();
   final GlobalKey _deleteButtonKey = GlobalKey();
+  final GlobalKey _navbarKey = GlobalKey();
+  final GlobalKey _navbarCategoriesKey = GlobalKey();
   final verticalOffset = 150.0;
 
   final List<TutorialStep> _steps = [
     TutorialStep(
-      title: 'Paso 1: Campo de texto',
+      title: 'Paso 1: Navegación',
+      description:
+          'Toca el ícono de categorías en la barra inferior para ir a la pantalla de categorías',
+      highlightKey: 'navbarCategories',
+      showTextInField: '',
+      addButtonEnabled: false,
+      categories: [],
+    ),
+    TutorialStep(
+      title: 'Paso 2: Campo de texto',
       description: 'Este es el campo donde escribes el nombre de tu categoría',
       highlightKey: 'input',
       showTextInField: '',
@@ -28,7 +39,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
       categories: [],
     ),
     TutorialStep(
-      title: 'Paso 2: Escribe el nombre',
+      title: 'Paso 3: Escribe el nombre',
       description: 'Aquí puedes ver cómo se vería al escribir "Deportes"',
       highlightKey: 'input',
       showTextInField: 'Deportes',
@@ -36,7 +47,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
       categories: [],
     ),
     TutorialStep(
-      title: 'Paso 3: Botón de agregar',
+      title: 'Paso 4: Botón de agregar',
       description: 'Presiona este botón verde para crear la categoría',
       highlightKey: 'addButton',
       showTextInField: 'Deportes',
@@ -44,7 +55,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
       categories: [],
     ),
     TutorialStep(
-      title: 'Paso 4: Categoría creada',
+      title: 'Paso 5: Categoría creada',
       description: '¡Así aparecerá tu nueva categoría en la lista!',
       highlightKey: 'categoryList',
       showTextInField: '',
@@ -54,7 +65,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
       ],
     ),
     TutorialStep(
-      title: 'Paso 5: Botón de eliminar',
+      title: 'Paso 6: Botón de eliminar',
       description: 'Usa este botón rojo para eliminar cualquier categoría',
       highlightKey: 'deleteButton',
       showTextInField: '',
@@ -126,12 +137,10 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
         onTap: _nextStep,
         child: Stack(
           children: [
-            // Contenido del tutorial
             Column(
               children: [
                 const SizedBox(height: 10),
 
-                // Logo
                 Center(
                   child: FractionallySizedBox(
                     widthFactor: 0.6,
@@ -199,8 +208,14 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                 const SizedBox(height: 16),
                 Expanded(child: _buildCategoryList(currentStepData)),
 
-                const SizedBox(height: 80),
+                const SizedBox(height: 130),
               ],
+            ),
+            Positioned(
+              bottom: 110,
+              left: 0,
+              right: 0,
+              child: _buildTutorialNavbar(),
             ),
 
             if (currentStepData.highlightKey != 'none')
@@ -221,6 +236,42 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTutorialNavbar() {
+    return Container(
+      key: _navbarKey,
+      height: 50,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        boxShadow: [
+          BoxShadow(color: AppColors.grey, spreadRadius: 1, blurRadius: 5),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildNavItem(Icons.home, false),
+          _buildNavItem(Icons.category_outlined, true, isCenter: true),
+          _buildNavItem(Icons.bar_chart, false),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(
+    IconData icon,
+    bool isSelected, {
+    bool isCenter = false,
+  }) {
+    return Container(
+      key: isCenter ? _navbarCategoriesKey : null,
+      child: Icon(
+        icon,
+        size: 30,
+        color: isSelected ? AppColors.secondary : AppColors.grey,
       ),
     );
   }
@@ -533,6 +584,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
           addButtonKey: _addButtonKey,
           categoryListKey: _categoryListKey,
           deleteButtonKey: _deleteButtonKey,
+          navbarCategoriesKey: _navbarCategoriesKey,
         ),
         child: Container(),
       ),
@@ -545,13 +597,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black,
-            blurRadius: 20,
-            offset: const Offset(0, -3),
-          ),
-        ],
+        boxShadow: [],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -646,6 +692,7 @@ class SpotlightPainter extends CustomPainter {
   final GlobalKey addButtonKey;
   final GlobalKey categoryListKey;
   final GlobalKey deleteButtonKey;
+  final GlobalKey navbarCategoriesKey;
 
   SpotlightPainter({
     required this.highlightKey,
@@ -653,6 +700,7 @@ class SpotlightPainter extends CustomPainter {
     required this.addButtonKey,
     required this.categoryListKey,
     required this.deleteButtonKey,
+    required this.navbarCategoriesKey,
   });
 
   @override
@@ -668,6 +716,20 @@ class SpotlightPainter extends CustomPainter {
         break;
       case 'categoryList':
         highlightRect = _getHighlightRect(categoryListKey, padding: 16);
+        if (highlightRect != null) {
+          highlightRect = RRect.fromRectAndRadius(
+            Rect.fromLTWH(
+              highlightRect.left,
+              highlightRect.top - 30,
+              highlightRect.width,
+              highlightRect.height - 100,
+            ),
+            highlightRect.tlRadius,
+          );
+        }
+        break;
+      case 'navbarCategories':
+        highlightRect = _getHighlightRect(navbarCategoriesKey, padding: 17);
         break;
       case 'deleteButton':
         highlightRect = _getHighlightRect(deleteButtonKey, padding: 12);
