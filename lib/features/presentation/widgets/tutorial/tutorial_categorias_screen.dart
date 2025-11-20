@@ -63,14 +63,6 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
         {'name': 'Deportes', 'icon': Icons.sports_soccer},
       ],
     ),
-    TutorialStep(
-      title: '¡Tutorial completado!',
-      description: 'Ya conoces cómo crear y gestionar tus categorías',
-      highlightKey: 'none',
-      showTextInField: '',
-      addButtonEnabled: false,
-      categories: [],
-    ),
   ];
 
   void _nextStep() {
@@ -111,14 +103,10 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(
-                Icons.school,
-                color: AppColors.primary,
-                size: 24,
-              ),
+              child: const Icon(Icons.school, color: Colors.white, size: 24),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -159,7 +147,6 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
 
                 const SizedBox(height: 16),
 
-                // Título
                 Text(
                   "Tutorial: Categorías",
                   style: GoogleFonts.titanOne(
@@ -189,7 +176,6 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
 
                 const SizedBox(height: 15),
 
-                // Campo de texto (estático)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: _buildStaticInputField(currentStepData),
@@ -197,7 +183,6 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
 
                 const SizedBox(height: 24),
 
-                // Lista de categorías
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Text(
@@ -212,19 +197,15 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                 ),
 
                 const SizedBox(height: 16),
-
-                // Lista de categorías estática
                 Expanded(child: _buildCategoryList(currentStepData)),
 
                 const SizedBox(height: 80),
               ],
             ),
 
-            // Overlay oscuro con recorte para highlight
             if (currentStepData.highlightKey != 'none')
               _buildHighlightOverlay(currentStepData),
 
-            // Banner de instrucciones (siempre visible arriba)
             Positioned(
               top: 0,
               left: 0,
@@ -256,7 +237,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.secondary.withOpacity(0.4),
+            color: AppColors.secondary.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -270,12 +251,12 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.lightbulb_outline,
-                  color: Colors.white,
+                  color: AppColors.secondary,
                   size: 28,
                 ),
               ),
@@ -296,13 +277,13 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   '${_currentStep + 1}/${_steps.length}',
                   style: GoogleFonts.poppins(
-                    color: Colors.white,
+                    color: AppColors.secondary,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -314,18 +295,18 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline, color: Colors.white, size: 20),
+                Icon(Icons.info_outline, color: AppColors.secondary, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     step.description,
                     style: GoogleFonts.poppins(
-                      color: Colors.white,
+                      color: AppColors.secondary,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       height: 1.3,
@@ -377,7 +358,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                           : step.showTextInField,
                       style: TextStyle(
                         color: step.showTextInField.isEmpty
-                            ? Colors.white70
+                            ? const Color(0xFFB3C5D7)
                             : Colors.white,
                         fontSize: 20,
                         fontWeight: step.showTextInField.isEmpty
@@ -397,13 +378,13 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                 height: 40,
                 decoration: BoxDecoration(
                   color: step.addButtonEnabled
-                      ? Colors.green
-                      : Colors.green.withOpacity(0.5),
+                      ? const Color(0xFF10B981)
+                      : const Color(0xFF6EE7B7),
                   shape: BoxShape.circle,
                   boxShadow: step.addButtonEnabled
                       ? [
                           BoxShadow(
-                            color: Colors.green.withOpacity(0.5),
+                            color: const Color(0xFF10B981).withOpacity(0.4),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -425,11 +406,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.category_outlined,
-              size: 64,
-              color: AppColors.grey.withOpacity(0.5),
-            ),
+            Icon(Icons.category_outlined, size: 64, color: AppColors.grey),
             const SizedBox(height: 16),
             Text(
               "No hay categorías creadas",
@@ -467,7 +444,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.08),
+            color: AppColors.primary.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -485,7 +462,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    AppColors.primary.withOpacity(0.8),
+                    AppColors.primary,
                     AppColors.primary,
                     AppColors.primaryVariant,
                   ],
@@ -530,7 +507,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFEF4444).withOpacity(0.4),
+                    color: const Color(0xFFEF4444).withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -571,7 +548,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, -3),
           ),
@@ -580,15 +557,14 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Botón anterior
           if (_currentStep > 0)
             ElevatedButton.icon(
               onPressed: _previousStep,
               icon: const Icon(Icons.arrow_back, size: 20),
               label: const Text('Atrás'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.grey.withOpacity(0.2),
-                foregroundColor: AppColors.primary,
+                backgroundColor: AppColors.grey,
+                foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -602,7 +578,6 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
           else
             const SizedBox(width: 90),
 
-          // Indicador de progreso
           Row(
             children: List.generate(
               _steps.length,
@@ -615,13 +590,12 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                   borderRadius: BorderRadius.circular(4),
                   color: index == _currentStep
                       ? AppColors.primary
-                      : AppColors.grey.withOpacity(0.3),
+                      : AppColors.grey,
                 ),
               ),
             ),
           ),
 
-          // Botón siguiente
           ElevatedButton.icon(
             onPressed: _nextStep,
             label: Text(
@@ -649,7 +623,6 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
   }
 }
 
-// Clase para definir cada paso del tutorial
 class TutorialStep {
   final String title;
   final String description;
@@ -668,7 +641,6 @@ class TutorialStep {
   });
 }
 
-// Painter para crear el efecto spotlight
 class SpotlightPainter extends CustomPainter {
   final String highlightKey;
   final GlobalKey inputFieldKey;
@@ -686,7 +658,6 @@ class SpotlightPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Obtener el área a iluminar según el paso
     RRect? highlightRect;
 
     switch (highlightKey) {
@@ -710,15 +681,12 @@ class SpotlightPainter extends CustomPainter {
         ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
         ..addRRect(highlightRect)
         ..fillType = PathFillType.evenOdd;
-
-      // Dibujar overlay oscuro con recorte
       final darkOverlay = Paint()
-        ..color = Colors.black.withOpacity(0.75)
+        ..color = const Color(0x99000000)
         ..style = PaintingStyle.fill;
 
       canvas.drawPath(path, darkOverlay);
 
-      // Dibujar borde brillante alrededor del área iluminada
       final borderPaint = Paint()
         ..color = Colors.white
         ..style = PaintingStyle.stroke
@@ -727,9 +695,8 @@ class SpotlightPainter extends CustomPainter {
 
       canvas.drawRRect(highlightRect, borderPaint);
 
-      // Dibujar segundo borde más fino para más brillo
       final innerBorderPaint = Paint()
-        ..color = Colors.white.withOpacity(0.8)
+        ..color = Colors.white
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2;
 
