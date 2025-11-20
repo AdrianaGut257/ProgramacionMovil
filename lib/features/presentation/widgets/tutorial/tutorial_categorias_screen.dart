@@ -213,7 +213,6 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
               child: _buildInstructionBanner(currentStepData),
             ),
 
-            // Barra de navegación inferior
             Positioned(
               bottom: 20,
               left: 20,

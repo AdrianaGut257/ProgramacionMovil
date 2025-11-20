@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TutorialTooltip extends StatelessWidget {
