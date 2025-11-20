@@ -237,7 +237,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.secondary.withOpacity(0.3),
+            color: AppColors.secondary,
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -384,7 +384,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                   boxShadow: step.addButtonEnabled
                       ? [
                           BoxShadow(
-                            color: const Color(0xFF10B981).withOpacity(0.4),
+                            color: const Color(0xFF10B981),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -444,7 +444,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -470,7 +470,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.3),
+                    color: AppColors.primary,
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -507,7 +507,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFEF4444).withOpacity(0.3),
+                    color: const Color(0xFFEF4444),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -548,7 +548,7 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black,
             blurRadius: 20,
             offset: const Offset(0, -3),
           ),
