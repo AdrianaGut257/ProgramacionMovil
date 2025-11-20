@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:programacion_movil/config/colors.dart';
-import 'tutorial_categorias_screen.dart';
+import 'tutorial_option.dart';
 
 class TutorialButton extends StatelessWidget {
   final GlobalKey? buttonKey;
@@ -10,7 +10,7 @@ class TutorialButton extends StatelessWidget {
   void _openTutorial(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const TutorialCategoriasScreen(),
+        builder: (context) => const TutorialOptionScreen(),
         fullscreenDialog: true,
       ),
     );
