@@ -16,6 +16,7 @@ import '../features/presentation/pages/game_board/board_individual_mode/board_ha
 import '../features/presentation/pages/record_game/record.dart';
 
 import '../features/presentation/widgets/navigation_bar.dart';
+import 'package:programacion_movil/features/presentation/widgets/tutorial/tutorial_button.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
@@ -26,12 +27,15 @@ class AppRouter {
           return Stack(
             children: [
               child,
+
               Positioned(
                 bottom: 0,
                 left: 0,
                 right: 0,
                 child: const CustomNavigationBar(),
               ),
+
+              const TutorialButton(),
             ],
           );
         },
