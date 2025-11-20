@@ -158,7 +158,7 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
                 ),
                 child: Column(
                   children: [
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 160),
 
                     // Categoría y Cronómetro
                     Row(
@@ -356,19 +356,19 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
   }
 
   Widget _buildBoard(TutorialStep step) {
-    final double radius = 120;
+    final double radius = 100;
     final letters = step.letters;
 
     return Container(
       key: _boardKey,
-      width: 360,
-      height: 360,
+      width: 280,
+      height: 280,
       child: Stack(
         alignment: Alignment.center,
         children: [
           Container(
-            width: 380,
-            height: 380,
+            width: 320,
+            height: 320,
             decoration: const BoxDecoration(
               color: AppColors.primary,
               shape: BoxShape.circle,
