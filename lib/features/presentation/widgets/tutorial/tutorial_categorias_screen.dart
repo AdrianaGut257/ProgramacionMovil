@@ -502,9 +502,9 @@ class _TutorialCategoriasScreenState extends State<TutorialCategoriasScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary,
-            blurRadius: 8,
-            offset: const Offset(0, 5),
+            color: AppColors.primary.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
