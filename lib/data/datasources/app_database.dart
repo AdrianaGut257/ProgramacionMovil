@@ -3,27 +3,23 @@ import 'package:path/path.dart';
 import 'package:flutter/foundation.dart';
 import '../models/player.dart';
 import 'migrations/migration_manager.dart';
-//import '../seeders/category_seeder.dart';
 
-/// Clase principal de la base de datos (Singleton)
 class AppDatabase {
   AppDatabase._privateConstructor();
   static final AppDatabase instance = AppDatabase._privateConstructor();
 
   static Database? _database;
 
-  /// Obtiene la instancia de la base de datos
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
     return _database!;
   }
 
-  /// Inicializa la base de datos
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'app_database.db');
-    
+
     return await openDatabase(
       path,
       version: 5,
@@ -35,7 +31,6 @@ class AppDatabase {
     );
   }
 
-  /// Reinicia completamente la base de datos
   Future<void> resetDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'app_database.db');
@@ -44,21 +39,20 @@ class AppDatabase {
     _database = null;
 
     await deleteDatabase(path);
-    
+
     if (kDebugMode) {
       debugPrint('🗑️ Base de datos reiniciada');
     }
   }
 
   // ==================== MÉTODOS DE CATEGORÍAS ====================
-  
+
   Future<void> insertCategory(String name) async {
     final db = await database;
-    await db.insert(
-      'category',
-      {'name': name, 'is_default': 0},
-      conflictAlgorithm: ConflictAlgorithm.ignore,
-    );
+    await db.insert('category', {
+      'name': name,
+      'is_default': 0,
+    }, conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
   Future<List<Map<String, dynamic>>> getCategories() async {
@@ -68,33 +62,21 @@ class AppDatabase {
 
   Future<List<Map<String, dynamic>>> getDefaultCategories() async {
     final db = await database;
-    return await db.query(
-      'category',
-      where: 'is_default = ?',
-      whereArgs: [1],
-    );
+    return await db.query('category', where: 'is_default = ?', whereArgs: [1]);
   }
 
   Future<List<Map<String, dynamic>>> getCustomCategories() async {
     final db = await database;
-    return await db.query(
-      'category',
-      where: 'is_default = ?',
-      whereArgs: [0],
-    );
+    return await db.query('category', where: 'is_default = ?', whereArgs: [0]);
   }
 
   Future<void> deleteCategory(String name) async {
     final db = await database;
-    await db.delete(
-      'category',
-      where: 'name = ?',
-      whereArgs: [name],
-    );
+    await db.delete('category', where: 'name = ?', whereArgs: [name]);
   }
 
   // ==================== MÉTODOS DE JUGADORES ====================
-  
+
   Future<void> insertPlayers(List<Player> players) async {
     final db = await database;
     for (final player in players) {
@@ -107,7 +89,7 @@ class AppDatabase {
   }
 
   // ==================== MÉTODOS DE HISTORIAL ====================
-  
+
   Future<int> saveGameHistory({
     required String gameMode,
     required Map<String, int> playerScores,
@@ -159,7 +141,6 @@ class AppDatabase {
     final db = await database;
     final now = DateTime.now().toIso8601String();
 
-    // Calcular puntuaciones por equipo
     int team1Score = 0;
     int team2Score = 0;
 
@@ -175,7 +156,6 @@ class AppDatabase {
       }
     }
 
-    // Determinar equipo ganador
     int? winnerTeam;
     if (team1Score > team2Score) {
       winnerTeam = 1;
@@ -223,7 +203,9 @@ class AppDatabase {
       debugPrint('✅ Partida de equipos guardada con ID: $gameId');
       debugPrint('   Team 1: $team1Score puntos');
       debugPrint('   Team 2: $team2Score puntos');
-      debugPrint('   Ganador: ${winnerTeam != null ? 'Equipo $winnerTeam' : 'Empate'}');
+      debugPrint(
+        '   Ganador: ${winnerTeam != null ? 'Equipo $winnerTeam' : 'Empate'}',
+      );
     }
 
     return gameId;
@@ -231,11 +213,8 @@ class AppDatabase {
 
   Future<List<Map<String, dynamic>>> getGameHistory() async {
     final db = await database;
-    
-    final games = await db.query(
-      'game_history',
-      orderBy: 'created_at DESC',
-    );
+
+    final games = await db.query('game_history', orderBy: 'created_at DESC');
 
     List<Map<String, dynamic>> historyList = [];
 
@@ -312,12 +291,8 @@ class AppDatabase {
 
   Future<void> deleteGameHistory(int gameId) async {
     final db = await database;
-    await db.delete(
-      'game_history',
-      where: 'id = ?',
-      whereArgs: [gameId],
-    );
-    
+    await db.delete('game_history', where: 'id = ?', whereArgs: [gameId]);
+
     if (kDebugMode) {
       debugPrint('🗑️ Partida $gameId eliminada del historial');
     }
@@ -326,20 +301,22 @@ class AppDatabase {
   Future<void> clearAllHistory() async {
     final db = await database;
     await db.delete('game_history');
-    
+
     if (kDebugMode) {
       debugPrint('🗑️ Todo el historial ha sido eliminado');
     }
   }
 
   // ==================== MÉTODOS DE ESTADÍSTICAS ====================
-  
+
   Future<Map<String, dynamic>> getStatistics() async {
     final db = await database;
 
-    final totalGames = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM game_history'),
-    ) ?? 0;
+    final totalGames =
+        Sqflite.firstIntValue(
+          await db.rawQuery('SELECT COUNT(*) FROM game_history'),
+        ) ??
+        0;
 
     final winnerQuery = await db.rawQuery('''
       SELECT player_name, COUNT(*) as wins
@@ -421,9 +398,7 @@ class AppDatabase {
   }
 
   // ==================== MÉTODOS DE UTILIDAD ====================
-  
-  /// ⚠️ MÉTODO TEMPORAL: Marcar categorías por defecto manualmente
-  /// (Solo para bases de datos existentes que necesiten actualización)
+
   Future<void> fixDefaultCategories() async {
     final db = await database;
     await MigrationManager.markDefaultCategories(db);
