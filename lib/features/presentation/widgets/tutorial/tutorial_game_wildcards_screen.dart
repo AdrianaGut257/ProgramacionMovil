@@ -179,12 +179,12 @@ class _TutorialGameWildcardsScreenState
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.stars, color: Colors.white, size: 24),
+              child: const Icon(Icons.school, color: Colors.white, size: 24),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Tutorial de Comodines',
+                'Tutorial',
                 style: GoogleFonts.poppins(
                   color: AppColors.primary,
                   fontSize: 20,
@@ -547,7 +547,10 @@ class _TutorialGameWildcardsScreenState
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [step.wildcardColor, step.wildcardColor],
+          colors: [
+            step.wildcardColor,
+            step.wildcardColor.withValues(alpha: 0.7),
+          ],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
