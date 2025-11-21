@@ -274,15 +274,6 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
                       decoration: BoxDecoration(
                         color: AppColors.secondary,
                         borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(
-                              0xFF4DD0E1,
-                            ).withValues(alpha: 0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
                       ),
                       child: Text(
                         '${currentStepData.playerName}  ${currentStepData.playerScore}',

@@ -15,6 +15,7 @@ class _TutorialGameWildcardsScreenState
     extends State<TutorialGameWildcardsScreen> {
   int _currentStep = 0;
   final GlobalKey _wildcardLetterKey = GlobalKey();
+  final GlobalKey _selectedLetterKey = GlobalKey();
 
   final List<TutorialStep> _steps = [
     TutorialStep(
@@ -30,6 +31,9 @@ class _TutorialGameWildcardsScreenState
       wildcardIndex: 0,
       wildcardIcon: Icons.timer,
       wildcardColor: Colors.green,
+      blockedIndices: [],
+      selectedIndex: -1,
+      showBlockedLetters: false,
     ),
     TutorialStep(
       title: 'Comodín 2: Saltar Turno',
@@ -38,11 +42,14 @@ class _TutorialGameWildcardsScreenState
       playerName: 'juan',
       playerScore: 5,
       categoryName: 'ANIMALES',
-      chronometerTime: '00:08',
+      chronometerTime: '00:09',
       letters: ['A', 'X', 'B', 'Ñ', 'K', 'I'],
       wildcardIndex: 2,
       wildcardIcon: Icons.skip_next,
       wildcardColor: Colors.blue,
+      blockedIndices: [],
+      selectedIndex: -1,
+      showBlockedLetters: false,
     ),
     TutorialStep(
       title: 'Comodín 3: Doble Puntos',
@@ -52,25 +59,65 @@ class _TutorialGameWildcardsScreenState
       playerName: 'juan',
       playerScore: 10,
       categoryName: 'ANIMALES',
-      chronometerTime: '00:07',
+      chronometerTime: '00:08',
       letters: ['A', 'X', 'S', 'Ñ', 'K', 'I'],
       wildcardIndex: 4,
       wildcardIcon: Icons.star,
       wildcardColor: Colors.amber,
+      blockedIndices: [],
+      selectedIndex: -1,
+      showBlockedLetters: false,
     ),
     TutorialStep(
       title: 'Comodín 4: Bloquear Letras',
       description:
-          'Elige una letra disponible y bloquea las demás para el siguiente jugador',
+          'Al tocar este comodín, podrás elegir una letra disponible para el siguiente jugador',
       highlightKey: 'wildcardLetter',
       playerName: 'juan',
       playerScore: 15,
       categoryName: 'ANIMALES',
-      chronometerTime: '00:06',
+      chronometerTime: '00:07',
       letters: ['A', 'X', 'S', 'Ñ', 'E', 'I'],
       wildcardIndex: 1,
       wildcardIcon: Icons.lock,
-      wildcardColor: Colors.red,
+      wildcardColor: AppColors.errorPrimary,
+      blockedIndices: [],
+      selectedIndex: -1,
+      showBlockedLetters: false,
+    ),
+    TutorialStep(
+      title: 'Comodín 4: Seleccionar Letra',
+      description:
+          'Toca la letra que quieres dejar disponible para el siguiente jugador',
+      highlightKey: 'selectedLetter',
+      playerName: 'Daniel',
+      playerScore: 20,
+      categoryName: 'ANIMALES',
+      chronometerTime: '00:06',
+      letters: ['A', 'M', 'S', 'T', 'E', 'I'],
+      wildcardIndex: -1,
+      wildcardIcon: Icons.touch_app,
+      wildcardColor: AppColors.errorPrimary,
+      blockedIndices: [],
+      selectedIndex: 2,
+      showBlockedLetters: false,
+    ),
+    TutorialStep(
+      title: 'Comodín 4: Letras Bloqueadas',
+      description:
+          '¡Perfecto! Solo la letra "S" estará disponible. Las demás quedan bloqueadas para el siguiente jugador',
+      highlightKey: 'blockedLetters',
+      playerName: 'Juan',
+      playerScore: 20,
+      categoryName: 'ANIMALES',
+      chronometerTime: '00:10',
+      letters: ['A', 'M', 'S', 'T', 'E', 'I'],
+      wildcardIndex: -1,
+      wildcardIcon: Icons.lock,
+      wildcardColor: AppColors.errorPrimary,
+      blockedIndices: [0, 1, 3, 4, 5],
+      selectedIndex: 2,
+      showBlockedLetters: true,
     ),
   ];
 
@@ -243,15 +290,6 @@ class _TutorialGameWildcardsScreenState
                       decoration: BoxDecoration(
                         color: AppColors.secondary,
                         borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(
-                              0xFF4DD0E1,
-                            ).withValues(alpha: 0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
                       ),
                       child: Text(
                         '${currentStepData.playerName}  ${currentStepData.playerScore}',
@@ -388,32 +426,46 @@ class _TutorialGameWildcardsScreenState
                 alignment: Alignment.center,
                 clipBehavior: Clip.none,
                 children: [
-                  Container(
-                    key: i == step.wildcardIndex ? _wildcardLetterKey : null,
-                    width: 65,
-                    height: 65,
-                    decoration: BoxDecoration(
-                      color: AppColors.secondary,
-                      borderRadius: BorderRadius.circular(45),
-                      border: Border(
-                        bottom: BorderSide(
-                          color: AppColors.secondaryVariant,
-                          width: 5,
-                        ),
+                  Opacity(
+                    opacity: step.blockedIndices.contains(i) ? 0.5 : 1.0,
+                    child: Container(
+                      key:
+                          (i == step.wildcardIndex ||
+                              (step.selectedIndex == i &&
+                                  step.highlightKey == 'selectedLetter'))
+                          ? (step.highlightKey == 'selectedLetter'
+                                ? _selectedLetterKey
+                                : _wildcardLetterKey)
+                          : null,
+                      width: 65,
+                      height: 65,
+                      decoration: BoxDecoration(
+                        color: AppColors.secondary,
+                        borderRadius: BorderRadius.circular(45),
+                        border:
+                            (step.selectedIndex == i &&
+                                step.highlightKey == 'selectedLetter')
+                            ? Border.all(color: AppColors.tertiary, width: 3)
+                            : Border(
+                                bottom: BorderSide(
+                                  color: AppColors.secondaryVariant,
+                                  width: 5,
+                                ),
+                              ),
                       ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        letters[i],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
+                      child: Center(
+                        child: Text(
+                          letters[i],
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  if (i == step.wildcardIndex)
+                  if (i == step.wildcardIndex && step.wildcardIndex >= 0)
                     Positioned(
                       top: -5,
                       right: -5,
@@ -437,6 +489,19 @@ class _TutorialGameWildcardsScreenState
                           color: Colors.white,
                           size: 16,
                         ),
+                      ),
+                    ),
+                  if (step.blockedIndices.contains(i))
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.6),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.lock,
+                        color: Colors.red,
+                        size: 32,
                       ),
                     ),
                 ],
@@ -464,7 +529,7 @@ class _TutorialGameWildcardsScreenState
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [step.wildcardColor, step.wildcardColor.withOpacity(0.7)],
+          colors: [step.wildcardColor, step.wildcardColor],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
@@ -559,6 +624,7 @@ class _TutorialGameWildcardsScreenState
         painter: SpotlightPainter(
           highlightKey: step.highlightKey,
           wildcardLetterKey: _wildcardLetterKey,
+          selectedLetterKey: _selectedLetterKey,
         ),
         child: const SizedBox.expand(),
       ),
@@ -603,15 +669,28 @@ class _TutorialGameWildcardsScreenState
           else
             const SizedBox(width: 90),
           Row(
-            children: List.generate(_steps.length, (index) {
+            children: List.generate(_steps.length > 3 ? 3 : _steps.length, (
+              index,
+            ) {
+              int displayStep;
+              if (_steps.length <= 3) {
+                displayStep = index;
+              } else if (_currentStep == 0) {
+                displayStep = index;
+              } else if (_currentStep == _steps.length - 1) {
+                displayStep = _steps.length - 3 + index;
+              } else {
+                displayStep = _currentStep - 1 + index;
+              }
+
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: index == _currentStep ? 24 : 8,
+                width: displayStep == _currentStep ? 24 : 8,
                 height: 8,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  color: index == _currentStep
+                  color: displayStep == _currentStep
                       ? AppColors.primary
                       : AppColors.grey,
                 ),
@@ -657,6 +736,9 @@ class TutorialStep {
   final int wildcardIndex;
   final IconData wildcardIcon;
   final Color wildcardColor;
+  final List<int> blockedIndices;
+  final int selectedIndex;
+  final bool showBlockedLetters;
 
   TutorialStep({
     required this.title,
@@ -670,16 +752,21 @@ class TutorialStep {
     required this.wildcardIndex,
     required this.wildcardIcon,
     required this.wildcardColor,
+    required this.blockedIndices,
+    required this.selectedIndex,
+    required this.showBlockedLetters,
   });
 }
 
 class SpotlightPainter extends CustomPainter {
   final String highlightKey;
   final GlobalKey wildcardLetterKey;
+  final GlobalKey selectedLetterKey;
 
   SpotlightPainter({
     required this.highlightKey,
     required this.wildcardLetterKey,
+    required this.selectedLetterKey,
   });
 
   @override
@@ -694,6 +781,15 @@ class SpotlightPainter extends CustomPainter {
           isCircle: true,
         );
         break;
+      case 'selectedLetter':
+        highlightRect = _getHighlightRect(
+          selectedLetterKey,
+          padding: 12,
+          isCircle: true,
+        );
+        break;
+      case 'blockedLetters':
+        return;
     }
 
     if (highlightRect != null) {
