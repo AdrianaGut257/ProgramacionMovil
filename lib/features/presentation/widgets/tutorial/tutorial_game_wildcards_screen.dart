@@ -96,7 +96,7 @@ class _TutorialGameWildcardsScreenState
       chronometerTime: '00:06',
       letters: ['A', 'M', 'S', 'Ñ', 'E', 'I'],
       wildcardIndex: -1,
-      wildcardIcon: Icons.touch_app,
+      wildcardIcon: Icons.lock,
       wildcardColor: AppColors.errorPrimary,
       blockedIndices: [],
       selectedIndex: 2,
