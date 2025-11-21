@@ -50,24 +50,13 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
       playerName: 'juan',
       playerScore: 0,
       categoryName: 'ANIMALES',
-      chronometerTime: '00:10',
+      chronometerTime: '00:09',
       letters: ['D', 'X', 'B', 'Ñ', 'K', 'I'],
       selectedLetterIndex: -1,
     ),
     TutorialStep(
-      title: 'Paso 4: Tablero de letras',
-      description: 'Selecciona una letra del círculo para comenzar',
-      highlightKey: 'board',
-      playerName: 'juan',
-      playerScore: 0,
-      categoryName: 'ANIMALES',
-      chronometerTime: '00:10',
-      letters: ['D', 'X', 'B', 'Ñ', 'K', 'I'],
-      selectedLetterIndex: -1,
-    ),
-    TutorialStep(
-      title: 'Paso 5: Seleccionar letra',
-      description: 'Toca una letra para seleccionarla',
+      title: 'Paso 4: Seleccionar letra',
+      description: 'Toca una letra para responder',
       highlightKey: 'letter',
       playerName: 'juan',
       playerScore: 0,
@@ -77,37 +66,37 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
       selectedLetterIndex: 0,
     ),
     TutorialStep(
-      title: 'Paso 6: Letra seleccionada',
+      title: 'Paso 5: Letra seleccionada',
       description:
-          '¡La letra cambia! Ahora debes decir una palabra que empiece con "D" de la categoría "ANIMALES"',
+          '¡La letra cambia! Ahora el siguiente jugador puede tocar cualquier letra disponible',
       highlightKey: 'letter',
-      playerName: 'juan',
-      playerScore: 5,
+      playerName: 'Daniel',
+      playerScore: 0,
       categoryName: 'ANIMALES',
-      chronometerTime: '00:06',
-      letters: ['D', 'X', 'B', 'Ñ', 'K', 'I'],
+      chronometerTime: '00:10',
+      letters: ['A', 'X', 'B', 'Ñ', 'K', 'I'],
       selectedLetterIndex: 0,
     ),
     TutorialStep(
-      title: 'Paso 7: Botón Siguiente',
+      title: 'Paso 6: Botón Siguiente',
       description: 'Presiona este botón para pasar a la siguiente categoría',
       highlightKey: 'nextButton',
-      playerName: 'juan',
-      playerScore: 10,
+      playerName: 'Daniel',
+      playerScore: 0,
       categoryName: 'ANIMALES',
-      chronometerTime: '00:05',
+      chronometerTime: '00:09',
       letters: ['D', 'X', 'B', 'Ñ', 'K', 'I'],
       selectedLetterIndex: -1,
     ),
     TutorialStep(
-      title: 'Paso 8: Terminar juego',
+      title: 'Paso 7: Terminar juego',
       description:
           'Presiona este botón rojo para terminar el juego completamente',
       highlightKey: 'endGameButton',
-      playerName: 'juan',
-      playerScore: 10,
+      playerName: 'Daniel',
+      playerScore: 0,
       categoryName: 'ANIMALES',
-      chronometerTime: '00:05',
+      chronometerTime: '00:08',
       letters: ['D', 'X', 'B', 'Ñ', 'K', 'I'],
       selectedLetterIndex: -1,
     ),
@@ -135,7 +124,6 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final width = size.width;
-    final height = size.height;
     final currentStepData = _steps[_currentStep];
 
     return Scaffold(
@@ -185,7 +173,6 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
                   children: [
                     const SizedBox(height: 160),
 
-                    // Categoría y Cronómetro
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -278,7 +265,6 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
 
                     const SizedBox(height: 10),
 
-                    // Nombre del jugador compacto
                     Container(
                       key: _playerNameKey,
                       padding: const EdgeInsets.symmetric(
@@ -286,7 +272,7 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4DD0E1),
+                        color: AppColors.secondary,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -411,8 +397,7 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
     final double radius = 90;
     final letters = step.letters;
 
-    return Container(
-      key: _boardKey,
+    return SizedBox(
       width: 260,
       height: 260,
       child: Stack(
@@ -434,34 +419,27 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
               ),
               child: Container(
                 key: i == step.selectedLetterIndex ? _letterKey : null,
-                width: 60,
-                height: 60,
+                width: 65,
+                height: 65,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: i == step.selectedLetterIndex
-                        ? [const Color(0xFF10B981), const Color(0xFF059669)]
-                        : [const Color(0xFF4DD0E1), const Color(0xFF26C6DA)],
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: i == step.selectedLetterIndex
-                          ? const Color(0xFF10B981).withValues(alpha: 0.4)
-                          : Colors.black.withValues(alpha: 0.1),
-                      blurRadius: i == step.selectedLetterIndex ? 12 : 6,
-                      offset: const Offset(0, 3),
+                  color: i == step.selectedLetterIndex
+                      ? AppColors.secondary
+                      : AppColors.secondary,
+                  borderRadius: BorderRadius.circular(45),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: AppColors.secondaryVariant,
+                      width: 5,
                     ),
-                  ],
+                  ),
                 ),
                 child: Center(
                   child: Text(
                     letters[i],
                     style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
                       color: Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -591,7 +569,7 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
           nextButtonKey: _nextButtonKey,
           endGameButtonKey: _endGameButtonKey,
         ),
-        child: Container(),
+        child: const SizedBox.expand(),
       ),
     );
   }
