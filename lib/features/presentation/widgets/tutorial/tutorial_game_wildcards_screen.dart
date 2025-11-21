@@ -16,6 +16,7 @@ class _TutorialGameWildcardsScreenState
   int _currentStep = 0;
   final GlobalKey _wildcardLetterKey = GlobalKey();
   final GlobalKey _selectedLetterKey = GlobalKey();
+  final GlobalKey _chronometerKey = GlobalKey();
 
   final List<TutorialStep> _steps = [
     TutorialStep(
@@ -36,13 +37,29 @@ class _TutorialGameWildcardsScreenState
       showBlockedLetters: false,
     ),
     TutorialStep(
+      title: 'Comodín 1: +5 en el Cronómetro',
+      description: '¡El tiempo aumentó! Ahora tienes 5 segundos adicionales',
+      highlightKey: 'chronometer',
+      playerName: 'Juan',
+      playerScore: 0,
+      categoryName: 'ANIMALES',
+      chronometerTime: '00:15',
+      letters: ['A', 'X', 'B', 'Ñ', 'K', 'I'],
+      wildcardIndex: -1,
+      wildcardIcon: Icons.timer,
+      wildcardColor: Colors.green,
+      blockedIndices: [],
+      selectedIndex: -1,
+      showBlockedLetters: false,
+    ),
+    TutorialStep(
       title: 'Comodín 2: Saltar Turno',
       description: 'Obtén 5 puntos automáticamente y pasa al siguiente jugador',
       highlightKey: 'wildcardLetter',
       playerName: 'Juan',
       playerScore: 5,
       categoryName: 'ANIMALES',
-      chronometerTime: '00:09',
+      chronometerTime: '00:10',
       letters: ['A', 'X', 'B', 'Ñ', 'K', 'I'],
       wildcardIndex: 2,
       wildcardIcon: Icons.skip_next,
@@ -59,7 +76,7 @@ class _TutorialGameWildcardsScreenState
       playerName: 'Juan',
       playerScore: 10,
       categoryName: 'ANIMALES',
-      chronometerTime: '00:08',
+      chronometerTime: '00:09',
       letters: ['A', 'X', 'S', 'Ñ', 'K', 'I'],
       wildcardIndex: 4,
       wildcardIcon: Icons.star,
@@ -76,7 +93,7 @@ class _TutorialGameWildcardsScreenState
       playerName: 'Juan',
       playerScore: 15,
       categoryName: 'ANIMALES',
-      chronometerTime: '00:07',
+      chronometerTime: '00:08',
       letters: ['A', 'X', 'S', 'Ñ', 'E', 'I'],
       wildcardIndex: 1,
       wildcardIcon: Icons.lock,
@@ -93,7 +110,7 @@ class _TutorialGameWildcardsScreenState
       playerName: 'Juan',
       playerScore: 20,
       categoryName: 'ANIMALES',
-      chronometerTime: '00:06',
+      chronometerTime: '00:07',
       letters: ['A', 'M', 'S', 'Ñ', 'E', 'I'],
       wildcardIndex: -1,
       wildcardIcon: Icons.lock,
@@ -243,6 +260,7 @@ class _TutorialGameWildcardsScreenState
                         ),
                         const SizedBox(width: 12),
                         Container(
+                          key: _chronometerKey,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,
@@ -625,6 +643,7 @@ class _TutorialGameWildcardsScreenState
           highlightKey: step.highlightKey,
           wildcardLetterKey: _wildcardLetterKey,
           selectedLetterKey: _selectedLetterKey,
+          chronometerKey: _chronometerKey,
         ),
         child: const SizedBox.expand(),
       ),
@@ -762,11 +781,13 @@ class SpotlightPainter extends CustomPainter {
   final String highlightKey;
   final GlobalKey wildcardLetterKey;
   final GlobalKey selectedLetterKey;
+  final GlobalKey chronometerKey;
 
   SpotlightPainter({
     required this.highlightKey,
     required this.wildcardLetterKey,
     required this.selectedLetterKey,
+    required this.chronometerKey,
   });
 
   @override
@@ -787,6 +808,9 @@ class SpotlightPainter extends CustomPainter {
           padding: 12,
           isCircle: true,
         );
+        break;
+      case 'chronometer':
+        highlightRect = _getHighlightRect(chronometerKey, padding: 8);
         break;
       case 'blockedLetters':
         return;
