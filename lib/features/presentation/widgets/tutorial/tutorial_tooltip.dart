@@ -132,7 +132,7 @@ class TutorialTooltip extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
-              'Te recomendamos ver el tutorial de crear categorías personalizadas para aprovechar al máximo tu experiencia de juego. ¡Solo te tomará unos segundos!',
+              'Te recomendamos ver los diferentes tutoriales para aprovechar al máximo tu experiencia de juego. ¡Solo te tomará unos minutos!',
               style: GoogleFonts.poppins(
                 color: AppColors.primary,
                 fontSize: 13,
