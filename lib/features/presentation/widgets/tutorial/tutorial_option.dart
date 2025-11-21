@@ -3,6 +3,7 @@ import 'package:programacion_movil/config/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'tutorial_categorias_screen.dart';
 import 'tutorial_game_screen.dart';
+import 'tutorial_game_wildcards_screen.dart';
 
 class TutorialOptionScreen extends StatelessWidget {
   const TutorialOptionScreen({super.key});
@@ -128,7 +129,7 @@ class TutorialOptionScreen extends StatelessWidget {
                     _buildTutorialCard(
                       context,
                       title: 'Jugar juego',
-                      description: 'Aprende a como funciona el juego',
+                      description: 'Aprende a como funciona el juego general',
                       icon: Icons.gamepad,
                       gradientColors: [
                         AppColors.secondary,
@@ -148,28 +149,19 @@ class TutorialOptionScreen extends StatelessWidget {
 
                     _buildTutorialCard(
                       context,
-                      title: 'Ver Estadísticas',
-                      description:
-                          'Analiza tus gastos con gráficos y reportes detallados',
-                      icon: Icons.bar_chart,
+                      title: 'Jugar con comodines',
+                      description: 'Aprende a jugar el juego con comodines',
+                      icon: Icons.gamepad_outlined,
                       gradientColors: [
-                        const Color(0xFF10B981),
-                        const Color(0xFF059669),
+                        AppColors.tertiary,
+                        AppColors.tertiaryVariant,
                       ],
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Tutorial próximamente disponible',
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            backgroundColor: const Color(0xFF10B981),
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const TutorialGameWildcardsScreen(),
                           ),
                         );
                       },
