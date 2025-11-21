@@ -165,8 +165,6 @@ class ModeInfoCard extends StatelessWidget {
                   }).toList(),
                 ),
 
-                SizedBox(height: isSmallScreen ? 16 : 18),
-
                 CustomButton(
                   text: buttonText,
                   icon: buttonIcon,
