@@ -105,7 +105,7 @@ class _TutorialGameWildcardsScreenState
     TutorialStep(
       title: 'Comodín 4: Letras Bloqueadas',
       description:
-          '¡Perfecto! Solo la letra "S" estará disponible. Las demás quedan bloqueadas para el siguiente jugador',
+          '¡Perfecto! Solo la letra "S" estará disponible para el siguiente jugador',
       highlightKey: 'blockedLetters',
       playerName: 'Juan',
       playerScore: 20,
