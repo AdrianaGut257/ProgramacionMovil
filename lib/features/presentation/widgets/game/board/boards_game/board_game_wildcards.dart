@@ -649,7 +649,7 @@ class BoardGameWildcardsState extends State<BoardGameWildcards> {
                     Text(
                       'Comodines Activos',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

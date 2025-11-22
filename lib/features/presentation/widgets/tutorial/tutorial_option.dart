@@ -11,7 +11,9 @@ class TutorialOptionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final width = size.width;
+    final height = size.height;
+
+    final isSmallHeight = height < 700;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
@@ -73,29 +75,37 @@ class TutorialOptionScreen extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              Text(
-                "Selecciona un Tutorial",
-                style: GoogleFonts.titanOne(
-                  fontSize: width * 0.075,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.primary,
-                  letterSpacing: 0,
-                  height: 1.1,
-                ),
-                textAlign: TextAlign.center,
-              ),
+              // 🔥 TITULOS CENTRADOS CORRECTAMENTE
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Selecciona un tutorial',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.titanOne().copyWith(
+                        fontSize: isSmallHeight ? 20 : 20,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.primary,
+                        letterSpacing: 0.5,
+                        height: 1.2,
+                      ),
+                    ),
 
-              const SizedBox(height: 12),
+                    const SizedBox(height: 12),
 
-              Text(
-                'Aprende a usar la aplicación paso a paso',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: const Color(0xFF6B7280),
-                  fontWeight: FontWeight.w500,
-                  height: 1.3,
+                    Text(
+                      'Aprende a usar la aplicación paso a paso',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: Color(0xFF6B7280),
+                        fontWeight: FontWeight.w500,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
                 ),
-                textAlign: TextAlign.center,
               ),
 
               const SizedBox(height: 32),
@@ -223,7 +233,9 @@ class TutorialOptionScreen extends StatelessWidget {
                 ),
                 child: Icon(icon, color: Colors.white, size: 32),
               ),
+
               const SizedBox(width: 16),
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,7 +262,9 @@ class TutorialOptionScreen extends StatelessWidget {
                   ],
                 ),
               ),
+
               const SizedBox(width: 8),
+
               Container(
                 width: 40,
                 height: 40,

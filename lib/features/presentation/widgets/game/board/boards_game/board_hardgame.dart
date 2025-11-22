@@ -735,7 +735,7 @@ class BoardGameHardWildcardsState extends State<BoardGameHardWildcards> {
                     Text(
                       'Comodines Activos',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
