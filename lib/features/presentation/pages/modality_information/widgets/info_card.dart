@@ -22,214 +22,209 @@ class InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    /// 🌟 ESCALADO RESPONSIVE REAL
+    /// 1 = pantallas grandes, 0.75 pantallas pequeñas
+    final scale = (width / 400).clamp(0.70, 1.0);
+
     final hasChips = chips != null && chips!.isNotEmpty;
     final isCompact = !hasChips;
 
-    return Container(
-      width: isCompact ? (isSmallScreen ? 150 : 165) : double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withAlpha(25),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-            spreadRadius: 0,
+    return Transform.scale(
+      scale: scale,
+      alignment: Alignment.center,
+      child: Container(
+        width: isCompact ? 165 : double.infinity,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withAlpha(25),
+              blurRadius: 18,
+              offset: const Offset(0, 6),
+            ),
+          ],
+          border: Border.all(
+            color: AppColors.primary.withAlpha(50),
+            width: 2,
           ),
-        ],
-        border: Border.all(color: AppColors.primary.withAlpha(50), width: 2),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: isCompact ? -15 : -15,
-            right: isCompact ? -15 : -15,
-            child: Container(
-              width: isCompact ? 60 : 80,
-              height: isCompact ? 60 : 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primary.withAlpha(15),
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -15,
+              right: -15,
+              child: Container(
+                width: isCompact ? 55 : 75,
+                height: isCompact ? 55 : 75,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primary.withAlpha(15),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(
-              isSmallScreen ? (isCompact ? 14 : 18) : (isCompact ? 16 : 22),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (hasChips) ...[
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.primary,
-                              AppColors.primary.withAlpha(200),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withAlpha(40),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          icon,
-                          color: AppColors.white,
-                          size: isSmallScreen ? 24 : 28,
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              title,
-                              style: GoogleFonts.poppins(
-                                fontSize: isSmallScreen ? 19 : 22,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                                height: 1.2,
-                              ),
-                            ),
-                            if (subtitle != null) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                subtitle!,
-                                style: GoogleFonts.poppins(
-                                  fontSize: isSmallScreen ? 12 : 13,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.grey,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: isSmallScreen ? 14 : 16),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: chips!.map((chip) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: isSmallScreen ? 12 : 14,
-                          vertical: isSmallScreen ? 7 : 8,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.primary.withAlpha(20),
-                              AppColors.primary.withAlpha(10),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: AppColors.primary.withAlpha(60),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              chip['icon'] as IconData,
-                              size: isSmallScreen ? 14 : 16,
-                              color: AppColors.primary,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              chip['text'] as String,
-                              style: GoogleFonts.poppins(
-                                fontSize: isSmallScreen ? 12 : 13,
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ] else ...[
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.primary,
-                              AppColors.primary.withAlpha(200),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withAlpha(40),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          icon,
-                          color: AppColors.white,
-                          size: isSmallScreen ? 20 : 24,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              title,
-                              style: GoogleFonts.poppins(
-                                fontSize: isSmallScreen ? 12 : 13,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.grey,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              value,
-                              style: GoogleFonts.poppins(
-                                fontSize: isSmallScreen ? 16 : 18,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                                height: 1.2,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (hasChips)
+                    _buildAdvancedContent(scale)
+                  else
+                    _buildCompactContent(scale),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 🔵 Contenido para tarjetas compactas (Tiempo / Dificultad)
+  Widget _buildCompactContent(double scale) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.all(10 * scale),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.primary,
+                AppColors.primary.withAlpha(200),
               ],
             ),
+            borderRadius: BorderRadius.circular(12),
           ),
-        ],
-      ),
+          child: Icon(
+            icon,
+            color: AppColors.white,
+            size: 22 * scale,
+          ),
+        ),
+        SizedBox(width: 10 * scale),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 12 * scale,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.grey,
+                ),
+              ),
+              SizedBox(height: 2 * scale),
+              Text(
+                value,
+                style: GoogleFonts.poppins(
+                  fontSize: 18 * scale,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // 🔵 Contenido para tarjetas grandes (con chips)
+  Widget _buildAdvancedContent(double scale) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(12 * scale),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    AppColors.primary.withAlpha(200),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 26 * scale,
+              ),
+            ),
+            SizedBox(width: 12 * scale),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 20 * scale,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  if (subtitle != null)
+                    Text(
+                      subtitle!,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13 * scale,
+                        color: AppColors.grey,
+                      ),
+                    ),
+                ],
+              ),
+            )
+          ],
+        ),
+
+        SizedBox(height: 14 * scale),
+
+        Wrap(
+          spacing: 8 * scale,
+          runSpacing: 8 * scale,
+          children: chips!.map((chip) {
+            return Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 12 * scale,
+                vertical: 7 * scale,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: AppColors.primary.withAlpha(60),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    chip['icon'],
+                    size: 14 * scale,
+                    color: AppColors.primary,
+                  ),
+                  SizedBox(width: 6 * scale),
+                  Text(
+                    chip['text'],
+                    style: GoogleFonts.poppins(
+                      fontSize: 12 * scale,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  )
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }
