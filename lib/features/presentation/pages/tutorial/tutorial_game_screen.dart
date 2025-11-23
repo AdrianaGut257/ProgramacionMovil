@@ -19,6 +19,7 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
   final GlobalKey _letterKey = GlobalKey();
   final GlobalKey _nextButtonKey = GlobalKey();
   final GlobalKey _endGameButtonKey = GlobalKey();
+  final GlobalKey _validationModalKey = GlobalKey();
 
   final List<TutorialStep> _steps = [
     TutorialStep(
@@ -31,6 +32,7 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
       chronometerTime: '00:10',
       letters: ['D', 'X', 'B', 'Ñ', 'K', 'I'],
       selectedLetterIndex: -1,
+      showModal: false,
     ),
     TutorialStep(
       title: 'Paso 2: Cronómetro',
@@ -42,6 +44,7 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
       chronometerTime: '00:10',
       letters: ['D', 'X', 'B', 'Ñ', 'K', 'I'],
       selectedLetterIndex: -1,
+      showModal: false,
     ),
     TutorialStep(
       title: 'Paso 3: Categoría',
@@ -53,6 +56,7 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
       chronometerTime: '00:09',
       letters: ['D', 'X', 'B', 'Ñ', 'K', 'I'],
       selectedLetterIndex: -1,
+      showModal: false,
     ),
     TutorialStep(
       title: 'Paso 4: Seleccionar letra',
@@ -64,9 +68,23 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
       chronometerTime: '00:08',
       letters: ['D', 'X', 'B', 'Ñ', 'K', 'I'],
       selectedLetterIndex: 0,
+      showModal: false,
     ),
     TutorialStep(
-      title: 'Paso 5: Letra seleccionada',
+      title: 'Paso 5: Validación',
+      description:
+          'Aquí se valida si la respuesta del jugador es correcta o incorrecta',
+      highlightKey: 'validationModal',
+      playerName: 'juan',
+      playerScore: 0,
+      categoryName: 'ANIMALES',
+      chronometerTime: '00:08',
+      letters: ['D', 'X', 'B', 'Ñ', 'K', 'I'],
+      selectedLetterIndex: 0,
+      showModal: true,
+    ),
+    TutorialStep(
+      title: 'Paso 6: Letra seleccionada',
       description:
           '¡La letra cambia! Ahora el siguiente jugador puede tocar cualquier letra disponible',
       highlightKey: 'letter',
@@ -76,9 +94,10 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
       chronometerTime: '00:10',
       letters: ['A', 'X', 'B', 'Ñ', 'K', 'I'],
       selectedLetterIndex: 0,
+      showModal: false,
     ),
     TutorialStep(
-      title: 'Paso 6: Botón Siguiente',
+      title: 'Paso 7: Botón Siguiente',
       description: 'Presiona este botón para pasar a la siguiente categoría',
       highlightKey: 'nextButton',
       playerName: 'Daniel',
@@ -87,9 +106,10 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
       chronometerTime: '00:09',
       letters: ['D', 'X', 'B', 'Ñ', 'K', 'I'],
       selectedLetterIndex: -1,
+      showModal: false,
     ),
     TutorialStep(
-      title: 'Paso 7: Terminar juego',
+      title: 'Paso 8: Terminar juego',
       description:
           'Presiona este botón rojo para terminar el juego completamente',
       highlightKey: 'endGameButton',
@@ -99,6 +119,7 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
       chronometerTime: '00:08',
       letters: ['D', 'X', 'B', 'Ñ', 'K', 'I'],
       selectedLetterIndex: -1,
+      showModal: false,
     ),
   ];
 
@@ -364,7 +385,7 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
 
             if (currentStepData.highlightKey != 'none')
               _buildHighlightOverlay(currentStepData),
-
+            if (currentStepData.showModal) _buildValidationModal(),
             Positioned(
               top: 0,
               left: 0,
@@ -379,6 +400,147 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
               child: _buildNavigationBar(),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildValidationModal() {
+    return Align(
+      alignment: Alignment.center,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 0),
+        child: Container(
+          key: _validationModalKey,
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.6,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.blue.shade50,
+                Colors.indigo.shade50,
+                Colors.purple.shade50,
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 15,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.indigo.shade100,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary,
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.quiz_rounded,
+                    size: 24,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  "Valida la respuesta",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 0, 0, 0),
+                    letterSpacing: 0.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 3),
+                Container(
+                  height: 2,
+                  width: 45,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(1),
+                    gradient: LinearGradient(
+                      colors: [AppColors.primary, AppColors.secondary],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey.shade200, width: 1),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: AppColors.secondary,
+                          borderRadius: BorderRadius.circular(35),
+                          border: const Border(
+                            bottom: BorderSide(
+                              color: AppColors.secondaryVariant,
+                              width: 4,
+                            ),
+                          ),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                          onPressed: () {},
+                        ),
+                      ),
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: AppColors.errorPrimary,
+                          borderRadius: BorderRadius.circular(35),
+                          border: const Border(
+                            bottom: BorderSide(
+                              color: AppColors.errorSecondary,
+                              width: 4,
+                            ),
+                          ),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                          onPressed: () {},
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -559,6 +721,7 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
           letterKey: _letterKey,
           nextButtonKey: _nextButtonKey,
           endGameButtonKey: _endGameButtonKey,
+          validationModalKey: _validationModalKey,
         ),
         child: const SizedBox.expand(),
       ),
@@ -668,6 +831,7 @@ class TutorialStep {
   final String chronometerTime;
   final List<String> letters;
   final int selectedLetterIndex;
+  final bool showModal;
 
   TutorialStep({
     required this.title,
@@ -679,6 +843,7 @@ class TutorialStep {
     required this.chronometerTime,
     required this.letters,
     required this.selectedLetterIndex,
+    required this.showModal,
   });
 }
 
@@ -691,6 +856,7 @@ class SpotlightPainter extends CustomPainter {
   final GlobalKey letterKey;
   final GlobalKey nextButtonKey;
   final GlobalKey endGameButtonKey;
+  final GlobalKey validationModalKey;
 
   SpotlightPainter({
     required this.highlightKey,
@@ -701,6 +867,7 @@ class SpotlightPainter extends CustomPainter {
     required this.letterKey,
     required this.nextButtonKey,
     required this.endGameButtonKey,
+    required this.validationModalKey,
   });
 
   @override
@@ -732,6 +899,13 @@ class SpotlightPainter extends CustomPainter {
         break;
       case 'endGameButton':
         highlightRect = _getHighlightRect(endGameButtonKey, padding: 8);
+        break;
+      case 'validationModal':
+        highlightRect = _getHighlightRect(
+          validationModalKey,
+          padding: 12,
+          verticalOffset: 90.0,
+        );
         break;
     }
 
@@ -767,6 +941,7 @@ class SpotlightPainter extends CustomPainter {
     GlobalKey key, {
     double padding = 8,
     bool isCircle = false,
+    double verticalOffset = 90.0, // <-- NUEVO PARÁMETRO
   }) {
     final renderBox = key.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null || !renderBox.hasSize) return null;
@@ -777,7 +952,10 @@ class SpotlightPainter extends CustomPainter {
 
       if (isCircle) {
         final centerX = position.dx + size.width / 2;
-        final centerY = position.dy + size.height / 2 - 90;
+        final centerY =
+            position.dy +
+            size.height / 2 -
+            verticalOffset; // <-- USA EL PARÁMETRO
         final radius = (size.width / 2) + padding;
 
         return RRect.fromRectAndRadius(
@@ -789,7 +967,7 @@ class SpotlightPainter extends CustomPainter {
       return RRect.fromRectAndRadius(
         Rect.fromLTWH(
           position.dx - padding,
-          position.dy - padding - 90,
+          position.dy - padding - verticalOffset, // <-- USA EL PARÁMETRO
           size.width + (padding * 2),
           size.height + (padding * 2),
         ),
