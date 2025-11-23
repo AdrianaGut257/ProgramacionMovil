@@ -409,11 +409,11 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
     return Align(
       alignment: Alignment.center,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(bottom: 0),
         child: Container(
           key: _validationModalKey,
           constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.85,
+            maxWidth: MediaQuery.of(context).size.width * 0.6,
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -435,12 +435,12 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: Colors.indigo.shade100,
                     shape: BoxShape.circle,
@@ -454,25 +454,25 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
                   ),
                   child: Icon(
                     Icons.quiz_rounded,
-                    size: 32,
+                    size: 24,
                     color: AppColors.primary,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 14),
                 Text(
                   "Valida la respuesta",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: const Color.fromARGB(255, 0, 0, 0),
                     letterSpacing: 0.5,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 3),
                 Container(
                   height: 2,
-                  width: 60,
+                  width: 45,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(1),
                     gradient: LinearGradient(
@@ -480,54 +480,59 @@ class _TutorialGameScreenState extends State<TutorialGameScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     color: Colors.white,
                     border: Border.all(color: Colors.grey.shade200, width: 1),
                   ),
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: const Text(
-                            "Correcto",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: AppColors.secondary,
+                          borderRadius: BorderRadius.circular(35),
+                          border: const Border(
+                            bottom: BorderSide(
+                              color: AppColors.secondaryVariant,
+                              width: 4,
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 30,
+                          ),
                           onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: AppColors.errorPrimary,
+                          borderRadius: BorderRadius.circular(35),
+                          border: const Border(
+                            bottom: BorderSide(
+                              color: AppColors.errorSecondary,
+                              width: 4,
                             ),
                           ),
-                          child: const Text(
-                            "Incorrecto",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 30,
                           ),
+                          onPressed: () {},
                         ),
                       ),
                     ],
@@ -899,7 +904,7 @@ class SpotlightPainter extends CustomPainter {
         highlightRect = _getHighlightRect(
           validationModalKey,
           padding: 12,
-          verticalOffset: 80.0,
+          verticalOffset: 90.0,
         );
         break;
     }
