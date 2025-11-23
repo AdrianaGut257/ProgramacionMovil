@@ -111,25 +111,28 @@ class HardModePage extends StatelessWidget {
 
                       SizedBox(height: isSmallScreen ? 16 : 24),
 
-                      Center(
-                        child: IntrinsicWidth(
-                          child: Row(
-                            children: [
-                              InfoCard(
+                      Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: InfoCard(
                                 icon: Icons.timer,
                                 title: 'Tiempo',
                                 value: '5 seg',
                                 isSmallScreen: isSmallScreen,
                               ),
-                              const SizedBox(width: 12),
-                              InfoCard(
-                                icon: Icons.whatshot,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: InfoCard(
+                                icon: Icons.star_half,
                                 title: 'Dificultad',
                                 value: 'Difícil',
                                 isSmallScreen: isSmallScreen,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
 
