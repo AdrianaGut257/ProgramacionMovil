@@ -1,0 +1,201 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'package:programacion_movil/config/colors.dart';
+import 'package:programacion_movil/data/models/category.dart' as models;
+import 'package:programacion_movil/data/repositories/category_repository.dart';
+import 'package:programacion_movil/features/presentation/state/game_team.dart';
+import 'package:programacion_movil/features/presentation/state/game_individual.dart';
+import 'package:programacion_movil/features/presentation/widgets/buttons/back_button_custom.dart';
+import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
+import 'package:programacion_movil/features/presentation/widgets/category/widgets/pred_category.dart';
+import 'package:programacion_movil/features/presentation/widgets/category/widgets/category_selector.dart';
+import 'package:programacion_movil/features/presentation/widgets/category/widgets/create_category.dart';
+import 'package:programacion_movil/features/presentation/widgets/category/widgets/selected_category.dart';
+
+class Category extends StatefulWidget {
+  final String? mode;
+  final String? difficulty;
+  final List<dynamic>? players;
+
+  const Category({super.key, this.mode, this.difficulty, this.players});
+
+  @override
+  State<Category> createState() => _CategoryState();
+}
+
+class _CategoryState extends State<Category> {
+  final ValueNotifier<List<String>> selectedCategories = ValueNotifier([
+    "Musica",
+    "Animales",
+    "Paises",
+    "Frutas",
+    "Vegetales",
+    "Colores",
+  ]);
+
+  final CategoryRepository _repository = CategoryRepository();
+  int _currentIndex = 0;
+
+  void toggleCategory(String category) {
+    final current = List<String>.from(selectedCategories.value);
+    current.contains(category)
+        ? current.remove(category)
+        : current.add(category);
+    selectedCategories.value = current;
+  }
+
+  void _onTabChanged(int index) {
+    setState(() => _currentIndex = index);
+  }
+
+  Future<void> _saveCategoriesToGameState() async {
+    if (selectedCategories.value.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debes seleccionar al menos una categoría'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      final allCategoriesMap = await _repository.getAllCategories();
+      final selectedCategoryObjects = allCategoriesMap
+          .where((catMap) => selectedCategories.value.contains(catMap['name']))
+          .map((catMap) => models.Category.fromMap(catMap))
+          .toList();
+
+      if (!mounted) return;
+
+      if (widget.mode == 'group') {
+        final gameTeam = context.read<GameTeam>();
+        gameTeam.clearCategories();
+        gameTeam.setCategories(selectedCategoryObjects);
+        context.push('/board-game');
+        return;
+      }
+
+      if (widget.mode == 'individual') {
+        final gameIndividual = context.read<GameIndividual>();
+        gameIndividual.clearCategories();
+        gameIndividual.setCategories(selectedCategoryObjects);
+
+        final route = widget.difficulty == 'hard'
+            ? '/board-game-hard'
+            : '/board-game-easy';
+
+        context.push(route);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error al cargar categorías: $e')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final width = size.width;
+
+    final isSmall = height < 700 || width < 350;
+    final isMedium = height >= 700 && height < 850;
+
+    final categoryContainerHeight = height * 0.5;
+    final titleFontSize = isSmall ? 22.0 : isMedium ? 26.0 : 30.0;
+    final paddingValue = isSmall ? 12.0 : isMedium ? 18.0 : 24.0;
+
+    return ValueListenableBuilder<List<String>>(
+      valueListenable: selectedCategories,
+      builder: (_, selected, __) {
+        return Scaffold(
+          backgroundColor: AppColors.white,
+          resizeToAvoidBottomInset: true,
+          body: SafeArea(
+            child: Column(
+              children: [
+                // Contenido desplazable
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Padding(
+                      padding: EdgeInsets.all(paddingValue),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              BackButtonCustom(onPressed: () => context.pop()),
+                              const Spacer(),
+                            ],
+                          ),
+                          SizedBox(height: isSmall ? 8 : 16),
+                          Text(
+                            "Seleccione categorías",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.titanOne().copyWith(
+                              fontSize: titleFontSize,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.primary,
+                              height: 1.2,
+                            ),
+                          ),
+                          SizedBox(height: isSmall ? 10 : 20),
+                          CategorySelector(
+                            currentIndex: _currentIndex,
+                            onTabChanged: _onTabChanged,
+                          ),
+                          SizedBox(height: isSmall ? 10 : 20),
+
+                          // Contenedor responsivo con IndexedStack
+                          SizedBox(
+                            height: categoryContainerHeight,
+                            child: IndexedStack(
+                              index: _currentIndex,
+                              children: [
+                                SelectedCategory(
+                                  selectedCategories: selected,
+                                  onToggle: toggleCategory,
+                                ),
+                                PredCategory(
+                                  selectedCategories: selected,
+                                  onToggle: toggleCategory,
+                                ),
+                                CreateCategory(
+                                  selectedCategories: selected,
+                                  onToggle: toggleCategory,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Botón inferior fijo
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: paddingValue,
+                    vertical: isSmall ? 8 : 16,
+                  ),
+                  child: CustomButton(
+                    text: "Jugar",
+                    onPressed: _saveCategoriesToGameState,
+                  ),
+                ),
+                SizedBox(height: height * 0.09),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
