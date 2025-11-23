@@ -10,7 +10,6 @@
 .history
 .svn/
 .swiftpm/
-.vscode
 migrate_working_dir/
 
 # IntelliJ related

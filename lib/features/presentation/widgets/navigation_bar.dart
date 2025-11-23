@@ -1,53 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:programacion_movil/config/colors.dart';
-import 'package:go_router/go_router.dart';
 
 class CustomNavigationBar extends StatelessWidget {
-  const CustomNavigationBar({super.key});
-
   @override
   Widget build(BuildContext context) {
-    final currentLocation = GoRouterState.of(context).matchedLocation;
-
     return Container(
-      height: 50,
+      height: 80,
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: Colors.white,
         boxShadow: [
-          BoxShadow(color: AppColors.grey, spreadRadius: 1, blurRadius: 5),
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 5,
+          ),
         ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildNavItem(
-            Icons.home,
-            currentLocation == '/mode',
-            () => context.go('/mode'),
-          ),
-          _buildNavItem(
-            Icons.category_outlined,
-            currentLocation == '/categorias-info',
-            () => context.go('/categorias-info'),
-          ),
-          _buildNavItem(
-            Icons.bar_chart,
-            currentLocation == '/record',
-            () => context.go('/record'),
-          ),
+          _buildNavItem(Icons.home, true),
+          _buildNavItem(Icons.videogame_asset, false),
+          _buildNavItem(Icons.bar_chart, false),
         ],
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, bool isSelected, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Icon(
-        icon,
-        size: 30,
-        color: isSelected ? AppColors.secondary : AppColors.grey,
-      ),
+  Widget _buildNavItem(IconData icon, bool isSelected) {
+    return Icon(
+      icon,
+      size: 30,
+      color: isSelected ? Colors.teal[400] : Colors.grey[600],
     );
   }
 }
