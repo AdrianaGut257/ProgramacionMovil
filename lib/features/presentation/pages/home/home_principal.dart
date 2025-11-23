@@ -4,7 +4,7 @@ import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/features/presentation/pages/home/widgets/animated_background.dart';
 import 'package:programacion_movil/features/presentation/pages/home/widgets/info_modal.dart';
 import 'package:programacion_movil/features/presentation/widgets/buttons/custom_button.dart';
-import 'package:programacion_movil/features/presentation/widgets/tutorial/tutorial_tooltip.dart';
+import 'package:programacion_movil/features/presentation/pages/tutorial/tutorial_tooltip.dart';
 
 class HomeStopWords extends StatefulWidget {
   const HomeStopWords({super.key});
