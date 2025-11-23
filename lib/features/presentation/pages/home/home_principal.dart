@@ -182,7 +182,7 @@ class _HomeStopWordsState extends State<HomeStopWords>
     required bool isSmallScreen,
     required bool showComoJugar,
   }) {
-    final double paddingH = isSmallScreen ? 20 : 26;
+    final double paddingH = isSmallScreen ? 15 : 20;
     final double paddingV = isSmallScreen ? 11 : 14;
 
     return Material(
