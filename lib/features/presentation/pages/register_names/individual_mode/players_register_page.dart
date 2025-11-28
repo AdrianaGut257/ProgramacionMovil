@@ -33,53 +33,69 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
     setState(() => players[index] = value);
   }
 
-  void _startGame() {
-    final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
+ void _startGame() {
+  final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
 
-    if (validPlayers.isEmpty) {
-      ValidationDialog.show(
-        context,
-        "No puedes comenzar sin jugadores, agrega mínimo 2",
-        ValidationType.noPlayers,
-      );
-      return;
-    }
-
-    if (validPlayers.length < 2) {
-      ValidationDialog.show(
-        context,
-        "Se necesitan al menos 2 jugadores para comenzar",
-        ValidationType.minPlayers,
-      );
-      return;
-    }
-
-    final gameIndividual = context.read<GameIndividual>();
-    gameIndividual.clearPlayers();
-
-    List<Player> playerObjects = [];
-    for (int i = 0; i < validPlayers.length; i++) {
-      final player = Player(
-        id: i + 1,
-        name: validPlayers[i].trim(),
-        score: 0,
-        team: 1,
-      );
-      gameIndividual.addPlayer(player);
-      playerObjects.add(player);
-    }
-
-    if (!mounted) return;
-
-    context.push(
-      '/comodines-info',
-      extra: {
-        'mode': 'individual',
-        'players': playerObjects,
-        'difficulty': widget.difficulty ?? 'easy',
-      },
+  if (validPlayers.isEmpty) {
+    ValidationDialog.show(
+      context,
+      "No puedes comenzar sin jugadores, agrega mínimo 2",
+      ValidationType.noPlayers,
     );
+    return;
   }
+
+  if (validPlayers.length < 2) {
+    ValidationDialog.show(
+      context,
+      "Se necesitan al menos 2 jugadores para comenzar",
+      ValidationType.minPlayers,
+    );
+    return;
+  }
+
+  // --- Validación: nombres repetidos ---
+  final uniqueNames =
+      validPlayers.map((p) => p.trim().toLowerCase()).toSet();
+
+  if (uniqueNames.length != validPlayers.length) {
+    ValidationDialog.show(
+      context,
+      "No puedes repetir nombres de jugadores",
+      ValidationType.duplicateNames,
+    );
+    return;
+  }
+
+  final gameIndividual = context.read<GameIndividual>();
+  gameIndividual.clearPlayers();
+
+  List<Player> playerObjects = [];
+  for (int i = 0; i < validPlayers.length; i++) {
+    final player = Player(
+      id: i + 1,
+      name: validPlayers[i].trim(),
+      score: 0,
+      team: 1,
+    );
+    gameIndividual.addPlayer(player);
+    playerObjects.add(player);
+  }
+
+  if (!mounted) return;
+
+
+  context.push(
+    '/comodines-info',
+    extra: {
+      'mode': 'individual',
+      'players': playerObjects,
+      'difficulty': widget.difficulty ?? 'easy',
+    },
+  );
+}
+
+  
 
   @override
   Widget build(BuildContext context) {

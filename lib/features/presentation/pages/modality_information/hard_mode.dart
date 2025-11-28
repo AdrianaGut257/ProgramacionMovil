@@ -101,7 +101,7 @@ class HardModePage extends StatelessWidget {
                             const GameModeCard(
                               title: 'Modo Difícil',
                               description:
-                                  'En este modo, si uno falla 2 veces, la partida termina de inmediato.',
+                                  'Si fallas o no respondes a tiempo, pierdes de inmediato.',
                               badgeText: 'HARD MODE',
                               icon: Icons.bolt,
                             ),
