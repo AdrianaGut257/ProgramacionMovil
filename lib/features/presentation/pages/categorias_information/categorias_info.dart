@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:programacion_movil/config/colors.dart';
 import 'package:programacion_movil/data/datasources/app_database.dart';
 import 'package:programacion_movil/features/presentation/pages/record_game/widgets/button/button_popup_delete.dart';
@@ -20,11 +21,39 @@ class _CategoriasPageState extends State<CategoriasPage> {
   List<Map<String, dynamic>> selectedCategories = [];
   bool isLoading = true;
   final TextEditingController _nameController = TextEditingController();
+  bool _hasShownWarning = false;
 
   @override
   void initState() {
     super.initState();
     _loadCategories();
+    _nameController.addListener(_onTextChanged);
+  }
+
+  void _onTextChanged() {
+    if (_nameController.text.length >= 20 && !_hasShownWarning) {
+      _hasShownWarning = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ValidationDialog.show(
+            context,
+            "El nombre de la categoría no puede exceder los 20 caracteres",
+            ValidationType.nameTooLong,
+          );
+        }
+      });
+
+      Future.delayed(const Duration(seconds: 2), () {
+        _hasShownWarning = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.removeListener(_onTextChanged);
+    _nameController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadCategories() async {
@@ -119,6 +148,8 @@ class _CategoriasPageState extends State<CategoriasPage> {
             Expanded(
               child: TextField(
                 controller: _nameController,
+                maxLength: 20,
+                inputFormatters: [LengthLimitingTextInputFormatter(20)],
                 style: const TextStyle(color: Colors.white, fontSize: 20),
                 textAlignVertical: TextAlignVertical.center,
                 decoration: const InputDecoration(
@@ -133,6 +164,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
                     horizontal: 20,
                     vertical: 15,
                   ),
+                  counterText: '',
                 ),
               ),
             ),

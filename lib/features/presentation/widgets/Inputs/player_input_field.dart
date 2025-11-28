@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../config/colors.dart';
 import '../buttons/add_remove_button.dart';
+import '../modals/validation_dialog.dart';
 
 class PlayerInputField extends StatefulWidget {
   final int index;
@@ -26,11 +28,32 @@ class PlayerInputField extends StatefulWidget {
 
 class _PlayerInputFieldState extends State<PlayerInputField> {
   late TextEditingController _controller;
+  bool _hasShownWarning = false;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialValue);
+    _controller.addListener(_onTextChanged);
+  }
+
+  void _onTextChanged() {
+    if (_controller.text.length >= 20 && !_hasShownWarning) {
+      _hasShownWarning = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ValidationDialog.show(
+            context,
+            "El nombre no puede exceder los 20 caracteres",
+            ValidationType.nameTooLong,
+          );
+        }
+      });
+
+      Future.delayed(const Duration(seconds: 2), () {
+        _hasShownWarning = false;
+      });
+    }
   }
 
   @override
@@ -43,6 +66,7 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
 
   @override
   void dispose() {
+    _controller.removeListener(_onTextChanged);
     _controller.dispose();
     super.dispose();
   }
@@ -51,7 +75,6 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-
       decoration: BoxDecoration(
         color: AppColors.primaryVariant,
         borderRadius: BorderRadius.circular(25),
@@ -73,6 +96,8 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
               child: TextField(
                 controller: _controller,
                 onChanged: widget.onChanged,
+                maxLength: 20,
+                inputFormatters: [LengthLimitingTextInputFormatter(20)],
                 decoration: const InputDecoration(
                   hintText: 'Escribe aquí',
                   hintStyle: TextStyle(color: Colors.white70),
@@ -85,6 +110,7 @@ class _PlayerInputFieldState extends State<PlayerInputField> {
                     horizontal: 20,
                     vertical: 15,
                   ),
+                  counterText: '',
                 ),
                 style: const TextStyle(color: Colors.white),
               ),
