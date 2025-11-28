@@ -22,7 +22,18 @@ class PlayersRegisterScreen extends StatefulWidget {
 class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
   List<String> players = ["", ""];
 
-  void _addPlayer() => setState(() => players.add(""));
+  void _addPlayer() {
+  if (players.length >= 10) {
+    ValidationDialog.show(
+      context,
+      "Solo puedes registrar hasta 10 jugadores",
+      ValidationType.maxPlayers,
+    );
+    return;
+  }
+
+  setState(() => players.add(""));
+}
 
   void _removePlayer(int index) {
     if (players.length <= 1) return;
@@ -33,7 +44,7 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
     setState(() => players[index] = value);
   }
 
- void _startGame() {
+void _startGame() {
   final validPlayers = players.where((p) => p.trim().isNotEmpty).toList();
 
   if (validPlayers.isEmpty) {
@@ -54,10 +65,16 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
     return;
   }
 
-  // --- Validación: nombres repetidos ---
-  final uniqueNames =
-      validPlayers.map((p) => p.trim().toLowerCase()).toSet();
+  if (validPlayers.length > 10) {
+    ValidationDialog.show(
+      context,
+      "El máximo de jugadores permitidos es 10",
+      ValidationType.maxPlayers,
+    );
+    return;
+  }
 
+  final uniqueNames = validPlayers.map((p) => p.trim().toLowerCase()).toSet();
   if (uniqueNames.length != validPlayers.length) {
     ValidationDialog.show(
       context,
@@ -83,7 +100,6 @@ class _PlayersRegisterScreenState extends State<PlayersRegisterScreen> {
   }
 
   if (!mounted) return;
-
 
   context.push(
     '/comodines-info',

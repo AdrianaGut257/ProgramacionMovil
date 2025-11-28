@@ -11,7 +11,10 @@ enum ValidationType {
   emptyName,
   nameTooLong,
   categoryExists,
+  maxPlayers,
 }
+
+
 
 class ValidationDialog extends StatelessWidget {
   final String message;
@@ -51,6 +54,9 @@ class ValidationDialog extends StatelessWidget {
         return Icons.text_fields;
       case ValidationType.categoryExists:
         return Icons.error_outline;
+      case ValidationType.maxPlayers:
+        return Icons.person_add_alt_1;
+     
     }
   }
 
@@ -68,6 +74,10 @@ class ValidationDialog extends StatelessWidget {
       case ValidationType.nameTooLong:
       case ValidationType.categoryExists:
         return AppColors.errorPrimary;
+      case ValidationType.maxPlayers:
+        return AppColors.secondary;
+
+
     }
   }
 
