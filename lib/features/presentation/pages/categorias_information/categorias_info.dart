@@ -73,17 +73,8 @@ class _CategoriasPageState extends State<CategoriasPage> {
     if (name.isEmpty) {
       ValidationDialog.show(
         context,
-        'El nombre no puede estar vacío',
+        'El nombre de la categoría no puede estar vacío',
         ValidationType.emptyName,
-      );
-      return;
-    }
-
-    if (name.length > 20) {
-      ValidationDialog.show(
-        context,
-        'El nombre de la categoría es demasiado largo',
-        ValidationType.nameTooLong,
       );
       return;
     }
